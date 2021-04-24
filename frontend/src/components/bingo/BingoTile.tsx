@@ -12,7 +12,7 @@ const BingoTile = ({ field, onClick }: BingoFieldProps) => {
       className={`bingo-field ${field.isSelected ? "selected" : ""}`}
       onClick={onClick}
     >
-      {field.text} ({field.row}:{field.column})
+      {field.text}
     </div>
   );
 };
