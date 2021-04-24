@@ -1,0 +1,11 @@
+.bingo-card {
+  display: grid;
+  justify-content: center;
+  grid-template-columns: repeat(5, 150px);
+  grid-template-rows: repeat(5, 150px);
+  column-gap: 8px;
+  row-gap: 8px;
+}
+
+.bingo-field-row {
+}
