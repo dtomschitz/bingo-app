@@ -9,8 +9,8 @@ type Action =
       update: { id: string; changes: Partial<BingoField> };
     }
   | {
-      type: "updateState";
-      changes: Partial<State>;
+      type: "updateScore";
+      tile: number;
     };
 
 interface State {
@@ -31,10 +31,10 @@ const reducer = (state: State, action: Action): State => {
         }),
       };
 
-    case "updateState":
+    case "updateScore":
       return {
         ...state,
-        ...action.changes,
+        score: state.score ^ (1 << action.tile),
       };
   }
 };
@@ -85,10 +85,8 @@ const BingoCard = ({ fields, onWin }: BingoCardProps) => {
     });
 
     dispatch({
-      type: "updateState",
-      changes: {
-        score: state.score ^ (1 << tile),
-      },
+      type: "updateScore",
+      tile: tile,
     });
   };
 
