@@ -1,74 +1,112 @@
-import { BingoField, BingoGrid } from "@bingo/models";
-import { useReducer } from "react";
+import { BingoField } from "@bingo/models";
+import { useEffect, useReducer } from "react";
 import "../../styling/bingo/BingoCard.scss";
 import BingoTile from "./BingoTile";
 
-type Action = {
-  type: "updateBingoField";
-  update: { row: number; column: number; changes: Partial<BingoField> };
-};
+type Action =
+  | {
+      type: "updateBingoField";
+      update: { id: string; changes: Partial<BingoField> };
+    }
+  | {
+      type: "updateState";
+      changes: Partial<State>;
+    };
 
 interface State {
-  grid: BingoGrid;
+  fields: BingoField[];
+  score: number;
+  hasWon: boolean;
 }
 
 const reducer = (state: State, action: Action): State => {
   switch (action.type) {
     case "updateBingoField":
-      const { row, column, changes } = action.update;
-      const grid = state.grid;
-      grid[row][column] = { ...grid[row][column], ...changes };
+      const { id, changes } = action.update;
 
       return {
         ...state,
-        grid,
+        fields: state.fields.map((field) => {
+          return field.id === id ? { ...field, ...changes } : field;
+        }),
+      };
+
+    case "updateState":
+      return {
+        ...state,
+        ...action.changes,
       };
   }
 };
 
-const transformToGrid = (fields: BingoField[]): BingoGrid => {
-  const grid: BingoGrid = [];
-  for (let i = 0, k = -1; i < fields.length; i++) {
-    if (i % 5 === 0) {
-      k++;
-      grid[k] = [];
-    }
+const winPatterns = [
+  65011712,
+  2031616,
+  63488,
+  1984,
+  62,
+  34636832,
+  17318416,
+  8659208,
+  4329604,
+  2164802,
+  34087042,
+  2236960,
+];
 
-    grid[k].push(fields[i]);
-  }
-
-  return grid;
+const findWinningPattern = (score: number) => {
+  return winPatterns.find((pattern) => (pattern & score) === pattern) || 0;
 };
 
-const BingoCard = ({ fields }: { fields: BingoField[] }) => {
-  const initialState: State = { grid: transformToGrid(fields) };
+interface BingoCardProps {
+  fields: BingoField[];
+  onWin: () => void;
+}
+
+const BingoCard = ({ fields, onWin }: BingoCardProps) => {
+  const initialState: State = { fields, score: 0, hasWon: false };
   const [state, dispatch] = useReducer(reducer, initialState);
 
-  const onStateChange = (row: number, column: number, field: BingoField) => {
+  useEffect(() => {
+    if (findWinningPattern(state.score) !== 0) {
+      onWin();
+    }
+  }, [onWin, state]);
+
+  const onBingoTileClick = (tile: number, field: BingoField) => {
     dispatch({
       type: "updateBingoField",
       update: {
-        row,
-        column,
+        id: field.id,
         changes: {
           isSelected: !field.isSelected,
         },
+      },
+    });
+
+    dispatch({
+      type: "updateState",
+      changes: {
+        score: state.score ^ (1 << tile),
       },
     });
   };
 
   return (
     <div className="bingo-card">
-      {state.grid.map((row, i) => (
-        <div className="bingo-card-row">
-          {row.map((field, j) => (
-            <BingoTile
-              key={field.id}
-              field={field}
-              onClick={() => onStateChange(i, j, field)}
-            />
-          ))}
-        </div>
+      <div className="bingo-header">B</div>
+      <div className="bingo-header">I</div>
+      <div className="bingo-header">N</div>
+      <div className="bingo-header">G</div>
+      <div className="bingo-header">O</div>
+      {state.fields.map((field, index) => (
+        <BingoTile
+          key={field.id}
+          field={field}
+          tile={25 - index}
+          winningPattern={findWinningPattern(state.score)}
+          onClick={() => onBingoTileClick(25 - index, field)}
+        />
       ))}
     </div>
   );

@@ -20,9 +20,13 @@ const fields: BingoField[] = [
 ];
 
 const App = () => {
+  const onWin = () => {
+    console.log("WIN!");
+  };
+
   return (
     <div id="app">
-      <BingoCard fields={fields} />
+      <BingoCard fields={fields} onWin={onWin} />
     </div>
   );
 };

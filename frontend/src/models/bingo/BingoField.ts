@@ -1,5 +1,6 @@
 export interface BingoField {
   id: string;
+  index?: number;
   text: string;
   isSelected?: boolean;
 }
