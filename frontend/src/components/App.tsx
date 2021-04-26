@@ -31,28 +31,28 @@ const App = () => {
 				}} >
 					Neues Bingo Feld hinzufügen
     </button>
-      Welcome
+      Welcome test test test
       {userBingoInputs.map((items, index) => {
-				return (
-					<div key={items.id}>
-						<input onChange={(e) => {
-							const fieldName = e.target.value;
-							setUserBingoInputs(currentBingoField =>
-								produce(currentBingoField, fieldValue => {
-									fieldValue[index].fieldName = fieldName;
-								})
-							);
-						}}
-							value={items.fieldName} placeholder="Bingo Feld" />
-						<button onClick={() => {
-							setUserBingoInputs(currentBingoField =>
-								currentBingoField.filter(x => x.id !== items.id))
-						}
-						}>
-						Delete
+					return (
+						<div key={items.id}>
+							<input onChange={(e) => {
+								const fieldName = e.target.value;
+								setUserBingoInputs(currentBingoField =>
+									produce(currentBingoField, fieldValue => {
+										fieldValue[index].fieldName = fieldName;
+									})
+								);
+							}}
+								value={items.fieldName} placeholder="Bingo Feld" />
+							<button onClick={() => {
+								setUserBingoInputs(currentBingoField =>
+									currentBingoField.filter(x => x.id !== items.id))
+							}
+							}>
+								Delete
 						</button>
-					</div>
-				);
+						</div>
+					);
 				})}
 			</div>
 			<pre>
