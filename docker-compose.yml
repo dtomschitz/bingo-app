@@ -18,6 +18,8 @@ services:
       - "./backend/src:/app/src"
     depends_on:
       - database
+    environment:
+      - JWT_SECRET=$JWT_SECRET
     ports:
       - "8000:8000"
   frontend:
