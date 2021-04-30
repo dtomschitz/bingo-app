@@ -1,5 +1,6 @@
 import { gql } from "../deps.ts";
 import { GameTypes } from "./game.types.ts";
+import { UserTypes } from "./user.types.ts";
 
 export const Schema = gql`
   type Query {
@@ -9,4 +10,5 @@ export const Schema = gql`
     _empty: String
   }
   ${GameTypes}
+  ${UserTypes}
 `;
