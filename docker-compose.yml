@@ -1,0 +1,33 @@
+version: "3"
+services:
+  database:
+    image: "mongo"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: $MONGO_ROOT_USER
+      MONGO_INITDB_ROOT_PASSWORD: $MONGO_ROOT_PASSWORD
+      MONGO_INITDB_USERNAME: $MONGO_USER
+      MONGO_INITDB_PASSWORD: $MONGO_USER_PASSWORD
+      MONGO_INITDB_DATABASE: $MONGO_DB
+    volumes:
+      - "./database/data:/data/db"
+    ports:
+      - "27017:27017"
+  backend:
+    build: ./backend
+    volumes:
+      - "./backend/src:/app/src"
+    depends_on:
+      - database
+    ports:
+      - "8000:8000"
+  frontend:
+    build:
+      context: ./frontend/
+    command: npm start
+    volumes:
+      - ./frontend/:/usr/app
+      - /usr/app/node_modules
+    depends_on:
+      - backend
+    ports:
+      - "3000:3000"
