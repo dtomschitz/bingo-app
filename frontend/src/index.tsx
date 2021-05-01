@@ -1,11 +1,12 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import App from './components/App';
+import Home from './components/home';
 import Login from './components/Login';
+import { BrowserRouter, Route, Link, Router } from "react-router-dom";
 
 ReactDOM.render(
   <React.StrictMode>
-    <Login />
+    <Home />
   </React.StrictMode>,
   document.getElementById('root')
 );
