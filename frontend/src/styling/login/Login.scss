@@ -1,0 +1,20 @@
+@import "../variables";
+
+.login-form {
+    max-width: 500px;
+    margin: 40px auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    grid-gap: 20px;
+    font-family: Arial, Helvetica, sans-serif;
+    color: $secondary;
+}
+
+.button-area {
+    margin: 30px;
+    width: 100%;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+}

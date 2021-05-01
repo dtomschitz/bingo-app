@@ -1,14 +1,17 @@
 import React from 'react';
-import "../styling/Login.scss";
+import { withRouter } from "react-router-dom";
+import "../../styling/login/Login.scss";
 
 class Login extends React.Component<any, any> {
+
     constructor(props: any) {
         super(props);
         this.state = {
             username: '',
             password: '',
         };
-
+        
+        this.routeChange = this.routeChange.bind(this);
         this.handleInputChange = this.handleInputChange.bind(this);
     }
 
@@ -22,7 +25,11 @@ class Login extends React.Component<any, any> {
     }
 
     submit(event: any) {
-        //TODO
+    }
+
+    routeChange() {
+        let path = `app`;
+        this.props.history.push(path);
     }
 
     render() {
@@ -30,8 +37,9 @@ class Login extends React.Component<any, any> {
             <div className="login-form">
                 <label>
                     Username:
-              <input
+                <input
                         name="username"
+                        id="username"
                         type="input"
                         onChange={this.handleInputChange} />
                 </label>
@@ -39,11 +47,12 @@ class Login extends React.Component<any, any> {
                     Password:
               <input
                         name="password"
+                        id="password"
                         type="password"
                         onChange={this.handleInputChange} />
                 </label>
                 <div className="button-area">
-                    <button onClick={this.submit}>Login</button>
+                    <button onClick={this.routeChange}>Login</button>
                     <button>Register</button>
                 </div>
             </div>
@@ -51,4 +60,4 @@ class Login extends React.Component<any, any> {
     }
 }
 
-export default Login
+export default withRouter(Login);
