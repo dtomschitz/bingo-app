@@ -7,10 +7,12 @@
     "@types/node-sass": "^4.11.1",
     "@types/react": "^17.0.3",
     "@types/react-dom": "^17.0.3",
+    "chokidar": "^2.1.8",
     "immer": "^9.0.1",
     "node-sass": "^5.0.0",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
+    "react-router-dom": "^5.2.0",
     "react-scripts": "4.0.3",
     "typescript": "^4.2.4",
     "uuid": "^8.3.2"
@@ -40,6 +42,7 @@
     ]
   },
   "devDependencies": {
+    "@types/react-router-dom": "^5.1.7",
     "@types/uuid": "^8.3.0"
   }
 }
