@@ -2,7 +2,7 @@ import React from 'react';
 import { withRouter } from "react-router-dom";
 import "../../styling/login/Login.scss";
 
-class Login extends React.Component<any, any> {
+class Register extends React.Component<any, any> {
 
     constructor(props: any) {
         super(props);
@@ -11,8 +11,7 @@ class Login extends React.Component<any, any> {
             password: '',
         };
 
-        this.routeChange = this.routeChange.bind(this);
-        this.goToRegister = this.goToRegister.bind(this);
+        this.onCancel = this.onCancel.bind(this);
         this.handleInputChange = this.handleInputChange.bind(this);
     }
 
@@ -26,15 +25,11 @@ class Login extends React.Component<any, any> {
     }
 
     submit(event: any) {
+        alert("TODO: Daten verarbeiten");
     }
 
-    routeChange() {
-        let path = `app`;
-        this.props.history.push(path);
-    }
-
-    goToRegister() {
-        let path = `register`;
+    onCancel() {
+        let path = `login`;
         this.props.history.push(path);
     }
 
@@ -43,7 +38,7 @@ class Login extends React.Component<any, any> {
             <div className="login-form">
                 <div className="login-input">
                     <span>Username:</span>
-                <input
+                    <input
                         name="username"
                         id="username"
                         type="input"
@@ -51,19 +46,27 @@ class Login extends React.Component<any, any> {
                 </div>
                 <div className="login-input">
                     <span>Password:</span>
-              <input
+                    <input
+                        name="password"
+                        id="password"
+                        type="password"
+                        onChange={this.handleInputChange} />
+                </div>
+                <div className="login-input">
+                    <span>Confirm Password:</span>
+                    <input
                         name="password"
                         id="password"
                         type="password"
                         onChange={this.handleInputChange} />
                 </div>
                 <div className="button-area">
-                    <button onClick={this.routeChange}>Login</button>
-                    <button onClick={this.goToRegister}>Register</button>
+                    <button onClick={this.submit}>Register</button>
+                    <button onClick={this.onCancel}>Cancel</button>
                 </div>
             </div>
         );
     }
 }
 
-export default withRouter(Login);
+export default withRouter(Register);

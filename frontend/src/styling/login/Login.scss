@@ -9,6 +9,13 @@
     grid-gap: 20px;
     font-family: Arial, Helvetica, sans-serif;
     color: $secondary;
+
+    .login-input {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
 }
 
 .button-area {

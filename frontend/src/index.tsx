@@ -2,6 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import Home from './components/home';
 import Login from './components/login/Login';
+import Register from './components/register/Register';
 import {
   BrowserRouter as Router,
   Switch,
@@ -15,6 +16,9 @@ ReactDOM.render(
       <Switch>
         <Route path="/login">
           <Login />
+        </Route>
+        <Route path="/register">
+          <Register />
         </Route>
         <Route path="/app">
           <App />
