@@ -1,0 +1,10 @@
+{
+  "dependencies": {
+    "apollo-boost": "^0.4.9",
+    "graphql-tag": "^2.12.4",
+    "react-apollo": "^3.1.5"
+  },
+  "devDependencies": {
+    "typescript": "^4.2.4"
+  }
+}
