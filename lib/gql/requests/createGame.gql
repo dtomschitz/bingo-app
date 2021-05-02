@@ -1,0 +1,41 @@
+mutation {
+  createGame(
+    input: {
+      title: "TEST"
+      fields: [
+        { text: "Field 1" }
+        { text: "Field 2" }
+        { text: "Field 3" }
+        { text: "Field 4" }
+        { text: "Field 5" }
+        { text: "Field 6" }
+        { text: "Field 7" }
+        { text: "Field 8" }
+        { text: "Field 9" }
+        { text: "Field 10" }
+        { text: "Field 11" }
+        { text: "Field 12" }
+        { text: "Field 13" }
+        { text: "Field 14" }
+        { text: "Field 15" }
+        { text: "Field 16" }
+        { text: "Field 17" }
+        { text: "Field 18" }
+        { text: "Field 19" }
+        { text: "Field 20" }
+        { text: "Field 21" }
+        { text: "Field 22" }
+        { text: "Field 23" }
+        { text: "Field 24" }
+        { text: "Field 25" }
+      ]
+    }
+  ) {
+    _id
+    title
+    fields {
+      _id
+      text
+    }
+  }
+}
