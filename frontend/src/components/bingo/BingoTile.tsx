@@ -1,5 +1,4 @@
 import { BingoField } from "../../../../lib/models/bingo/BingoField";
-import "../../styling/bingo/BingoField.scss";
 
 interface BingoFieldProps {
   tile: number;

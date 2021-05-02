@@ -1,6 +1,5 @@
 import { BingoField } from "../../../../lib/models/bingo/BingoField";
 import { useEffect, useReducer } from "react";
-import "../../styling/bingo/BingoCard.scss";
 import BingoTile from "./BingoTile";
 
 type Action =
