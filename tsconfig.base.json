@@ -1,0 +1,9 @@
+{
+    "compileOnSave": false,
+    "compilerOptions": { 
+      "paths": {
+        "@bingo/models": ["libs/models/bingo/index.ts"],
+      }
+    },
+    "exclude": ["node_modules", "tmp"]
+  }
