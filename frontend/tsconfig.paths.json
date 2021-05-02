@@ -1,9 +1,9 @@
 {
-    "compilerOptions": {
-        "paths": {
-        "@bingo/models": ["./src/models/index.ts"],
-        "@bingo/components/*": ["./src/components/*"],
-        "@bingo/styling/*": ["./src/styling/*"]
-        }
-    },
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "paths": {
+      "@bingo/components/*": ["./src/components/*"],
+      "@bingo/styling/*": ["./src/styling/*"]
+    }
+  }
 }

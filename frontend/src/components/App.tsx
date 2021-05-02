@@ -1,13 +1,12 @@
-import { BingoField } from "../models";
+import { BingoField } from "../../../lib/models";
 import "../styling/App.scss";
 import BingoCard from "./bingo/BingoCard";
 import { v4 as uuidv4 } from "uuid";
 import React, { useState } from "react";
 import { produce } from "immer";
-import ApolloClient from 'apollo-boost';
-import { ApolloProvider } from 'react-apollo';
-import GetGame from "./GetGame";
-
+import ApolloClient from "apollo-boost";
+import { ApolloProvider } from "react-apollo";
+//import GetGame from "./GetGame";
 
 const generateRow = (): BingoField[] => {
   return Array.from({ length: 5 }, (_, i) => ({
@@ -17,9 +16,9 @@ const generateRow = (): BingoField[] => {
   }));
 };
 
-const client = new ApolloClient({
-  uri: "localhost:8000/graphql"
-});
+/*const client = new ApolloClient({
+  uri: "localhost:8000/graphql",
+});*/
 
 const fields: BingoField[] = [
   ...generateRow(),
@@ -39,14 +38,14 @@ function getRandom(digits: number) {
   return Math.round(Math.random() * Math.pow(10, digits)).toString();
 }
 
-function Game() {
-  return ( 
+/*function Game() {
+  return (
     <ApolloProvider client={client}>
       {""}
       <GetGame />
     </ApolloProvider>
-  )
-}
+  );
+}*/
 
 const App = () => {
   const [userBingoInputs, setUserBingoInputs] = useState<UserBingoInput[]>([
@@ -56,7 +55,7 @@ const App = () => {
   const onWin = () => {
     console.log("WIN!");
   };
-  
+
   return (
     <>
       <div id="app">
