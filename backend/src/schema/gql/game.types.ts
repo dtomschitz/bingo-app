@@ -15,7 +15,7 @@ export const GameTypes = gql`
   }
 
   extend type Mutation {
-    createGame(gameCreate: CreateGame!): BingoGame!
+    createGame(input: CreateGame!): BingoGame!
   }
 
   type BingoGame {

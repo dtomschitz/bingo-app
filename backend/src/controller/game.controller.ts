@@ -4,7 +4,7 @@ import { GameSchema } from "../schema/index.ts";
 
 const gameCollection = database.getDatabase().collection<GameSchema>("game");
 
-interface GameCreate {
+interface CreateGame {
   title: string;
   fields: BingoField[];
 }
@@ -33,25 +33,26 @@ export const getGame = async (
 
 export const createGame = async (
   parent: any,
-  { gameCreate: { title, fields } }: { gameCreate: GameCreate },
+  { input }: { input: CreateGame },
   context: any,
   info: any
 ) => {
-  if (!title || !fields) {
+  if (!input.title || !input.fields) {
     throw new GQLError({ message: "Your request has the wrong format" });
   }
 
-  if (fields.length !== 25) {
+  if (input.fields.length !== 25) {
     throw new GQLError({
       message: "Your request contains either too many or to few bingo fields",
     });
   }
 
-  fields = fields.map((field) => ({
+  input.fields = input.fields.map((field) => ({
     ...field,
     _id: v4.generate(),
   }));
 
+  const { title, fields } = input;
   const gameId = await gameCollection.insertOne({
     title,
     fields,
