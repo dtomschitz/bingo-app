@@ -1,4 +1,4 @@
-import { gql } from "../deps.ts";
+import { gql } from "../../deps.ts";
 
 export const UserTypes = gql`
   type User {

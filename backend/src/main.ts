@@ -1,4 +1,4 @@
-import { Schema } from "./schema/index.ts";
+import { GraphQLSchema } from "./schema/index.ts";
 import { Application, Router, RouterContext } from "./deps.ts";
 import { applyGraphQL, GQLError } from "./deps.ts";
 import { resolvers } from "./resolver/resolver.ts";
@@ -7,7 +7,7 @@ const app = new Application();
 
 const GraphQLService = await applyGraphQL<Router>({
   Router,
-  typeDefs: Schema,
+  typeDefs: GraphQLSchema,
   resolvers: resolvers,
   context: (ctx: RouterContext) => {
     return ctx;
