@@ -65,6 +65,8 @@
 }
 
 .dialog-header {
+  font: 500 20px/32px Arial, Helvetica, sans-serif;
+  letter-spacing: normal;
   margin: 0 0 20px;
   display: block;
 }
@@ -75,6 +77,10 @@
   padding: 0 24px;
   max-height: 65vh;
   overflow: auto;
+
+  &::-webkit-scrollbar-track {
+    background: $light-background;
+  }
 }
 
 .dialog-actions {

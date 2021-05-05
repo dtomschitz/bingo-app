@@ -71,7 +71,7 @@ button:active {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: $light-background;
+  background: lighten($color: $background, $amount: 20%);
   border-radius: 100px;
 }
 
