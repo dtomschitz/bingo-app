@@ -1,4 +1,4 @@
-import { DetailedHTMLProps, HTMLAttributes, ReactNode } from 'react';
+import { DetailedHTMLProps, HTMLAttributes } from 'react';
 import Modal, { ModalProps } from 'react-overlays/Modal';
 
 export interface DialogProps extends ModalProps {}

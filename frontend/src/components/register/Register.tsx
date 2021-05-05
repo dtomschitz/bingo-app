@@ -26,13 +26,8 @@ const Register = withRouter(({ history }) => {
     });
   };
 
-  const submit = (event: any) => {
+  const onSubmit = () => {
     //alert('TODO: Daten verarbeiten');
-  };
-
-  const onCancel = () => {
-    //let path = `login`;
-    //this.props.history.push(path);
   };
 
   return (
@@ -63,9 +58,7 @@ const Register = withRouter(({ history }) => {
       </CardContent>
       <CardActions>
         <Button onClick={() => history.push('/login')}>Anmelden</Button>
-        <FlatButton onClick={() => history.push('/register')}>
-          Registrieren
-        </FlatButton>
+        <FlatButton onClick={onSubmit}>Registrieren</FlatButton>
       </CardActions>
     </Card>
   );
