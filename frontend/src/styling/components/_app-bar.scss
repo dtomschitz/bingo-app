@@ -1,0 +1,39 @@
+.app-bar {
+  position: fixed;
+  width: 100%;
+  z-index: 2;
+  background-color: $background;
+  min-height: 56px;
+  user-select: none;
+
+  @include elevation-transition;
+
+  &.elevated {
+    @extend .elevation-z4;
+  }
+
+  .container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 56px;
+  }
+
+  .title {
+    margin: 0 32px;
+    font-size: 28pt;
+    font-weight: 600;
+    letter-spacing: 5px;
+    color: #fff;
+
+    &:hover {
+      cursor: pointer;
+    }
+  }
+
+  .actions {
+    * {
+      margin: 0 16px;
+    }
+  }
+}

@@ -1,0 +1,76 @@
+$transition-duration: 280ms !default;
+$transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1) !default;
+
+@function private-transition-property-value(
+  $duration: $transition-duration,
+  $easing: $transition-timing-function
+) {
+  @return box-shadow #{$duration} #{$easing};
+}
+
+@mixin elevation-transition(
+  $duration: $transition-duration,
+  $easing: $transition-timing-function
+) {
+  transition: private-transition-property-value($duration, $easing);
+}
+
+.elevation-z1 {
+  box-shadow: 0px 2px 1px -1px rgba(0, 0, 0, 0.2),
+    0px 1px 1px 0px rgba(0, 0, 0, 0.14), 0px 1px 3px 0px rgba(0, 0, 0, 0.12);
+}
+
+.elevation-z2 {
+  box-shadow: 0px 3px 1px -2px rgba(0, 0, 0, 0.2),
+    0px 2px 2px 0px rgba(0, 0, 0, 0.14), 0px 1px 5px 0px rgba(0, 0, 0, 0.12);
+}
+
+.elevation-z3 {
+  box-shadow: 0 3px 3px -2px rgba(0, 0, 0, 0.2), 0 3px 4px 0 rgba(0, 0, 0, 0.14),
+    0 1px 8px 0 rgba(0, 0, 0, 0.12);
+}
+
+.elevation-z4 {
+  box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.2), 0 4px 5px 0 rgba(0, 0, 0, 0.14),
+    0 1px 10px 0 rgba(0, 0, 0, 0.12);
+}
+
+.elevation-z5 {
+  box-shadow: 0 3px 5px -1px rgba(0, 0, 0, 0.2), 0 5px 8px 0 rgba(0, 0, 0, 0.14),
+    0 1px 14px 0 rgba(0, 0, 0, 0.12);
+}
+
+.elevation-z6 {
+  box-shadow: 0 3px 5px -1px rgba(0, 0, 0, 0.2),
+    0 6px 10px 0 rgba(0, 0, 0, 0.14), 0 1px 18px 0 rgba(0, 0, 0, 0.12);
+}
+
+.elevation-z7 {
+  box-shadow: 0 4px 5px -2px rgba(0, 0, 0, 0.2),
+    0 7px 10px 1px rgba(0, 0, 0, 0.14), 0 2px 16px 1px rgba(0, 0, 0, 0.12);
+}
+
+.elevation-z8 {
+  box-shadow: 0 5px 5px -3px rgba(0, 0, 0, 0.2),
+    0 8px 10px 1px rgba(0, 0, 0, 0.14), 0 3px 14px 2px rgba(0, 0, 0, 0.12);
+}
+
+.elevation-z9 {
+  box-shadow: 0 5px 6px -3px rgba(0, 0, 0, 0.2),
+    0 9px 12px 1px rgba(0, 0, 0, 0.14), 0 3px 16px 2px rgba(0, 0, 0, 0.12);
+}
+
+.elevation-z10 {
+  box-shadow: 0 6px 6px -3px rgba(0, 0, 0, 0.2),
+    0 10px 14px 1px rgba(0, 0, 0, 0.14), 0 4px 18px 3px rgba(0, 0, 0, 0.12);
+}
+
+.elevation-z11 {
+  box-shadow: 0 6px 7px -4px rgba(0, 0, 0, 0.2),
+    0 11px 15px 1px rgba(0, 0, 0, 0.14), 0 4px 20px 3px rgba(0, 0, 0, 0.12);
+}
+
+.elevation-z12 {
+  box-shadow: 0 7px 8px -4px rgba(0, 0, 0, 0.2),
+    0 12px 17px 2px rgba(0, 0, 0, 0.14), 0 5px 22px 4px rgba(0, 0, 0, 0.12);
+}

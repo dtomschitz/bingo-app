@@ -1,0 +1,19 @@
+.divider {
+  display: block;
+  margin: 0;
+
+  $border-color: hsla(0, 0%, 100%, 0.12);
+
+  &.horizontal {
+    border-top-width: 1px;
+    border-top-style: solid;
+    border-top-color: $border-color;
+  }
+
+  &.vertical {
+    border-top: 0;
+    border-right-width: 1px;
+    border-right-style: solid;
+    border-right-color: $border-color;
+  }
+}

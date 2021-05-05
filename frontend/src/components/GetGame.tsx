@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState } from 'react';
 //import { Query, useQuery } from "react-apollo";
 //import { GameTypes } from "../../../backend/src/schema/gql/game.types";
 //import gql from "graphql-tag";

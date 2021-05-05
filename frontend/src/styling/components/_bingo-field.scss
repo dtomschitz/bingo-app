@@ -3,13 +3,13 @@
   justify-content: center;
   align-items: center;
   border-radius: 16px;
-  cursor: pointer;
   color: #fff;
   background-color: lighten($background, $amount: 5%);
   transition: background-color 0.1s cubic-bezier(0.4, 0, 0.2, 1);
 
-  &:hover:not(.win) {
+  &:hover:not(.win, .disable-hover) {
     background-color: lighten($background, $amount: 15%);
+    cursor: pointer;
   }
 
   &.selected {
@@ -18,5 +18,17 @@
 
   &.win {
     background-color: $primary;
+  }
+
+  &.create {
+    img {
+      height: 40px;
+      width: 40px;
+    }
+  }
+
+  button.delete {
+    top: 0;
+    right: 0;
   }
 }

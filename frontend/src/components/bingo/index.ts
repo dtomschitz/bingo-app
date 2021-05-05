@@ -1,2 +1,3 @@
 export * from "./BingoCard";
-export * from "./BingoTile";
+export * from "./BingoCardHeader";
+export * from "./CreateBingoCard";

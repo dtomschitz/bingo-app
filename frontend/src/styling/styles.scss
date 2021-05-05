@@ -1,0 +1,96 @@
+@import 'variables';
+@import 'elevations';
+
+@import 'components/components-dir';
+@import 'dialogs/dialogs-dir';
+@import 'screens/screens-dir';
+
+html,
+body {
+  margin: 0;
+  height: 100vh;
+}
+
+body {
+  font-family: Arial, Helvetica, sans-serif;
+  background-color: $background;
+}
+
+h1,
+h2 {
+  margin: 0;
+}
+
+// Global styles
+input {
+  //padding: 20px;
+  padding: 16px;
+  width: 12rem;
+  //height: 2rem;
+  height: 40px;
+  border: $primary 2px solid;
+  border-radius: 5px;
+  color: $secondary;
+  background-color: transparent;
+  outline: none;
+  box-sizing: border-box;
+  font-size: 16px;
+}
+
+/*button {
+  background: transparent;
+  display: inline-block;
+  border: 2px solid $primary;
+  color: $primary;
+  border-radius: 5px;
+  //padding: 0.5rem 0;
+  padding: 0.6rem 16px;
+  //margin: 0.5rem 1rem;
+  //width: 10rem;
+  cursor: pointer;
+}*/
+
+input:focus {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+/*button:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+button:active {
+  transform: translateY(1px);
+}*/
+
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: $background;
+}
+
+::-webkit-scrollbar-thumb {
+  background: $light-background;
+  border-radius: 100px;
+}
+
+#root {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+#router-container {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  align-items: center;
+  margin-top: 56px;
+  overflow-y: auto;
+  padding: 16px;
+}
+
+.game {
+  flex: 1;
+}

@@ -1,0 +1,88 @@
+.button {
+  background: transparent;
+  display: inline-block;
+  color: $primary;
+  padding: 0.6rem 16px;
+  cursor: pointer;
+  border-radius: 5px;
+  border-color: transparent;
+
+  &:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+  }
+
+  &:active {
+    transform: translateY(1px);
+  }
+
+  &:focus-visible {
+    outline: none;
+  }
+
+  &.bordered {
+    border: 2px solid $primary;
+  }
+
+  &.flat {
+    border: 2px solid $primary;
+    background-color: rgba($primary, $alpha: 0.25);
+  }
+
+  &.disabled {
+    color: hsla(0, 0%, 100%, 0.3);
+  }
+}
+
+.icon-button {
+  padding: 0;
+  min-width: 0;
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  line-height: 40px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  color: #fff;
+  background: transparent;
+  box-sizing: border-box;
+  position: relative;
+  user-select: none;
+  cursor: pointer;
+  outline: none;
+  display: inline-block;
+  white-space: nowrap;
+  text-decoration: none;
+  vertical-align: baseline;
+  text-align: center;
+  overflow: visible;
+  transition: background-color 50ms linear;
+
+  &:hover {
+    border-color: rgba($primary, 0.6);
+    background-color: rgba($primary, 0.1);
+  }
+
+  &:active {
+    border-color: rgba($primary, 0.8);
+    background-color: rgba($primary, 0.4);
+  }
+
+  &:focus-visible {
+    outline: none;
+  }
+
+  &.disabled {
+    color: hsla(0, 0%, 100%, 0.3);
+  }
+
+  .icon {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0 auto;
+    background-repeat: no-repeat;
+    fill: currentColor;
+    height: 24px;
+    width: 24px;
+  }
+}
