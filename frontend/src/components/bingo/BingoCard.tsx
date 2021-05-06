@@ -3,7 +3,6 @@ import { BingoField } from '../../../../lib/models/bingo/BingoField';
 
 interface BingoCardProps {
   fields: BingoField[];
-  createModeEnabled: boolean;
   onWin?: () => void;
 }
 
