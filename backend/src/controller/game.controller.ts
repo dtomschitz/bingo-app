@@ -15,6 +15,15 @@ interface BingoField {
   isSelected?: boolean;
 }
 
+export const getGames = async (
+  parent: any,
+  {}: any,
+  context: any,
+  info: any
+) => {
+  return await gameCollection.find().toArray();
+};
+
 export const getGame = async (
   parent: any,
   { _id }: { _id: any },

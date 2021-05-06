@@ -29,7 +29,7 @@ export const FlatButton = (props: ButtonProps) => {
   });
 
   return (
-    <button className={className} {...props}>
+    <button {...props} className={className}>
       {props.children}
     </button>
   );
@@ -41,7 +41,7 @@ export const IconButton = (props: IconButtonProps) => {
   });
 
   return (
-    <button className={className} {...props}>
+    <button {...props} className={className}>
       <div className="icon">
         <FontAwesomeIcon icon={props.icon} />
       </div>

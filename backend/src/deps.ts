@@ -13,3 +13,4 @@ export { create, verify } from "https://deno.land/x/djwt@v2.2/mod.ts";
 export type { Header } from "https://deno.land/x/djwt@v2.2/mod.ts";
 export { v4 } from "https://deno.land/std/uuid/mod.ts";
 export { Bson, MongoClient } from "https://deno.land/x/mongo@v0.22.0/mod.ts";
+export { oakCors } from "https://deno.land/x/cors/mod.ts";

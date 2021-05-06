@@ -1,95 +1,33 @@
 import { withRouter } from 'react-router';
-import { BingoField, BingoGame } from '../../../lib/models';
+import { useQuery } from 'react-apollo';
+import { BingoGame } from '../../../lib/models';
 import { BingoPreviewCard } from './bingo';
-import { v4 as uuidv4 } from 'uuid';
+import gql from 'graphql-tag';
 
-const fields: BingoField[] = Array.from({ length: 25 }, () => ({
-  id: uuidv4(),
-  text: 'Test',
-  isSelected: false,
-}));
-
-const dummyGames: BingoGame[] = [
-  {
-    _id: uuidv4(),
-    title: 'Spiel 1',
-    fields,
-  },
-  {
-    _id: uuidv4(),
-    title: 'Spiel 2',
-    fields,
-  },
-  {
-    _id: uuidv4(),
-    title: 'Spiel 3',
-    fields,
-  },
-  {
-    _id: uuidv4(),
-    title: 'Spiel 3',
-    fields,
-  },
-  {
-    _id: uuidv4(),
-    title: 'Spiel 3',
-    fields,
-  },
-  {
-    _id: uuidv4(),
-    title: 'Spiel 3',
-    fields,
-  },
-  {
-    _id: uuidv4(),
-    title: 'Spiel 3',
-    fields,
-  },
-  {
-    _id: uuidv4(),
-    title: 'Spiel 3',
-    fields,
-  },
-  {
-    _id: uuidv4(),
-    title: 'Spiel 3',
-    fields,
-  },
-  {
-    _id: uuidv4(),
-    title: 'Spiel 3',
-    fields,
-  },
-  {
-    _id: uuidv4(),
-    title: 'Spiel 3',
-    fields,
-  },
-  {
-    _id: uuidv4(),
-    title: 'Spiel 3',
-    fields,
-  },
-  {
-    _id: uuidv4(),
-    title: 'Spiel 3',
-    fields,
-  },
-  {
-    _id: uuidv4(),
-    title: 'Spiel 3',
-    fields,
-  },
-];
+const GET_GAMES = gql`
+  query GetGames {
+    games {
+      _id
+      title
+      fields {
+        _id
+        text
+      }
+    }
+  }
+`;
 
 const Home = withRouter(({ history }) => {
+  const { error, loading, data } = useQuery<{ games: BingoGame[] }>(GET_GAMES);
+
+  const openGame = (game: BingoGame) => {
+    history.push(`/game/${game._id}`);
+  };
+
   return (
     <div className="home">
-      {dummyGames.map(game => (
-        <BingoPreviewCard
-          game={game}
-          onClick={() => history.push(`game/${game._id}`)}
-        />
+      {data?.games.map(game => (
+        <BingoPreviewCard game={game} onClick={() => openGame(game)} />
       ))}
     </div>
   );
