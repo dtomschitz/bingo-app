@@ -1,4 +1,4 @@
-import { MongoClient } from "./deps.ts";
+import { MongoClient } from "../deps.ts";
 
 export class DatabaseConnection {
   client: MongoClient;
@@ -18,7 +18,10 @@ export class DatabaseConnection {
   }
 }
 
-const database = new DatabaseConnection("saturn", "mongodb://localhost:27017");
+const databaseUser = Deno.env.get("DATABASE_USER");
+const databasePassword = Deno.env.get("DATABASE_PASSWORD");
+
+const database = new DatabaseConnection("saturn", `mongodb://${databaseUser}:${databasePassword}@database:27017`);
 await database.connect();
 
 export { database };

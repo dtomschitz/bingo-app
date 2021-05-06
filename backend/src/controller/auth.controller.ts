@@ -1,3 +1,4 @@
+import { UserSchema } from './../schema/mongo/user.schema.ts';
 import { getUserFromDb, addUserToDb } from './../db/user.database.ts';
 import { bcrypt, create, GQLError, verify } from "../deps.ts";
 import { header, payload } from "../middleware/jwt.ts";
@@ -19,17 +20,11 @@ const isEmailValid = (email: string) => {
 };
 
 const doesUserExist = async (
-  email: string,
-  isLogin: boolean
+  email: string
 ) => {
-  const user = await getUserFromDb(email);
+  const user: UserSchema | null = await getUserFromDb(email);
 
-  if (isLogin) {
-    return { password: "$2a$08$7cY.XJtZKw6w7ue9LWV4Nu./uroyNNJ4tR4P2TOJgovftcFKiNUhu" };
-  } else {
-    const userExists = !(user === null);
-    return userExists;
-  }
+  return user;
 };
 
 //MUTATE { email: "x-email", name: "x-name", password: "x-password" }
@@ -48,18 +43,16 @@ export const registerUser = async (parent: any, { userRegister }: any, context: 
     throw new GQLError({ message: "Invalid email!"});
   }
 
-  const userExists: any = await doesUserExist(
-    requestData.email,
-    false
+  const userExists: UserSchema | null = await doesUserExist(
+    requestData.email
   );
 
   if (!userExists) {
     throw new GQLError("This User already exists");
   }
-
+ 
   const salt = await bcrypt.genSalt(8);
   const hash = await bcrypt.hash(requestData.password, salt);
-  console.log("Hash",hash);
   const uid = addUserToDb();
 
   if (uid) {
@@ -85,8 +78,7 @@ export const loginUser = async (parent: any, { userLogin }: any, context: any, i
   }
 
   const user: any | null = await doesUserExist(
-    requestData.email,
-    true
+    requestData.email
   );
 
   if (user) {
@@ -156,5 +148,8 @@ export const getUser = async (parent: any, {  }: any, context: any, info: any) =
 
   const userData = await getUserFromDb(response.email);
 
+  if(!userData){
+    throw new GQLError({ message: "User does not exist!"});
+  }
   return { name: userData.name };
 };
