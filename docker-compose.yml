@@ -9,7 +9,7 @@ services:
       MONGO_INITDB_PASSWORD: $MONGO_USER_PASSWORD
       MONGO_INITDB_DATABASE: $MONGO_DB
     volumes:
-      - "./database/data:/data/db"
+      - "mongodata:/data/db"
     ports:
       - "27017:27017"
   backend:
@@ -35,3 +35,5 @@ services:
       - backend
     ports:
       - "3000:3000"
+volumes:
+  mongodata:
