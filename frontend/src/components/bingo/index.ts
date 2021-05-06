@@ -1,2 +1,2 @@
-export * from "./BingoCard";
-export * from "./BingoTile";
+export * from './BingoCard';
+export * from './BingoPreviewCard';

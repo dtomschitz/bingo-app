@@ -1,0 +1,32 @@
+.create-game {
+  width: 500px;
+
+  input {
+    flex: 1;
+  }
+
+  .input-container,
+  .bingo-field-container {
+    input {
+      margin-right: 16px;
+    }
+  }
+
+  .input-container {
+    display: flex;
+    margin-bottom: 32px;
+  }
+
+  .bingo-fields .bingo-field-container {
+    display: flex;
+    margin-bottom: 16px;
+
+    .actions {
+      display: flex;
+
+      .divider {
+        margin: 0 8px;
+      }
+    }
+  }
+}

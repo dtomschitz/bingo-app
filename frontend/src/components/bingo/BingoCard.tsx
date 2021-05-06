@@ -1,16 +1,18 @@
-import { BingoField } from "../../../../lib/models/bingo/BingoField";
-import { useEffect, useReducer } from "react";
-import BingoTile from "./BingoTile";
+import { useEffect, useReducer } from 'react';
+import { BingoField } from '../../../../lib/models/bingo/BingoField';
 
-type Action =
-  | {
-      type: "updateBingoField";
-      update: { id: string; changes: Partial<BingoField> };
-    }
-  | {
-      type: "updateScore";
-      tile: number;
-    };
+interface BingoCardProps {
+  fields: BingoField[];
+  createModeEnabled: boolean;
+  onWin?: () => void;
+}
+
+interface BingoFieldProps {
+  field: BingoField;
+  tile: number;
+  winningPattern: number;
+  onClick: () => void;
+}
 
 interface State {
   fields: BingoField[];
@@ -18,22 +20,30 @@ interface State {
   hasWon: boolean;
 }
 
+type Action =
+  | {
+      type: 'updateBingoField';
+      update: { id: string; tile: number; changes: Partial<BingoField> };
+    }
+  | { type: 'updateState'; update: Partial<State> };
+
 const reducer = (state: State, action: Action): State => {
   switch (action.type) {
-    case "updateBingoField":
+    case 'updateBingoField':
       const { id, changes } = action.update;
 
       return {
         ...state,
-        fields: state.fields.map((field) => {
+        fields: state.fields.map(field => {
           return field.id === id ? { ...field, ...changes } : field;
         }),
+        score: state.score ^ (1 << action.update.tile),
       };
 
-    case "updateScore":
+    case 'updateState':
       return {
         ...state,
-        score: state.score ^ (1 << action.tile),
+        ...action.update,
       };
   }
 };
@@ -54,59 +64,76 @@ const winPatterns = [
 ];
 
 const findWinningPattern = (score: number) => {
-  return winPatterns.find((pattern) => (pattern & score) === pattern) || 0;
+  return winPatterns.find(pattern => (pattern & score) === pattern) || 0;
 };
 
-interface BingoCardProps {
-  fields: BingoField[];
-  onWin: () => void;
-}
-
-const BingoCard = ({ fields, onWin }: BingoCardProps) => {
+export const BingoCard = ({ fields, onWin }: BingoCardProps) => {
   const initialState: State = { fields, score: 0, hasWon: false };
   const [state, dispatch] = useReducer(reducer, initialState);
 
   useEffect(() => {
     if (findWinningPattern(state.score) !== 0) {
-      onWin();
+      onWin!();
     }
   }, [onWin, state]);
 
   const onBingoTileClick = (tile: number, field: BingoField) => {
     dispatch({
-      type: "updateBingoField",
+      type: 'updateBingoField',
       update: {
         id: field.id,
+        tile,
         changes: {
           isSelected: !field.isSelected,
         },
       },
     });
-
-    dispatch({
-      type: "updateScore",
-      tile: tile,
-    });
   };
 
   return (
-    <div className="bingo-card">
-      <div className="bingo-header">B</div>
-      <div className="bingo-header">I</div>
-      <div className="bingo-header">N</div>
-      <div className="bingo-header">G</div>
-      <div className="bingo-header">O</div>
-      {state.fields.map((field, index) => (
-        <BingoTile
-          key={field.id}
-          field={field}
-          tile={25 - index}
-          winningPattern={findWinningPattern(state.score)}
-          onClick={() => onBingoTileClick(25 - index, field)}
-        />
-      ))}
+    <>
+      <BingoCardHeader />
+      <div className="bingo-card">
+        {state.fields.map((field, index) => (
+          <BingoTile
+            key={field.id}
+            field={field}
+            tile={25 - index}
+            winningPattern={findWinningPattern(state.score)}
+            onClick={() => onBingoTileClick(25 - index, field)}
+          />
+        ))}
+      </div>
+    </>
+  );
+};
+
+const BingoCardHeader = () => {
+  return (
+    <div className="bingo-card-header">
+      <div className="letter">B</div>
+      <div className="letter">I</div>
+      <div className="letter">N</div>
+      <div className="letter">G</div>
+      <div className="letter">O</div>
     </div>
   );
 };
 
-export default BingoCard;
+const BingoTile = ({
+  tile,
+  field,
+  onClick,
+  winningPattern,
+}: BingoFieldProps) => {
+  const isWin = !!(winningPattern & (1 << tile));
+  const classes = `bingo-field 
+    ${field.isSelected ? 'selected' : ''} 
+    ${isWin ? 'win' : ''}`;
+
+  return (
+    <div className={classes} onClick={onClick}>
+      <span className="text">{field.text}</span>
+    </div>
+  );
+};

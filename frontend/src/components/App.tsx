@@ -1,108 +1,82 @@
-import { BingoField } from "../../../lib/models";
-import "../styling/App.scss";
-import BingoCard from "./bingo/BingoCard";
-import { v4 as uuidv4 } from "uuid";
-import React, { useState } from "react";
-import { produce } from "immer";
-import ApolloClient from "apollo-boost";
-import { ApolloProvider } from "react-apollo";
-//import GetGame from "./GetGame";
+import { useState } from 'react';
+import {
+  BrowserRouter as Router,
+  Switch,
+  Route,
+  useHistory,
+} from 'react-router-dom';
+import Login from './login/Login';
+import Register from './register/Register';
+import Home from './Home';
+import CreateGameDialog from './CreateGameDialog';
+import { FlatButton } from './common/Button';
+import { DialogContainer } from './common/Dialog';
+import Divider from './common/Divider';
 
-const generateRow = (): BingoField[] => {
-  return Array.from({ length: 5 }, (_, i) => ({
-    id: uuidv4(),
-    text: "Test",
-    isSelected: false,
-  }));
-};
-
-/*const client = new ApolloClient({
-  uri: "localhost:8000/graphql",
-});*/
-
-const fields: BingoField[] = [
-  ...generateRow(),
-  ...generateRow(),
-  ...generateRow(),
-  ...generateRow(),
-  ...generateRow(),
-];
-
-interface UserBingoInput {
-  id: string;
-  fieldName: string;
+interface AppBarProps {
+  elevated: boolean;
 }
-
-function getRandom(digits: number) {
-  digits = digits || 8;
-  return Math.round(Math.random() * Math.pow(10, digits)).toString();
-}
-
-/*function Game() {
-  return (
-    <ApolloProvider client={client}>
-      {""}
-      <GetGame />
-    </ApolloProvider>
-  );
-}*/
 
 const App = () => {
-  const [userBingoInputs, setUserBingoInputs] = useState<UserBingoInput[]>([
-    { id: "5", fieldName: "Ferrari" },
-  ]);
+  const [elevateAppBar, setElevateAppBar] = useState(false);
 
-  const onWin = () => {
-    console.log("WIN!");
+  const handleScroll = (scrollTop: number) => {
+    setElevateAppBar(scrollTop > 10 ? true : false);
   };
 
   return (
-    <>
-      <div id="app">
-        <button
-          onClick={() => {
-            setUserBingoInputs((currentBingoField) => [
-              ...currentBingoField,
-              {
-                id: getRandom(6),
-                fieldName: "",
-              },
-            ]);
-          }}
-        >
-          Neues Bingo Feld hinzufügen
-        </button>
-        Welcome
-        {userBingoInputs.map((items, index) => {
-          return (
-            <div key={items.id}>
-              <input
-                onChange={(e) => {
-                  const fieldName = e.target.value;
-                  setUserBingoInputs((currentBingoField) =>
-                    produce(currentBingoField, (fieldValue) => {
-                      fieldValue[index].fieldName = fieldName;
-                    })
-                  );
-                }}
-                value={items.fieldName}
-                placeholder="Bingo Feld"
-              />
-              <button
-                onClick={() => {
-                  setUserBingoInputs((currentBingoField) =>
-                    currentBingoField.filter((x) => x.id !== items.id)
-                  );
-                }}
-              >
-                Delete
-              </button>
-            </div>
-          );
-        })}
+    <Router>
+      <AppBar elevated={elevateAppBar} />
+      <div
+        id="router-container"
+        onScroll={e => handleScroll(e.currentTarget.scrollTop)}
+      >
+        <Switch>
+          <Route path="/login">
+            <Login />
+          </Route>
+          <Route path="/register">
+            <Register />
+          </Route>
+          <Route path="/">
+            <Home />
+          </Route>
+        </Switch>
       </div>
-      <pre>{JSON.stringify(userBingoInputs, null, 1)}</pre>
-      <BingoCard fields={fields} onWin={onWin} />{" "}
+      <DialogContainer />
+    </Router>
+  );
+};
+
+const AppBar = ({ elevated }: AppBarProps) => {
+  const history = useHistory();
+  const [showCreateGameDialog, setShowCreateGameDialog] = useState(false);
+
+  return (
+    <>
+      <div className={`app-bar ${elevated ? 'elevated' : ''}`}>
+        <div className="container">
+          <span className="title" onClick={() => history.push('/')}>
+            BINGO
+          </span>
+          <div className="actions">
+            <FlatButton onClick={() => history.push('/register')}>
+              Registrieren
+            </FlatButton>
+            <FlatButton onClick={() => history.push('/login')}>
+              Anmelden
+            </FlatButton>
+            <FlatButton onClick={() => setShowCreateGameDialog(true)}>
+              Spiel erstellen
+            </FlatButton>
+          </div>
+        </div>
+        {!elevated ? <Divider /> : <></>}
+      </div>
+      <CreateGameDialog
+        show={showCreateGameDialog}
+        onHide={() => setShowCreateGameDialog(false)}
+      />
     </>
   );
 };

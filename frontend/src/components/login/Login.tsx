@@ -1,69 +1,58 @@
-import React from 'react';
-import { withRouter } from "react-router-dom";
-import "../../styling/login/Login.scss";
+import { Button, FlatButton } from 'components/common/Button';
+import {
+  Card,
+  CardActions,
+  CardContent,
+  CardTitle,
+} from 'components/common/Card';
+import { ChangeEvent, useState } from 'react';
+import { withRouter } from 'react-router-dom';
 
-class Login extends React.Component<any, any> {
-
-    constructor(props: any) {
-        super(props);
-        this.state = {
-            username: '',
-            password: '',
-        };
-
-        this.routeChange = this.routeChange.bind(this);
-        this.goToRegister = this.goToRegister.bind(this);
-        this.handleInputChange = this.handleInputChange.bind(this);
-    }
-
-    handleInputChange(event: any) {
-        const target = event.target;
-        const name = target.name;
-
-        this.setState((state: any) => {
-            return { [name]: target.value }
-        });
-    }
-
-    submit(event: any) {
-    }
-
-    routeChange() {
-        let path = `app`;
-        this.props.history.push(path);
-    }
-
-    goToRegister() {
-        let path = `register`;
-        this.props.history.push(path);
-    }
-
-    render() {
-        return (
-            <div className="login-form">
-                <div className="login-input">
-                    <span>Username:</span>
-                <input
-                        name="username"
-                        id="username"
-                        type="input"
-                        onChange={this.handleInputChange} />
-                </div>
-                <div className="login-input">
-                    <span>Password:</span>
-              <input
-                        name="password"
-                        id="password"
-                        type="password"
-                        onChange={this.handleInputChange} />
-                </div>
-                <div className="button-area">
-                    <button onClick={this.routeChange}>Login</button>
-                    <button onClick={this.goToRegister}>Register</button>
-                </div>
-            </div>
-        );
-    }
+interface LoginState {
+  username: string;
+  password: string;
 }
 
-export default withRouter(Login);
+const Login = withRouter(({ history }) => {
+  const [state, setState] = useState<LoginState>({
+    username: '',
+    password: '',
+  });
+
+  const handleInputChange = ({ target }: ChangeEvent<HTMLInputElement>) => {
+    setState({
+      ...state,
+      [target.name]: target.value,
+    });
+  };
+
+  return (
+    <Card className="login">
+      <CardTitle>Anmelden</CardTitle>
+      <CardContent>
+        <input
+          name="username"
+          id="username"
+          type="input"
+          placeholder="E-Mail"
+          onChange={handleInputChange}
+        />
+        <input
+          name="password"
+          id="password"
+          type="password"
+          placeholder="Passwort"
+          onChange={e => handleInputChange}
+        />
+      </CardContent>
+      <CardActions>
+        <Button onClick={() => history.push('/register')}>Register</Button>
+        <FlatButton onClick={() => history.push('/register')}>
+          Anmelden
+        </FlatButton>
+      </CardActions>
+    </Card>
+  );
+});
+
+export default Login;
