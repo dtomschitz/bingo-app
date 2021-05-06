@@ -1,5 +1,5 @@
 import { GQLError, v4, Bson } from "../deps.ts";
-import { database } from "../database.ts";
+import { database } from "../db/database.ts";
 import { GameSchema } from "../schema/index.ts";
 
 const gameCollection = database.getDatabase().collection<GameSchema>("game");

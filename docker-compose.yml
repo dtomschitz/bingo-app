@@ -19,6 +19,8 @@ services:
     depends_on:
       - database
     environment:
+      - DATABASE_USER=$MONGO_ROOT_USER
+      - DATABASE_PASSWORD=$MONGO_ROOT_PASSWORD
       - JWT_SECRET=$JWT_SECRET
     ports:
       - "8000:8000"
