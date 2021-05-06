@@ -11,7 +11,8 @@ export const GameTypes = gql`
   }
 
   extend type Query {
-    getGame(_id: ID!): BingoGame!
+    games: [BingoGame!]!
+    game(_id: ID!): BingoGame!
   }
 
   extend type Mutation {
