@@ -1,7 +1,8 @@
-version: "3"
+version: '3'
 services:
   database:
-    image: "mongo"
+    container_name: database
+    image: 'mongo'
     environment:
       MONGO_INITDB_ROOT_USERNAME: $MONGO_ROOT_USER
       MONGO_INITDB_ROOT_PASSWORD: $MONGO_ROOT_PASSWORD
@@ -9,13 +10,16 @@ services:
       MONGO_INITDB_PASSWORD: $MONGO_USER_PASSWORD
       MONGO_INITDB_DATABASE: $MONGO_DB
     volumes:
-      - "mongodata:/data/db"
+      - 'mongodata:/data/db'
     ports:
-      - "27017:27017"
+      - '27017:27017'
   backend:
-    build: ./backend
+    container_name: backend
+    build:
+      context: ./
+      target: backend
     volumes:
-      - "./backend/src:/app/src"
+      - './apps/backend/src:/app/src'
     depends_on:
       - database
     environment:
@@ -23,17 +27,18 @@ services:
       - DATABASE_PASSWORD=$MONGO_ROOT_PASSWORD
       - JWT_SECRET=$JWT_SECRET
     ports:
-      - "8000:8000"
+      - '8000:8000'
   frontend:
+    container_name: frontend
     build:
-      context: ./frontend/
-    command: npm start
+      context: ./
+      target: frontend
     volumes:
-      - ./frontend/:/usr/app
+      - ./apps/frontend/:/app
       - /usr/app/node_modules
     depends_on:
       - backend
     ports:
-      - "3000:3000"
+      - '3000:3000'
 volumes:
   mongodata:
