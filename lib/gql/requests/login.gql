@@ -1,5 +1,0 @@
-mutation {
-  loginUser(userLogin: { email: "x-email@test.de", password: "Test1234!" }) {
-    token
-  }
-}
