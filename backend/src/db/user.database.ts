@@ -8,6 +8,7 @@ export const getUserFromDb = async (email: string) => {
   return user ?? null;
 }
 
-export const addUserToDb = () => {
-  return "test";
+export const addUserToDb = async (userData: UserSchema) => {
+  const uuid = await users.insertOne(userData);
+  return uuid;
 }

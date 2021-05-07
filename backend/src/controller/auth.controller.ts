@@ -27,33 +27,43 @@ const doesUserExist = async (
   return user;
 };
 
+const emailToLowerCase = (email: string) => {
+  return email.toLowerCase();
+}
+
+
 //MUTATE { email: "x-email", name: "x-name", password: "x-password" }
 export const registerUser = async (parent: any, { userRegister }: any, context: any, info: any) => {
   const requestData: any = userRegister;
 
+
   if (!requestData.email || !requestData.name || !requestData.password) {
-    throw new GQLError({ message: "Your request has the wrong format"});
+    throw new GQLError({ message: "Your request has the wrong format" });
   }
+
+  const emailLowerCase = emailToLowerCase(requestData.email as string);
 
   if (!isPasswordValid(requestData.password)) {
-    throw new GQLError({ message: "Your password needs a minimum of eight characters, at least one letter, one number and a special character"});
+    throw new GQLError({ message: "Your password needs a minimum of eight characters, at least one letter, one number and a special character" });
   }
 
-  if (!isEmailValid(requestData.email)) {
-    throw new GQLError({ message: "Invalid email!"});
+  if (!isEmailValid(emailLowerCase)) {
+    throw new GQLError({ message: "Invalid email!" });
   }
 
   const userExists: UserSchema | null = await doesUserExist(
-    requestData.email
+    emailLowerCase
   );
 
-  if (!userExists) {
+  if (userExists) {
     throw new GQLError("This User already exists");
   }
- 
+
   const salt = await bcrypt.genSalt(8);
   const hash = await bcrypt.hash(requestData.password, salt);
-  const uid = addUserToDb();
+  const uid = addUserToDb({ name: requestData.name, email: emailLowerCase, password: hash });
+  console.log(uid);
+
 
   if (uid) {
     return { done: true };
@@ -66,19 +76,21 @@ export const loginUser = async (parent: any, { userLogin }: any, context: any, i
   const requestData: any = userLogin;
 
   if (!requestData.email || !requestData.password) {
-    throw new GQLError({ message: "Your request has the wrong format"});
+    throw new GQLError({ message: "Your request has the wrong format" });
   }
+
+  const emailLowerCase = emailToLowerCase(requestData.email as string);
 
   if (!isPasswordValid(requestData.password)) {
-    throw new GQLError({ message: "Invalid password!"});
+    throw new GQLError({ message: "Invalid password!" });
   }
 
-  if (!isEmailValid(requestData.email)) {
-    throw new GQLError({ message: "Invalid email!"});
+  if (!isEmailValid(emailLowerCase)) {
+    throw new GQLError({ message: "Invalid email!" });
   }
 
-  const user: any | null = await doesUserExist(
-    requestData.email
+  const user: UserSchema | null = await doesUserExist(
+    emailLowerCase
   );
 
   if (user) {
@@ -86,22 +98,22 @@ export const loginUser = async (parent: any, { userLogin }: any, context: any, i
     if (result) {
       const payloadWithUser = {
         ...payload,
-        email: requestData.email,
+        email: emailLowerCase,
       };
 
       const JWT_SECRET: string | undefined = Deno.env.get("JWT_SECRET");
 
       if (!JWT_SECRET) {
-        throw new GQLError({ message: "Could not generate Token!"});
+        throw new GQLError({ message: "Could not generate Token!" });
       }
       const jwt = await create(header, payloadWithUser, JWT_SECRET);
       console.log("jwt created");
       return { token: jwt };
     } else {
-      throw new GQLError({ message: "Wrong password!"});
+      throw new GQLError({ message: "Wrong password!" });
     }
   } else {
-    throw new GQLError({ message: "This user does not exist!"});
+    throw new GQLError({ message: "This user does not exist!" });
   }
 };
 
@@ -139,17 +151,17 @@ export const validateAuth = async (context: any) => {
   }
 };
 
-export const getUser = async (parent: any, {  }: any, context: any, info: any) => {
+export const getUser = async (parent: any, { }: any, context: any, info: any) => {
   const response: any = await validateAuth(context);
 
   if (!response.success || !response.email) {
-    throw new GQLError({ message: response.body});
+    throw new GQLError({ message: response.body });
   }
 
   const userData = await getUserFromDb(response.email);
 
-  if(!userData){
-    throw new GQLError({ message: "User does not exist!"});
+  if (!userData) {
+    throw new GQLError({ message: "User does not exist!" });
   }
   return { name: userData.name };
 };
