@@ -2,12 +2,10 @@ interface DividerProps {
   vertical?: boolean;
 }
 
-const Divider = (props: DividerProps) => {
+export const Divider = (props: DividerProps) => {
   return (
     <div
       className={`divider ${props.vertical ? 'vertical' : 'horizontal'}`}
     ></div>
   );
 };
-
-export default Divider;

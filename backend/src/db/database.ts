@@ -18,10 +18,10 @@ export class DatabaseConnection {
   }
 }
 
-const databaseUser = Deno.env.get("DATABASE_USER");
-const databasePassword = Deno.env.get("DATABASE_PASSWORD");
+//const databaseUser = Deno.env.get("DATABASE_USER");
+//const databasePassword = Deno.env.get("DATABASE_PASSWORD");
 
-const database = new DatabaseConnection("saturn", `mongodb://${databaseUser}:${databasePassword}@database:27017`);
+const database = new DatabaseConnection("saturn", `mongodb://localhost:27017`);
 await database.connect();
 
 export { database };

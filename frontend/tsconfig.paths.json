@@ -1,9 +1,0 @@
-{
-  "extends": "./tsconfig.json",
-  "compilerOptions": {
-    "paths": {
-      "@bingo/components/*": ["./src/components/*"],
-      "@bingo/styling/*": ["./src/styling/*"]
-    }
-  }
-}

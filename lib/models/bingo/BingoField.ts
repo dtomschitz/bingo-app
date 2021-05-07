@@ -1,5 +1,5 @@
 export interface BingoField {
-  id: string;
+  _id: string;
   text: string;
   isSelected?: boolean;
 }

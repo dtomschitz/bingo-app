@@ -1,5 +1,5 @@
 import { useEffect, useReducer } from 'react';
-import { BingoField } from '../../../../lib/models/bingo/BingoField';
+import { BingoField } from '../../../../lib/models';
 
 interface BingoCardProps {
   fields: BingoField[];
@@ -34,7 +34,7 @@ const reducer = (state: State, action: Action): State => {
       return {
         ...state,
         fields: state.fields.map(field => {
-          return field.id === id ? { ...field, ...changes } : field;
+          return field._id === id ? { ...field, ...changes } : field;
         }),
         score: state.score ^ (1 << action.update.tile),
       };
@@ -80,7 +80,7 @@ export const BingoCard = ({ fields, onWin }: BingoCardProps) => {
     dispatch({
       type: 'updateBingoField',
       update: {
-        id: field.id,
+        id: field._id,
         tile,
         changes: {
           isSelected: !field.isSelected,
@@ -95,7 +95,7 @@ export const BingoCard = ({ fields, onWin }: BingoCardProps) => {
       <div className="bingo-card">
         {state.fields.map((field, index) => (
           <BingoTile
-            key={field.id}
+            key={field._id}
             field={field}
             tile={25 - index}
             winningPattern={findWinningPattern(state.score)}

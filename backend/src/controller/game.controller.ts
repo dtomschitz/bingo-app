@@ -50,7 +50,7 @@ export const createGame = async (
     throw new GQLError({ message: "Your request has the wrong format" });
   }
 
-  if (input.fields.length !== 25) {
+  if (input.fields.length < 25) {
     throw new GQLError({
       message: "Your request contains either too many or to few bingo fields",
     });

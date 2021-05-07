@@ -1,12 +1,7 @@
-import { Button, FlatButton } from 'components/common/Button';
-import {
-  Card,
-  CardActions,
-  CardContent,
-  CardTitle,
-} from 'components/common/Card';
 import { ChangeEvent, useState } from 'react';
 import { withRouter } from 'react-router-dom';
+import { Button, FlatButton } from '../common/Button';
+import { Card, CardActions, CardContent, CardTitle } from '../common/Card';
 
 interface LoginState {
   username: string;

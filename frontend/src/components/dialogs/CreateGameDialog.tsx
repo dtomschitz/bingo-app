@@ -1,11 +1,16 @@
 import { useState } from 'react';
+import { v4 as uuidv4 } from 'uuid';
+import { useMutation } from '@apollo/react-hooks';
+import gql from 'graphql-tag';
 import {
   faTrash,
   faCheck,
   faCandyCane,
+  faInfoCircle,
 } from '@fortawesome/free-solid-svg-icons';
-import { BingoField } from '../../../lib/models';
-import { Button, FlatButton, IconButton } from './common/Button';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { BingoField } from '../../../../lib/models';
+import { Button, FlatButton, IconButton } from '../common/Button';
 import {
   BaseDialog,
   DialogActions,
@@ -13,10 +18,8 @@ import {
   DialogHeader,
   DialogPane,
   DialogProps,
-} from './common/Dialog';
-import Divider from './common/Divider';
-
-import { v4 as uuidv4 } from 'uuid';
+} from '../common/Dialog';
+import { Divider } from '../common/Divider';
 
 interface AddBingoFieldInputProps {
   onSubmit: (value: string) => void;
@@ -28,10 +31,33 @@ interface BingoFieldItemProps {
   onDelete: (id: string) => void;
 }
 
-const CreateGameDialog = (props: DialogProps) => {
-  const [fields, setFields] = useState<BingoField[]>([]);
+const CREATE_GAME = gql`
+  mutation CreateGame($title: String!, $fields: [BingoField!]!) {
+    createGame(input: { title: $title, fields: $fields }) {
+      _id
+      title
+      fields {
+        _id
+        text
+      }
+    }
+  }
+`;
 
-  const createGame = () => {
+export const CreateGameDialog = (props: DialogProps) => {
+  const [title, setTitle] = useState<string>('');
+  const [fields, setFields] = useState<BingoField[]>([]);
+  //const [createGame] = useMutation(CREATE_GAME);
+
+  const canSave = fields.length < 30;
+
+  const saveGame = () => {
+    /*createGame({
+      variables: {
+        title,
+        fields,
+      },
+    });*/
     //TODO: Create Game
 
     hide();
@@ -45,7 +71,7 @@ const CreateGameDialog = (props: DialogProps) => {
     setFields(currentFields => [
       ...currentFields,
       {
-        id: uuidv4(),
+        _id: uuidv4(),
         text,
       },
     ]);
@@ -53,12 +79,12 @@ const CreateGameDialog = (props: DialogProps) => {
 
   const updateBingoField = (id: string, text: string) => {
     setFields(
-      fields.map(field => (field.id === id ? { ...field, text } : field)),
+      fields.map(field => (field._id === id ? { ...field, text } : field)),
     );
   };
 
   const deleteBingoField = (id: string) => {
-    setFields(fields.filter(field => field.id !== id));
+    setFields(fields.filter(field => field._id !== id));
   };
 
   return (
@@ -66,21 +92,38 @@ const CreateGameDialog = (props: DialogProps) => {
       <DialogPane className="create-game">
         <DialogHeader>Spiel erstellen</DialogHeader>
         <DialogContent>
+          <div className="title">
+            <input
+              value={title}
+              onChange={e => setTitle(e.currentTarget.value)}
+              placeholder="Titel"
+            />
+          </div>
           <AddBingoFieldInput onSubmit={addBingoField} />
           <div className="bingo-fields">
             {fields.map(field => (
               <BingoFieldItem
-                key={field.id}
+                key={field._id}
                 field={field}
-                onUpdate={value => updateBingoField(field.id, value)}
+                onUpdate={value => updateBingoField(field._id, value)}
                 onDelete={deleteBingoField}
               />
             ))}
           </div>
         </DialogContent>
         <DialogActions>
-          <Button onClick={hide}>Abbrechen</Button>
-          <FlatButton onClick={createGame}>Speichern</FlatButton>
+          {canSave && (
+            <div className="warning">
+              <FontAwesomeIcon icon={faInfoCircle} />
+              Es müssen mindestens 30 Felder angelegt werden!
+            </div>
+          )}
+          <div className="buttons">
+            <Button onClick={hide}>Abbrechen</Button>
+            <FlatButton onClick={saveGame} disabled={canSave}>
+              Speichern
+            </FlatButton>
+          </div>
         </DialogActions>
       </DialogPane>
     </BaseDialog>
@@ -160,10 +203,8 @@ const BingoFieldItem = ({ field, onUpdate, onDelete }: BingoFieldItemProps) => {
         {editMode && <IconButton onClick={onSave} icon={faCheck} />}
         {editMode && <IconButton onClick={onCancel} icon={faCandyCane} />}
         {editMode && <Divider vertical />}
-        <IconButton onClick={() => onDelete(field.id)} icon={faTrash} />
+        <IconButton onClick={() => onDelete(field._id)} icon={faTrash} />
       </div>
     </div>
   );
 };
-
-export default CreateGameDialog;

@@ -7,13 +7,13 @@ import {
   useLocation,
 } from 'react-router-dom';
 import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
+import { FlatButton, IconButton } from './common/Button';
+import { DialogContainer } from './common/Dialog';
+import { Divider } from './common/Divider';
+import { CreateGameDialog } from './dialogs';
 import Login from './login/Login';
 import Register from './register/Register';
 import Home from './Home';
-import CreateGameDialog from './CreateGameDialog';
-import { FlatButton, IconButton } from './common/Button';
-import { DialogContainer } from './common/Dialog';
-import Divider from './common/Divider';
 import Game from './Game';
 
 interface AppBarProps {

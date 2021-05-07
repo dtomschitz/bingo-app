@@ -1,8 +1,8 @@
 import { withRouter } from 'react-router';
 import { useQuery } from 'react-apollo';
+import gql from 'graphql-tag';
 import { BingoGame } from '../../../lib/models';
 import { BingoPreviewCard } from './bingo';
-import gql from 'graphql-tag';
 
 const GET_GAMES = gql`
   query GetGames {

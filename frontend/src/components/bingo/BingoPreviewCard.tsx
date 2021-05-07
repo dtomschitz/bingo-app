@@ -1,5 +1,5 @@
-import { Card, CardTitle } from 'components/common/Card';
 import { BingoGame } from '../../../../lib/models';
+import { Card, CardTitle } from '../common/Card';
 
 interface BingoPreviewCardProps {
   game: BingoGame;

@@ -1,32 +1,62 @@
 .create-game {
   width: 500px;
 
-  input {
-    flex: 1;
-  }
-
-  .input-container,
-  .bingo-field-container {
+  .dialog-content {
     input {
-      margin-right: 16px;
+      flex: 1;
+    }
+
+    .title,
+    .input-container {
+      display: flex;
+      margin-bottom: 32px;
+    }
+
+    .input-container,
+    .bingo-field-container {
+      input {
+        margin-right: 16px;
+      }
+    }
+
+    .bingo-fields {
+      .bingo-field-container {
+        display: flex;
+        margin-bottom: 16px;
+
+        .actions {
+          display: flex;
+
+          .divider {
+            margin: 0 8px;
+          }
+        }
+      }
     }
   }
 
-  .input-container {
-    display: flex;
-    margin-bottom: 32px;
-  }
+  .dialog-actions {
+    flex-direction: row;
 
-  .bingo-fields .bingo-field-container {
-    display: flex;
-    margin-bottom: 16px;
+    .warning,
+    .buttons {
+      width: 100%;
+    }
 
-    .actions {
+    .warning {
       display: flex;
+      align-items: center;
+      margin: 8px 0 16px 0;
 
-      .divider {
-        margin: 0 8px;
+      svg {
+        margin-right: 16px;
+        color: $primary;
       }
+    }
+
+    .buttons {
+      display: flex;
+      justify-content: flex-end;
     }
   }
 }

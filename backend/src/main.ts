@@ -1,4 +1,5 @@
 import { GraphQLSchema } from "./schema/index.ts";
+//import { GraphQLSchema } from "../../lib/gql/schema/index.ts";
 import { Application, Router, RouterContext } from "./deps.ts";
 import { applyGraphQL, oakCors } from "./deps.ts";
 import { resolvers } from "./resolver/resolver.ts";
