@@ -14,6 +14,7 @@
   "projects": {
     "frontend": { "tags": [] },
     "frontend-e2e": { "tags": [], "implicitDependencies": ["frontend"] },
-    "models": { "tags": [] }
+    "models": { "tags": [] },
+    "gql": { "tags": [] }
   }
 }

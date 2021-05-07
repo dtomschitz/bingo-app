@@ -13,12 +13,12 @@ CMD deno run --allow-net --allow-env --unstable --watch /app/src/main.ts
 ### Frontend ###
 FROM node:12.10.0 AS frontend
 
-WORKDIR /app
-
 COPY package*.json ./
 COPY workspace.json ./
+
+RUN npm install -g nx
 RUN npm ci -qy
 
-RUN ls /app
+COPY . .
 
-CMD npm run start:frontend
+RUN npm run start:frontend

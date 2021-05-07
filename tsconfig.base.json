@@ -15,7 +15,8 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@bingo/models": ["libs/models/src/index.ts"]
+      "@bingo/models": ["libs/models/src/index.ts"],
+      "@bingo/gql": ["libs/gql/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]
