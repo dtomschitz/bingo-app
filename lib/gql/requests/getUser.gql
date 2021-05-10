@@ -1,9 +1,0 @@
-query {
-  getUser {
-    name
-  }
-}
-
-addHeaderToRequest: {
-  "Authorization": "Bearer SetJWThere"
-}

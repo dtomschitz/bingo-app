@@ -1,7 +1,8 @@
-version: "3"
+version: '3'
 services:
   database:
-    image: "mongo"
+    container_name: database
+    image: 'mongo'
     environment:
       MONGO_INITDB_ROOT_USERNAME: $MONGO_ROOT_USER
       MONGO_INITDB_ROOT_PASSWORD: $MONGO_ROOT_PASSWORD
@@ -9,31 +10,49 @@ services:
       MONGO_INITDB_PASSWORD: $MONGO_USER_PASSWORD
       MONGO_INITDB_DATABASE: $MONGO_DB
     volumes:
-      - "mongodata:/data/db"
+      - 'mongodata:/data/db'
     ports:
-      - "27017:27017"
+      - '27017:27017'
+    networks:
+      - saturn
+
   backend:
-    build: ./backend
-    volumes:
-      - "./backend/src:/app/src"
+    container_name: backend
+    build:
+      context: ./
+      dockerfile: ./apps/backend/Dockerfile
     depends_on:
       - database
     environment:
       - DATABASE_USER=$MONGO_ROOT_USER
       - DATABASE_PASSWORD=$MONGO_ROOT_PASSWORD
       - JWT_SECRET=$JWT_SECRET
-    ports:
-      - "8000:8000"
-  frontend:
-    build:
-      context: ./frontend/
-    command: npm start
     volumes:
-      - ./frontend/:/usr/app
-      - /usr/app/node_modules
+      - './apps:/app/apps:ro'
+      - './libs:/app/libs:ro'
+    ports:
+      - '8000:8000'
+    networks:
+      - saturn
+
+  frontend:
+    container_name: frontend
+    build:
+      context: ./
+      dockerfile: ./apps/frontend/Dockerfile
     depends_on:
       - backend
+    volumes:
+      - './apps:/app/apps:ro'
+      - './libs:/app/libs:ro'
     ports:
-      - "3000:3000"
+      - '3000:3000'
+    networks:
+      - saturn
+
+networks:
+  saturn:
+    driver: bridge
+
 volumes:
   mongodata:
