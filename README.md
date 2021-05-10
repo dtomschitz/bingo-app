@@ -1,6 +1,6 @@
-<p align="center">
+<div style="text-align:center">
   <img src="bingo.png" alt="logo" width="200"/>
-</p>
+</div>
 
 # Table of contents
 

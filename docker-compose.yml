@@ -13,32 +13,46 @@ services:
       - 'mongodata:/data/db'
     ports:
       - '27017:27017'
+    networks:
+      - saturn
+
   backend:
     container_name: backend
     build:
       context: ./
-      target: backend
-    volumes:
-      - './apps/backend/src:/app/src'
+      dockerfile: ./apps/backend/Dockerfile
     depends_on:
       - database
     environment:
       - DATABASE_USER=$MONGO_ROOT_USER
       - DATABASE_PASSWORD=$MONGO_ROOT_PASSWORD
       - JWT_SECRET=$JWT_SECRET
+    volumes:
+      - './apps:/app/apps:ro'
+      - './libs:/app/libs:ro'
     ports:
       - '8000:8000'
+    networks:
+      - saturn
+
   frontend:
     container_name: frontend
     build:
       context: ./
-      target: frontend
-    volumes:
-      - ./apps/frontend/:/app
-      - /usr/app/node_modules
+      dockerfile: ./apps/frontend/Dockerfile
     depends_on:
       - backend
+    volumes:
+      - './apps:/app/apps:ro'
+      - './libs:/app/libs:ro'
     ports:
       - '3000:3000'
+    networks:
+      - saturn
+
+networks:
+  saturn:
+    driver: bridge
+
 volumes:
   mongodata:
