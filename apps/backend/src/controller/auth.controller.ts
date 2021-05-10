@@ -61,8 +61,8 @@ export const registerUser = async (parent: any, { userRegister }: any, context: 
 
   const salt = await bcrypt.genSalt(8);
   const hash = await bcrypt.hash(requestData.password, salt);
-  const uid = addUserToDb({ name: requestData.name, email: emailLowerCase, password: hash });
-  console.log(uid);
+  const uid = await addUserToDb({ name: requestData.name, email: emailLowerCase, password: hash });
+  console.log("uid", uid);
 
 
   if (uid) {
