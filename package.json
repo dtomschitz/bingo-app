@@ -4,9 +4,9 @@
   "license": "MIT",
   "scripts": {
     "nx": "nx",
-    "start:frontend": "nx serve --port 3000",
-    "start:backend": "deno run --allow-net --allow-env --unstable --watch ./apps/backend/src/main.ts",
-    "build:frontend": "nx build"
+    "frontend:start": "nx serve --port 3000",
+    "backend:start": "deno run --allow-net --allow-env --unstable --watch ./apps/backend/src/main.ts",
+    "backend:cache": "deno cache --unstable ./apps/backend/src/deps.ts"
   },
   "private": true,
   "dependencies": {

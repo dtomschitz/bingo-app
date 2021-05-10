@@ -23,13 +23,13 @@
 
 | Name            | Description                            |
 | --------------- | -------------------------------------- |
-| _start:backend_ | Starts the Backend in development mode |
+| _backend:start_ | Starts the Backend in development mode |
+| _backend:cache_ | Starts the Backend in development mode |
 
 ## Frontend
 
 | Name             | Description                             |
 | ---------------- | --------------------------------------- |
-| _start:frontend_ | Starts the Frontend in development mode |
-| _build:frontend_ | Builds the Frontend for production mode |
+| _frontend:start_ | Starts the Frontend in development mode |
 
 Icon made by Freepik from www.flaticon.com
