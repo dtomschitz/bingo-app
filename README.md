@@ -1,6 +1,12 @@
-<div style="text-align:center">
+<table align="center"><tr><td align="center" width="9999">
   <img src="bingo.png" alt="logo" width="200"/>
-</div>
+
+  # Bingo App
+
+  Description for my awesome project
+  </td></tr>
+</table>
+
 
 # Table of contents
 
