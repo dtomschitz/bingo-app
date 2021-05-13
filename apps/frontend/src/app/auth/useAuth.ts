@@ -1,6 +1,13 @@
 import { useContext, useState } from 'react';
-import { useApolloClient, gql } from '@apollo/client';
-import { User, AuthResult, LoginProps, RegisterProps } from '@bingo/models';
+import { gql, ApolloClient, NormalizedCacheObject } from '@apollo/client';
+import {
+  User,
+  AuthResult,
+  LogoutResult,
+  LoginProps,
+  RegisterProps,
+  RefreshAccessTokenResult,
+} from '@bingo/models';
 import { authContext } from './AuthProvider';
 
 const USER_LOGIN = gql`
@@ -12,6 +19,14 @@ const USER_LOGIN = gql`
       }
       accessToken
       refreshToken
+    }
+  }
+`;
+
+const USER_LOGOUT = gql`
+  mutation UserLogout($email: String!) {
+    logoutUser(props: { email: $email }) {
+      success
     }
   }
 `;
@@ -42,8 +57,7 @@ export const useAuth = () => {
   return useContext(authContext);
 };
 
-export const useProvideAuth = () => {
-  const client = useApolloClient();
+export const useProvideAuth = (client: ApolloClient<NormalizedCacheObject>) => {
   const [user, setUser] = useState<User>(undefined);
   const [isPending, setIsPending] = useState<boolean>(false);
 
@@ -55,6 +69,12 @@ export const useProvideAuth = () => {
     setUser(user);
     setAccessToken(accessToken);
     setRefreshToken(refreshToken);
+  };
+
+  const resetAuthContext = () => {
+    setUser(undefined);
+    localStorage.removeItem('accessToken');
+    localStorage.removeItem('refreshToken');
   };
 
   const setAccessToken = (token: string) => {
@@ -80,6 +100,27 @@ export const useProvideAuth = () => {
         return true;
       })
       .catch(() => false);
+  };
+
+  const logout = () => {
+    return client
+      .mutate<{ logoutUser: LogoutResult }>({
+        mutation: USER_LOGOUT,
+        variables: {
+          email: user.email,
+        },
+        fetchPolicy: 'no-cache',
+      })
+      .then(() => {
+        console.log('TEst');
+
+        resetAuthContext();
+        return true;
+      })
+      .catch(() => {
+        resetAuthContext();
+        return false;
+      });
   };
 
   const register = ({ name, email, password }: RegisterProps) => {
@@ -124,7 +165,7 @@ export const useProvideAuth = () => {
         return true;
       })
       .catch(() => {
-        setAuthContext(undefined);
+        resetAuthContext();
         setIsPending(false);
 
         return false;
@@ -134,6 +175,7 @@ export const useProvideAuth = () => {
   return {
     user,
     login,
+    logout,
     register,
     verify,
     isPending,

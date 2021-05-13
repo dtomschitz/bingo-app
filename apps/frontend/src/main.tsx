@@ -5,18 +5,81 @@ import {
   ApolloProvider,
   createHttpLink,
   InMemoryCache,
+  Observable,
+  from,
+  gql,
 } from '@apollo/client';
 import { setContext } from '@apollo/client/link/context';
-import { AuthProvider } from './app/auth';
+import { onError } from '@apollo/client/link/error';
+import { BrowserRouter } from 'react-router-dom';
+import { AuthProvider, useAuth } from './app/auth';
 import App from './app/App';
+import { RefreshAccessTokenResult } from '@bingo/models';
 
-const httpLink = createHttpLink({
-  uri: 'http://localhost:8000/graphql',
-});
+const REFRESH_ACCESS_TOKEN = gql`
+  mutation RefreshAccessToken($refreshToken: String!) {
+    refreshAccessToken(props: { refreshToken: $refreshToken }) {
+      accessToken
+    }
+  }
+`;
+
+const refreshAccessToken = () => {
+  const refreshToken = localStorage.getItem('refreshToken');
+
+  return client
+    .mutate<{ refreshAccessToken: RefreshAccessTokenResult }>({
+      mutation: REFRESH_ACCESS_TOKEN,
+      variables: {
+        refreshToken,
+      },
+      fetchPolicy: 'no-cache',
+    })
+    .then(result => {
+      console.log(result);
+      const token = result.data.refreshAccessToken.accessToken;
+      localStorage.setItem('refreshToken', token);
+
+      return token;
+    });
+};
+
+const errorLink = onError(
+  ({ graphQLErrors, networkError, operation, forward }) => {
+    if (graphQLErrors) {
+      if (networkError.message === 'UNAUTHORIZED') {
+        return new Observable(observer => {
+          refreshAccessToken()
+            .then(accessToken => {
+              operation.setContext(({ headers = {} }: any) => ({
+                headers: {
+                  ...headers,
+                  authorization: accessToken ? `Bearer ${accessToken}` : '',
+                },
+              }));
+            })
+            .then(() => {
+              const subscriber = {
+                next: observer.next.bind(observer),
+                error: observer.error.bind(observer),
+                complete: observer.complete.bind(observer),
+              };
+
+              forward(operation).subscribe(subscriber);
+            })
+            .catch(error => {
+              observer.error(error);
+            });
+        });
+      }
+    }
+
+    return forward(operation);
+  },
+);
 
 const authLink = setContext((_, { headers }) => {
   const accessToken = localStorage.getItem('accessToken');
-  const refreshToken = localStorage.getItem('refreshToken');
 
   return {
     headers: {
@@ -26,19 +89,24 @@ const authLink = setContext((_, { headers }) => {
   };
 });
 
+const httpLink = createHttpLink({
+  uri: 'http://localhost:8000/graphql',
+});
+
 const client = new ApolloClient({
-  //link: authLink.concat(httpLink),
-  link: httpLink,
+  link: from([errorLink, authLink, httpLink]),
   cache: new InMemoryCache(),
 });
 
 ReactDOM.render(
   <StrictMode>
-    <ApolloProvider client={client}>
-      <AuthProvider>
-        <App />
+    <BrowserRouter>
+      <AuthProvider client={client}>
+        <ApolloProvider client={client}>
+          <App />
+        </ApolloProvider>
       </AuthProvider>
-    </ApolloProvider>
+    </BrowserRouter>
   </StrictMode>,
   document.getElementById('root'),
 );

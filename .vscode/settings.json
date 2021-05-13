@@ -4,7 +4,7 @@
     "titleBar.activeBackground": "#5C324E",
     "titleBar.activeForeground": "#FCF9FB"
   },
-  "typescript.enablePromptUseWorkspaceTsdk": true,
+  "typescript.enablePromptUseWorkspaceTsdk": false,
   "deno.enable": false,
   "deno.lint": false,
   "deno.unstable": false

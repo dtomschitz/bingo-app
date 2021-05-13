@@ -10,6 +10,7 @@ import {
   JwtPayload,
   JwtSignOptions,
   LoginProps,
+  LogoutProps,
   RefreshAccessTokenProps,
 } from "../models.ts";
 
@@ -123,6 +124,28 @@ export const loginUser = async (
   };
 };
 
+export const logoutUser = async (
+  parent: any,
+  { props }: GraphQLProps<LogoutProps>,
+  context: any,
+  info: any,
+) => {
+  if (!props.email) {
+    throw new GQLError("Your request has the wrong format");
+  }
+
+  const user = await getUserByEmail(props.email);
+  if (!user) {
+    throw new GQLError("This user does not exist!");
+  }
+  
+  await updateUser(user._id, { refreshToken: undefined });
+
+  return {
+    success: true
+  };
+}
+
 /**
  * Refreshes the access token for the `User` with the given refresh token.
  */
@@ -166,10 +189,8 @@ export const refreshAccessToken = async (
   }
 
   const { _id, email } = await verifyToken(props.refreshToken, refreshTokenSecret);
-  const user = await getUserByEmail(email);
 
   return {
-    user,
     accessToken: generateAccessToken({
       _id,
       email,
@@ -186,7 +207,6 @@ export const refreshAccessToken = async (
  */
 const validateUser = async (email: string, password: string) => {
   const user = await getUserByEmail(email);
-
   if (!user) {
     throw new GQLError("This user does not exist!");
   }
@@ -224,7 +244,7 @@ const generateAccessToken = (payload: JwtPayload) => {
     },
     {
       secret: Deno.env.get("ACCESS_TOKEN_SECRET"),
-      expiration: Deno.env.get("ACCESS_TOKEN_EXPIRATION_TIME"),
+      expiration: 3600, // 1h
     },
   );
 };
@@ -242,7 +262,7 @@ const generateRefreshToken = (payload: JwtPayload) => {
     },
     {
       secret: Deno.env.get("REFRESH_TOKEN_SECRET"),
-      expiration: Deno.env.get("REFRESH_TOKEN_EXPIRATION_TIME"),
+      expiration: 2628000, // 30d
     },
   );
 };
@@ -258,13 +278,9 @@ const generateToken = (payload: jwt.Payload, options: JwtSignOptions) => {
     throw new GQLError("The secret can not be undefined!");
   }
 
-  if (!options.expiration) {
-    throw new GQLError("The expiration time can not be undefined!");
-  }
-
   return jwt.create(header, {
     ...payload,
-    exp: Date.now() + parseInt(options.expiration, 10),
+    exp: jwt.getNumericDate(options.expiration)
   }, options.secret);
 };
 

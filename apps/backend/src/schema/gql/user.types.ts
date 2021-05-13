@@ -12,6 +12,10 @@ export const UserTypes = gql`
     password: String
   }
 
+  input UserLogout {
+    email: String
+  }
+
   input UserRegister {
     name: String
     email: String
@@ -19,6 +23,7 @@ export const UserTypes = gql`
   }
 
   input RefreshAccessTokenProps {
+    email: String
     refreshToken: String
   }
 
@@ -28,14 +33,18 @@ export const UserTypes = gql`
     refreshToken: String
   }
 
+  type UserLogoutResult {
+    success: Boolean
+  }
+
   type RefreshAccessTokenResult {
-    user: User
     accessToken: String
   }
 
   extend type Mutation {
     registerUser(props: UserRegister!): AuthResult!
     loginUser(props: UserLogin!): AuthResult!
+    logoutUser(props: UserLogout!): UserLogoutResult!
     verifyUser(props: RefreshAccessTokenProps!): User!
     refreshAccessToken(props: RefreshAccessTokenProps!): RefreshAccessTokenResult!
   }

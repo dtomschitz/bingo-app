@@ -19,13 +19,14 @@ export interface JwtPayload {
 
 export interface JwtSignOptions {
   secret: string | undefined;
-  expiration: string | undefined;
+  expiration: number;
 }
 
 export interface AuthContext {
   user: User;
   login?: (props: LoginProps) => Promise<boolean>;
   register?: (props: RegisterProps) => Promise<boolean>;
+  logout?: () => Promise<boolean>;
   verify?: () => Promise<boolean>;
   isPending: boolean;
   isLoggedIn: boolean;
@@ -39,9 +40,21 @@ export interface AuthResult {
   refreshToken: string;
 }
 
+export interface LogoutResult {
+  success: boolean;
+}
+
+export interface RefreshAccessTokenResult {
+  accessToken: string;
+}
+
 export interface LoginProps {
   email: string;
   password: string;
+}
+
+export interface LogoutProps {
+  email: string;
 }
 
 export interface RegisterProps extends LoginProps {
@@ -49,5 +62,6 @@ export interface RegisterProps extends LoginProps {
 }
 
 export interface RefreshAccessTokenProps {
+  email: string;
   refreshToken: string;
 }

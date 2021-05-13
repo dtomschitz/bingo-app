@@ -1,11 +1,7 @@
 import { useEffect, useState } from 'react';
-import {
-  BrowserRouter as Router,
-  Switch,
-  Route,
-  useHistory,
-} from 'react-router-dom';
-import { FlatButton } from './components/common/Button';
+import { Switch, Route, useHistory } from 'react-router-dom';
+import { faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
+import { FlatButton, IconButton } from './components/common/Button';
 import { DialogContainer } from './components/common/Dialog';
 import { Divider } from './components/common/Divider';
 import { ProgressBar } from './components/common/ProgressBar';
@@ -22,17 +18,17 @@ const App = () => {
   const [elevateAppBar, setElevateAppBar] = useState(false);
 
   useEffect(() => {
-    if (!auth.user) {
+    if (!auth.isLoggedIn && auth.refreshToken) {
       auth.verify();
     }
-  }, [auth]);
+  }, []);
 
   const handleScroll = (scrollTop: number) => {
     setElevateAppBar(scrollTop > 10 ? true : false);
   };
 
   return (
-    <Router>
+    <>
       <AppBar elevated={elevateAppBar} />
       <div
         id="router-container"
@@ -45,7 +41,7 @@ const App = () => {
         </Switch>
       </div>
       <DialogContainer />
-    </Router>
+    </>
   );
 };
 
@@ -62,9 +58,12 @@ const AppBar = ({ elevated }: AppBarProps) => {
     }
 
     return auth.user ? (
-      <FlatButton onClick={() => setShowCreateGameDialog(true)}>
-        Spiel erstellen
-      </FlatButton>
+      <>
+        <FlatButton onClick={() => setShowCreateGameDialog(true)}>
+          Spiel erstellen
+        </FlatButton>
+        <IconButton icon={faSignOutAlt} onClick={() => auth.logout()} />
+      </>
     ) : (
       <FlatButton onClick={() => setShowAuthDialog(true)}>Anmelden</FlatButton>
     );
