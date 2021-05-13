@@ -42,7 +42,7 @@
   pointer-events: auto;
   box-sizing: border-box;
   max-height: 100%;
-  max-width: 80vw;
+  margin: 0 16px;
 }
 
 .dialog-container {
@@ -87,8 +87,7 @@
   display: flex;
   flex-wrap: wrap;
   justify-content: flex-end;
-  padding: 8px 0;
-  //min-height: 52px;
+  padding: 16px 0;
   align-items: center;
   box-sizing: content-box;
   margin-bottom: -24px;

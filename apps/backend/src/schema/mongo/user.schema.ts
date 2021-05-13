@@ -1,5 +1,6 @@
-export interface UserSchema{
-  email: string;
-  name: string;
-  password: string;
+import { User } from "../../models.ts";
+
+export interface UserSchema extends User {
+  accessToken: string;
+  refreshToken: string
 }

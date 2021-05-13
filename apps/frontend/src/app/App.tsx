@@ -1,27 +1,31 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   BrowserRouter as Router,
   Switch,
   Route,
   useHistory,
-  useLocation,
 } from 'react-router-dom';
-import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
-import { FlatButton, IconButton } from './components/common/Button';
+import { FlatButton } from './components/common/Button';
 import { DialogContainer } from './components/common/Dialog';
 import { Divider } from './components/common/Divider';
-import { CreateGameDialog } from './dialogs';
-import Login from './Login';
-import Register from './Register';
+import { ProgressBar } from './components/common/ProgressBar';
+import { useAuth } from './auth';
+import { AuthDialog, CreateGameDialog } from './dialogs';
 import Home from './Home';
-import Game from './Game';
 
 interface AppBarProps {
   elevated: boolean;
 }
 
 const App = () => {
+  const auth = useAuth();
   const [elevateAppBar, setElevateAppBar] = useState(false);
+
+  useEffect(() => {
+    if (!auth.user) {
+      auth.verify();
+    }
+  }, [auth]);
 
   const handleScroll = (scrollTop: number) => {
     setElevateAppBar(scrollTop > 10 ? true : false);
@@ -35,13 +39,6 @@ const App = () => {
         onScroll={e => handleScroll(e.currentTarget.scrollTop)}
       >
         <Switch>
-          <Route path="/login">
-            <Login />
-          </Route>
-          <Route path="/register">
-            <Register />
-          </Route>
-          <Route path="/game/:gameId" component={Game} />
           <Route path="/">
             <Home />
           </Route>
@@ -54,43 +51,47 @@ const App = () => {
 
 const AppBar = ({ elevated }: AppBarProps) => {
   const history = useHistory();
-  const location = useLocation();
-  const [showCreateGameDialog, setShowCreateGameDialog] = useState(false);
+  const auth = useAuth();
 
-  const isHome = location.pathname !== '/';
+  const [showCreateGameDialog, setShowCreateGameDialog] = useState(false);
+  const [showAuthDialog, setShowAuthDialog] = useState(false);
+
+  const renderActions = () => {
+    if (auth.isPending) {
+      return undefined;
+    }
+
+    return auth.user ? (
+      <FlatButton onClick={() => setShowCreateGameDialog(true)}>
+        Spiel erstellen
+      </FlatButton>
+    ) : (
+      <FlatButton onClick={() => setShowAuthDialog(true)}>Anmelden</FlatButton>
+    );
+  };
 
   return (
     <>
       <div className={`app-bar ${elevated ? 'elevated' : ''}`}>
         <div className="container">
-          {isHome && (
-            <IconButton
-              className="back-button"
-              icon={faArrowLeft}
-              onClick={() => history.push('/')}
-            />
-          )}
           <span className="title" onClick={() => history.push('/')}>
             BINGO
           </span>
           <div className="flex-spacer" />
-          <div className="actions">
-            <FlatButton onClick={() => history.push('/register')}>
-              Registrieren
-            </FlatButton>
-            <FlatButton onClick={() => history.push('/login')}>
-              Anmelden
-            </FlatButton>
-            <FlatButton onClick={() => setShowCreateGameDialog(true)}>
-              Spiel erstellen
-            </FlatButton>
-          </div>
+          <div className="actions">{renderActions()}</div>
+        </div>
+        <div className="progress-bar-container">
+          {auth.isPending && <ProgressBar />}
         </div>
         {!elevated && <Divider />}
       </div>
       <CreateGameDialog
         show={showCreateGameDialog}
         onHide={() => setShowCreateGameDialog(false)}
+      />
+      <AuthDialog
+        show={showAuthDialog}
+        onHide={() => setShowAuthDialog(false)}
       />
     </>
   );
