@@ -1,4 +1,3 @@
-import { Bson } from "../deps.ts";
 import { UserSchema } from './../schema/mongo/user.schema.ts';
 import { database } from "../db/database.ts";
 import { CreateUserProps, UpdateUserProps } from "../models.ts";

@@ -112,8 +112,6 @@ export const useProvideAuth = (client: ApolloClient<NormalizedCacheObject>) => {
         fetchPolicy: 'no-cache',
       })
       .then(() => {
-        console.log('TEst');
-
         resetAuthContext();
         return true;
       })

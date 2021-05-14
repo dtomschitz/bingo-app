@@ -23,7 +23,7 @@ export const ProtectedRoute = ({
       ) : (
         <Redirect
           to={{
-            pathname: redirectPath ?? '/login',
+            pathname: redirectPath ?? '/',
             state: { from: location },
           }}
         />

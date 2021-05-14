@@ -11,10 +11,10 @@ import {
 } from '@apollo/client';
 import { setContext } from '@apollo/client/link/context';
 import { onError } from '@apollo/client/link/error';
+import { RefreshAccessTokenResult, ErrorType } from '@bingo/models';
 import { BrowserRouter } from 'react-router-dom';
-import { AuthProvider, useAuth } from './app/auth';
+import { AuthProvider } from './app/auth';
 import App from './app/App';
-import { RefreshAccessTokenResult } from '@bingo/models';
 
 const REFRESH_ACCESS_TOKEN = gql`
   mutation RefreshAccessToken($refreshToken: String!) {
@@ -36,9 +36,8 @@ const refreshAccessToken = () => {
       fetchPolicy: 'no-cache',
     })
     .then(result => {
-      console.log(result);
       const token = result.data.refreshAccessToken.accessToken;
-      localStorage.setItem('refreshToken', token);
+      localStorage.setItem('accessToken', token);
 
       return token;
     });
@@ -47,30 +46,35 @@ const refreshAccessToken = () => {
 const errorLink = onError(
   ({ graphQLErrors, networkError, operation, forward }) => {
     if (graphQLErrors) {
-      if (networkError.message === 'UNAUTHORIZED') {
-        return new Observable(observer => {
-          refreshAccessToken()
-            .then(accessToken => {
-              operation.setContext(({ headers = {} }: any) => ({
-                headers: {
-                  ...headers,
-                  authorization: accessToken ? `Bearer ${accessToken}` : '',
-                },
-              }));
-            })
-            .then(() => {
-              const subscriber = {
-                next: observer.next.bind(observer),
-                error: observer.error.bind(observer),
-                complete: observer.complete.bind(observer),
-              };
+      for (const i in graphQLErrors) {
+        const error = graphQLErrors[i];
+        if (error.message === ErrorType.UNAUTHORIZED) {
+          return new Observable(observer => {
+            refreshAccessToken()
+              .then(accessToken => {
+                console.log(accessToken);
 
-              forward(operation).subscribe(subscriber);
-            })
-            .catch(error => {
-              observer.error(error);
-            });
-        });
+                operation.setContext(({ headers = {} }: any) => ({
+                  headers: {
+                    ...headers,
+                    authorization: accessToken ? `Bearer ${accessToken}` : '',
+                  },
+                }));
+              })
+              .then(() => {
+                const subscriber = {
+                  next: observer.next.bind(observer),
+                  error: observer.error.bind(observer),
+                  complete: observer.complete.bind(observer),
+                };
+
+                forward(operation).subscribe(subscriber);
+              })
+              .catch(error => {
+                observer.error(error);
+              });
+          });
+        }
       }
     }
 

@@ -5,7 +5,7 @@ export interface BingoGame {
 }
 
 export interface BingoField {
-  _id: string;
+  _id?: string;
   text: string;
   isSelected?: boolean;
 }

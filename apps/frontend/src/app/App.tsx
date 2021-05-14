@@ -5,17 +5,23 @@ import { FlatButton, IconButton } from './components/common/Button';
 import { DialogContainer } from './components/common/Dialog';
 import { Divider } from './components/common/Divider';
 import { ProgressBar } from './components/common/ProgressBar';
-import { useAuth } from './auth';
+import { ProtectedRoute, useAuth } from './auth';
 import { AuthDialog, CreateGameDialog } from './dialogs';
 import Home from './Home';
+import Game from './Game';
 
 interface AppBarProps {
   elevated: boolean;
+  onCreateGame: () => void;
+  onLogin: () => void;
 }
 
 const App = () => {
   const auth = useAuth();
   const [elevateAppBar, setElevateAppBar] = useState(false);
+
+  const [showCreateGameDialog, setShowCreateGameDialog] = useState(false);
+  const [showAuthDialog, setShowAuthDialog] = useState(false);
 
   useEffect(() => {
     if (!auth.isLoggedIn && auth.refreshToken) {
@@ -29,7 +35,11 @@ const App = () => {
 
   return (
     <>
-      <AppBar elevated={elevateAppBar} />
+      <AppBar
+        onCreateGame={() => setShowCreateGameDialog(true)}
+        onLogin={() => setShowAuthDialog(true)}
+        elevated={elevateAppBar}
+      />
       <div
         id="router-container"
         onScroll={e => handleScroll(e.currentTarget.scrollTop)}
@@ -41,49 +51,6 @@ const App = () => {
         </Switch>
       </div>
       <DialogContainer />
-    </>
-  );
-};
-
-const AppBar = ({ elevated }: AppBarProps) => {
-  const history = useHistory();
-  const auth = useAuth();
-
-  const [showCreateGameDialog, setShowCreateGameDialog] = useState(false);
-  const [showAuthDialog, setShowAuthDialog] = useState(false);
-
-  const renderActions = () => {
-    if (auth.isPending) {
-      return undefined;
-    }
-
-    return auth.user ? (
-      <>
-        <FlatButton onClick={() => setShowCreateGameDialog(true)}>
-          Spiel erstellen
-        </FlatButton>
-        <IconButton icon={faSignOutAlt} onClick={() => auth.logout()} />
-      </>
-    ) : (
-      <FlatButton onClick={() => setShowAuthDialog(true)}>Anmelden</FlatButton>
-    );
-  };
-
-  return (
-    <>
-      <div className={`app-bar ${elevated ? 'elevated' : ''}`}>
-        <div className="container">
-          <span className="title" onClick={() => history.push('/')}>
-            BINGO
-          </span>
-          <div className="flex-spacer" />
-          <div className="actions">{renderActions()}</div>
-        </div>
-        <div className="progress-bar-container">
-          {auth.isPending && <ProgressBar />}
-        </div>
-        {!elevated && <Divider />}
-      </div>
       <CreateGameDialog
         show={showCreateGameDialog}
         onHide={() => setShowCreateGameDialog(false)}
@@ -93,6 +60,42 @@ const AppBar = ({ elevated }: AppBarProps) => {
         onHide={() => setShowAuthDialog(false)}
       />
     </>
+  );
+};
+
+const AppBar = ({ onCreateGame, onLogin, elevated }: AppBarProps) => {
+  const history = useHistory();
+  const auth = useAuth();
+
+  const renderActions = () => {
+    if (auth.isPending) {
+      return undefined;
+    }
+
+    return auth.user ? (
+      <>
+        <FlatButton onClick={onCreateGame}>Spiel erstellen</FlatButton>
+        <IconButton icon={faSignOutAlt} onClick={() => auth.logout()} />
+      </>
+    ) : (
+      <FlatButton onClick={onLogin}>Anmelden</FlatButton>
+    );
+  };
+
+  return (
+    <div className={`app-bar ${elevated ? 'elevated' : ''}`}>
+      <div className="container">
+        <span className="title" onClick={() => history.push('/')}>
+          BINGO
+        </span>
+        <div className="flex-spacer" />
+        <div className="actions">{renderActions()}</div>
+      </div>
+      <div className="progress-bar-container">
+        {auth.isPending && <ProgressBar />}
+      </div>
+      {!elevated && <Divider />}
+    </div>
   );
 };
 

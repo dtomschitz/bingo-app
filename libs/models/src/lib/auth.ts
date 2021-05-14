@@ -18,7 +18,7 @@ export interface JwtPayload {
 }
 
 export interface JwtSignOptions {
-  secret: string | undefined;
+  secret: string;
   expiration: number;
 }
 

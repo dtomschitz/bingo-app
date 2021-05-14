@@ -1,6 +1,7 @@
-import { GQLError, v4, Bson } from "../deps.ts";
+import { GQLError, v4, Bson, Context } from "../deps.ts";
 import { database } from "../db/database.ts";
 import { GameSchema } from "../schema/index.ts";
+import { validateAuthentication } from "./auth.controller.ts";
 
 const gameCollection = database.getDatabase().collection<GameSchema>("game");
 
@@ -18,7 +19,7 @@ interface BingoField {
 export const getGames = async (
   parent: any,
   {}: any,
-  context: any,
+  context: Context,
   info: any
 ) => {
   return await gameCollection.find().toArray();
@@ -27,7 +28,7 @@ export const getGames = async (
 export const getGame = async (
   parent: any,
   { _id }: { _id: any },
-  context: any,
+  context: Context,
   info: any
 ) => {
   const game = await gameCollection.findOne({ _id: new Bson.ObjectId(_id) });
@@ -43,9 +44,11 @@ export const getGame = async (
 export const createGame = async (
   parent: any,
   { input }: { input: CreateGame },
-  context: any,
+  context: Context,
   info: any
-) => {
+) => {  
+  await validateAuthentication(context);
+
   if (!input.title || !input.fields) {
     throw new GQLError({ message: "Your request has the wrong format" });
   }
