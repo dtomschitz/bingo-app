@@ -1,32 +1,31 @@
 import { gql } from "../../deps.ts";
 
 export const GameTypes = gql`
-  input CreateBingoField {
-    text: String!
-  }
 
   input CreateGame {
     title: String!
-    fields: [CreateBingoField]
+    fields: [String!]!
   }
 
   extend type Query {
     games: [BingoGame!]!
     game(_id: ID!): BingoGame!
+    instance(_id: ID!): [String!]!
   }
 
   extend type Mutation {
     createGame(input: CreateGame!): BingoGame!
+    createInstance(_id: ID!): [String!]!
   }
 
   type BingoGame {
     _id: ID
     title: String!
-    fields: [BingoField!]!
+    fields: [Field!]!
   }
 
-  type BingoField {
+  type Field {
     _id: ID
-    text: String!
+    name: String!
   }
 `;
