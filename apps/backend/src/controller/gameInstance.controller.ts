@@ -1,8 +1,9 @@
 import { GQLError, v4, Bson, Context } from "../deps.ts";
 import { database } from "../db/database.ts";
-import { GameSchema, CreateGame, Field } from "../schema/index.ts";
+import { GameSchema, CreateGame } from "../schema/index.ts";
 import { validateAuthentication } from "./auth.controller.ts";
 import { UserSchema } from './../schema/mongo/user.schema.ts';
+import { GameInstance, Field } from "../schema/mongo/game.schema.ts";
 
 const gameCollection = database.getDatabase().collection<GameSchema>("game");
 
@@ -33,13 +34,19 @@ export const getInstance = async (
         });
     }
 
-    // console.log(game.gameInstances);
+    const gameInstance: GameInstance[] = game.gameInstances.filter(instance => new Bson.ObjectId(instance.userId).toString() === new Bson.ObjectId(user._id).toString());
 
-    // const field = game.gameInstances.filter(instance => instance.userId === user._id);
+    if (!gameInstance[0]) {
+        throw new GQLError({
+            message: "There is no Instance with the specified id for this user",
+        });
+    }
 
-    // console.log(game.gameInstances[0].userId == user._id);
-
-    return []
+    return gameInstance[0].fields.map((fieldId: string) => {
+        return game.fields.find((fieldEntry: Field) =>
+            fieldEntry._id === fieldId
+        )?.name ?? ''
+    })
 }
 
 
@@ -65,6 +72,12 @@ export const createInstance = async (
     }
 
     const fields = game.fields;
+
+    if (game.gameInstances?.some(instance => new Bson.ObjectId(instance.userId).toString() === new Bson.ObjectId(user._id).toString())) {
+        throw new GQLError({
+            message: "Only one instance allowed per user",
+        });
+    }
 
     let randomNumber = function (min: number, max: number) {
         return Math.floor(Math.random() * (max - min + 1) + min);
