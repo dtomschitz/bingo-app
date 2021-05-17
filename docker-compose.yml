@@ -1,8 +1,9 @@
-version: '3'
+version: '3.4'
 services:
   database:
     container_name: database
     image: 'mongo'
+    env_file: .env
     environment:
       MONGO_INITDB_ROOT_USERNAME: $MONGO_ROOT_USER
       MONGO_INITDB_ROOT_PASSWORD: $MONGO_ROOT_PASSWORD
@@ -26,7 +27,10 @@ services:
     environment:
       - DATABASE_USER=$MONGO_ROOT_USER
       - DATABASE_PASSWORD=$MONGO_ROOT_PASSWORD
-      - JWT_SECRET=$JWT_SECRET
+      - ACCESS_TOKEN_SECRET=$ACCESS_TOKEN_SECRET
+      - ACCESS_TOKEN_EXPIRATION_TIME=$ACCESS_TOKEN_EXPIRATION_TIME
+      - REFRESH_TOKEN_SECRET=$REFRESH_TOKEN_SECRET
+      - REFRESH_TOKEN_EXPIRATION_TIME=$REFRESH_TOKEN_EXPIRATION_TIME
     volumes:
       - './apps:/app/apps:ro'
       - './libs:/app/libs:ro'

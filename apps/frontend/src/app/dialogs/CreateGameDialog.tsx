@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
-import { useMutation } from '@apollo/react-hooks';
+import { useMutation } from '@apollo/client';
 import gql from 'graphql-tag';
 import {
   faTrash,
@@ -32,7 +32,7 @@ interface BingoFieldItemProps {
 }
 
 const CREATE_GAME = gql`
-  mutation CreateGame($title: String!, $fields: [BingoField!]!) {
+  mutation CreateGame($title: String!, $fields: [CreateBingoField!]!) {
     createGame(input: { title: $title, fields: $fields }) {
       _id
       title
@@ -46,18 +46,23 @@ const CREATE_GAME = gql`
 
 export const CreateGameDialog = (props: DialogProps) => {
   const [title, setTitle] = useState<string>('');
-  const [fields, setFields] = useState<BingoField[]>([]);
-  //const [createGame] = useMutation(CREATE_GAME);
+  const [fields, setFields] = useState<BingoField[]>(
+    Array.from({ length: 31 }, (_, i) => i + 1).map(i => ({
+      _id: uuidv4(),
+      text: `TEST ${i}`,
+    })),
+  );
+  const [createGame] = useMutation(CREATE_GAME);
 
   const canSave = fields.length < 30;
 
   const saveGame = () => {
-    /*createGame({
+    createGame({
       variables: {
         title,
         fields,
       },
-    });*/
+    });
     //TODO: Create Game
 
     hide();

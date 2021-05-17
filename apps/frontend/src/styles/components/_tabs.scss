@@ -1,0 +1,61 @@
+.tabs {
+  display: flex;
+  flex-direction: column;
+}
+
+.tab-header {
+  display: flex;
+  overflow: hidden;
+  position: relative;
+  flex-shrink: 0;
+  border-bottom: 1px solid hsla(0, 0%, 100%, 0.12);
+}
+
+.tab-label-container {
+  display: flex;
+  flex-grow: 1;
+  overflow: hidden;
+  z-index: 1;
+}
+
+.tab-label {
+  height: 48px;
+  padding: 0 24px;
+  cursor: pointer;
+  box-sizing: border-box;
+  opacity: 0.6;
+  flex: 1;
+  text-align: center;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  white-space: nowrap;
+  position: relative;
+  color: #fff;
+
+  &.active {
+    opacity: 1;
+  }
+}
+
+.tab-label-ink-bar {
+  width: 100%;
+  position: absolute;
+  bottom: 0;
+  height: 2px;
+  background-color: $primary;
+}
+
+.tab-label-content {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  white-space: nowrap;
+}
+
+.tab-content {
+  display: flex;
+  position: relative;
+  overflow: hidden;
+  padding: 24px 0;
+}

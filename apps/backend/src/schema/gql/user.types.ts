@@ -12,30 +12,40 @@ export const UserTypes = gql`
     password: String
   }
 
-  input UserRegister {
+  input UserLogout {
     email: String
+  }
+
+  input UserRegister {
     name: String
+    email: String
     password: String
   }
 
-  type ResolveType {
-    done: Boolean
+  input RefreshAccessTokenProps {
+    email: String
+    refreshToken: String
   }
 
-  type ResolveLogin {
-    token: String
+  type AuthResult {
+    user: User
+    accessToken: String
+    refreshToken: String
   }
 
-  type ResolveUser {
-    name: String
+  type UserLogoutResult {
+    success: Boolean
   }
 
-  extend type Query {
-    getUser: ResolveUser!
+  type RefreshAccessTokenResult {
+    accessToken: String
   }
 
   extend type Mutation {
-    registerUser(userRegister: UserRegister!): ResolveType!
-    loginUser(userLogin: UserLogin!): ResolveLogin!
+    registerUser(props: UserRegister!): AuthResult!
+    loginUser(props: UserLogin!): AuthResult!
+    logoutUser(props: UserLogout!): UserLogoutResult!
+    verifyUser(props: RefreshAccessTokenProps!): User!
+    refreshAccessToken(props: RefreshAccessTokenProps!): RefreshAccessTokenResult!
   }
 `;

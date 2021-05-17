@@ -16,7 +16,8 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    height: 56px;
+    height: 52px;
+    padding-top: 2px;
   }
 
   .back-button {
@@ -36,8 +37,15 @@
   }
 
   .actions {
+    display: flex;
+    align-items: center;
+
     * {
       margin: 0 16px;
     }
+  }
+
+  .progress-bar-container {
+    height: 4px;
   }
 }
