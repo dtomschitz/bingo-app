@@ -48,6 +48,7 @@ export const CreateGameDialog = (props: DialogProps) => {
   const [title, setTitle] = useState<string>('');
   const [fields, setFields] = useState<BingoField[]>(
     Array.from({ length: 31 }, (_, i) => i + 1).map(i => ({
+      _id: uuidv4(),
       text: `TEST ${i}`,
     })),
   );
@@ -75,6 +76,7 @@ export const CreateGameDialog = (props: DialogProps) => {
     setFields(currentFields => [
       ...currentFields,
       {
+        _id: uuidv4(),
         text,
       },
     ]);

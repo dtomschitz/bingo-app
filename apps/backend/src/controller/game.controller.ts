@@ -59,10 +59,10 @@ export const createGame = async (
     });
   }
 
-  input.fields = input.fields.map((field) => ({
+  /*input.fields = input.fields.map((field) => ({
     ...field,
     _id: v4.generate(),
-  }));
+  }));*/
 
   const { title, fields } = input;
   const gameId = await gameCollection.insertOne({
