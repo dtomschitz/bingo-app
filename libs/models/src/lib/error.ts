@@ -5,6 +5,10 @@ export enum ErrorType {
   INCORRECT_REQUEST = 'INCORRECT_REQUEST',
   INVALID_PASSWORD_FORMAT = 'INVALID_PASSWORD_FORMAT',
   INVALID_EMAIL_FORMAT = 'INVALID_EMAIL_FORMAT',
+  INCORRECT_PASSWORD = 'INCORRECT_PASSWORD',
+  USER_ALREADY_EXISTS = 'USER_ALREADY_EXISTS',
+  USER_DOES_NOT_EXIST = 'USER_DOES_NOT_EXIST',
+  USER_CREATION_FAILED = 'USER_CREATION_FAILED',
 }
 
 export const errorMessages: { [key in ErrorType]: string } = {
@@ -12,9 +16,13 @@ export const errorMessages: { [key in ErrorType]: string } = {
   UNKNONW_USER: 'Failed to find a user for the given parameters!',
   MISSING_JWT_TOKEN_SECRET: 'The jwt token secret is missing!',
   INCORRECT_REQUEST: 'Your request has the wrong format!',
+  INCORRECT_PASSWORD: 'The given password is not correct!',
   INVALID_PASSWORD_FORMAT:
     'Your password needs a minimum of eight characters, at least one letter, one number and a special character!',
   INVALID_EMAIL_FORMAT: 'The given email has the wrong format!',
+  USER_ALREADY_EXISTS: 'There is already a user registered with this email!',
+  USER_DOES_NOT_EXIST: 'The given user is not registered!',
+  USER_CREATION_FAILED: 'Failed to create the new user!',
 };
 
 export const getErrorMessage = (type: ErrorType) => {

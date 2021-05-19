@@ -11,3 +11,5 @@ export interface BingoField {
 }
 
 export type BingoFields = { [id: string]: BingoField };
+
+export type CreateGameProps = Omit<BingoGame, '_id'>;
