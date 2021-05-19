@@ -41,22 +41,20 @@ const isEmailValid = (email: string) => {
 export const registerUser = async (
   parent: any,
   { props }: GraphQLProps<CreateUserProps>,
-  context: Context,
+  context: any,
   info: any,
 ) => {
   if (!props.email || !props.name || !props.password) {
-    throw new GQLError({ message: "Your request has the wrong format" });
+    throw new GQLError(ErrorType.INCORRECT_REQUEST);
   }
 
   if (!isPasswordValid(props.password)) {
-    throw new GQLError(
-      "Your password needs a minimum of eight characters, at least one letter, one number and a special character",
-    );
+    throw new GQLError(ErrorType.INVALID_PASSWORD_FORMAT);
   }
 
   const email = props.email.toLowerCase();
   if (!isEmailValid(email)) {
-    throw new GQLError("Invalid email!");
+    throw new GQLError(ErrorType.INVALID_EMAIL_FORMAT);
   }
 
   if (await getUserByEmail(email)) {

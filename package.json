@@ -7,7 +7,8 @@
     "frontend:start": "nx serve --port 3000",
     "frontend:start:docker": "nx serve --host 0.0.0.0 --port 3000",
     "backend:start": "deno run --allow-net --allow-env --unstable --watch ./apps/backend/src/main.ts",
-    "backend:cache": "deno cache --unstable ./apps/backend/src/deps.ts"
+    "backend:cache": "deno cache --unstable ./apps/backend/src/deps.ts",
+    "backend:test": "deno test ./apps/backend/ --allow-net --allow-env --unstable"
   },
   "private": true,
   "dependencies": {
