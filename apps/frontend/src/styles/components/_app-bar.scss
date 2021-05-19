@@ -31,6 +31,10 @@
     letter-spacing: 5px;
     color: #fff;
 
+    @media (max-width: 1023px) {
+      margin: 0 16px;
+    }
+
     &:hover {
       cursor: pointer;
     }
@@ -40,8 +44,9 @@
     display: flex;
     align-items: center;
 
-    * {
-      margin: 0 16px;
+    .create-game-button,
+    .logout-button {
+      margin-right: 16px;
     }
   }
 

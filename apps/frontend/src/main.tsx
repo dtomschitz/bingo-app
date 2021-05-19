@@ -13,7 +13,7 @@ import { setContext } from '@apollo/client/link/context';
 import { onError } from '@apollo/client/link/error';
 import { RefreshAccessTokenResult, ErrorType } from '@bingo/models';
 import { BrowserRouter } from 'react-router-dom';
-import { AuthProvider } from './app/auth';
+import { AuthProvider, AppBarProvider } from './app/hooks';
 import App from './app/App';
 
 const REFRESH_ACCESS_TOKEN = gql`
@@ -105,11 +105,13 @@ const client = new ApolloClient({
 ReactDOM.render(
   <StrictMode>
     <BrowserRouter>
-      <AuthProvider client={client}>
-        <ApolloProvider client={client}>
-          <App />
-        </ApolloProvider>
-      </AuthProvider>
+      <AppBarProvider>
+        <AuthProvider client={client}>
+          <ApolloProvider client={client}>
+            <App />
+          </ApolloProvider>
+        </AuthProvider>
+      </AppBarProvider>
     </BrowserRouter>
   </StrictMode>,
   document.getElementById('root'),

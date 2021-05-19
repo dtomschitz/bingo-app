@@ -24,10 +24,10 @@ export interface JwtSignOptions {
 
 export interface AuthContext {
   user: User;
-  login?: (props: LoginProps) => Promise<boolean>;
-  register?: (props: RegisterProps) => Promise<boolean>;
-  logout?: () => Promise<boolean>;
-  verify?: () => Promise<boolean>;
+  login: (props: LoginProps) => Promise<boolean>;
+  register: (props: RegisterProps) => Promise<boolean>;
+  logout: () => Promise<boolean>;
+  verify: () => Promise<boolean>;
   isPending: boolean;
   isLoggedIn: boolean;
   accessToken: string;

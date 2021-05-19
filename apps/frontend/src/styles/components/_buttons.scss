@@ -19,12 +19,12 @@
     outline: none;
   }
 
-  &.bordered {
+  &.bordered,
+  &.flat {
     border: 2px solid $primary;
   }
 
   &.flat {
-    border: 2px solid $primary;
     background-color: rgba($primary, $alpha: 0.25);
   }
 

@@ -1,4 +1,4 @@
-import { useContext, useState } from 'react';
+import { createContext, ReactNode, useContext, useState } from 'react';
 import { gql, ApolloClient, NormalizedCacheObject } from '@apollo/client';
 import {
   User,
@@ -6,9 +6,8 @@ import {
   LogoutResult,
   LoginProps,
   RegisterProps,
-  RefreshAccessTokenResult,
+  AuthContext,
 } from '@bingo/models';
-import { authContext } from './AuthProvider';
 
 const USER_LOGIN = gql`
   mutation UserLogin($email: String!, $password: String!) {
@@ -53,11 +52,14 @@ const VERIFY_USER = gql`
   }
 `;
 
-export const useAuth = () => {
-  return useContext(authContext);
-};
+interface AuthProviderProps {
+  children: ReactNode;
+  client: ApolloClient<NormalizedCacheObject>;
+}
 
-export const useProvideAuth = (client: ApolloClient<NormalizedCacheObject>) => {
+export const authContext = createContext<AuthContext>(null);
+
+export const AuthProvider = ({ children, client }: AuthProviderProps) => {
   const [user, setUser] = useState<User>(undefined);
   const [isPending, setIsPending] = useState<boolean>(false);
 
@@ -158,7 +160,7 @@ export const useProvideAuth = (client: ApolloClient<NormalizedCacheObject>) => {
 
         setTimeout(() => {
           setIsPending(false);
-        }, 1000);
+        }, 500);
 
         return true;
       })
@@ -170,15 +172,23 @@ export const useProvideAuth = (client: ApolloClient<NormalizedCacheObject>) => {
       });
   };
 
-  return {
-    user,
-    login,
-    logout,
-    register,
-    verify,
-    isPending,
-    isLoggedIn,
-    accessToken,
-    refreshToken,
-  };
+  return (
+    <authContext.Provider
+      value={{
+        user,
+        login,
+        logout,
+        register,
+        verify,
+        isPending,
+        isLoggedIn,
+        accessToken,
+        refreshToken,
+      }}
+    >
+      {children}
+    </authContext.Provider>
+  );
 };
+
+export const useAuth = () => useContext(authContext);

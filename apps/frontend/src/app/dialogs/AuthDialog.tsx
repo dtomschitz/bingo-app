@@ -1,15 +1,17 @@
 import { useState } from 'react';
-import { useHistory, withRouter } from 'react-router';
-import { useAuth } from '../auth';
-import { FlatButton } from '../components/common/Button';
-import { Card, CardActions, CardContent } from '../components/common/Card';
 import {
+  FlatButton,
+  Card,
+  CardActions,
+  CardContent,
   BaseDialog,
   DialogContent,
   DialogPane,
   DialogProps,
-} from '../components/common/Dialog';
-import { Tab, Tabs } from '../components/common/Tabs';
+  Tab,
+  Tabs,
+} from '../components/common';
+import { useAuth } from '../hooks';
 
 interface LoginProps {
   onLogin: (email: string, password: string) => void;
