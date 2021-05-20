@@ -1,5 +1,7 @@
 import {
   afterAll,
+  assertExists,
+  assertEquals,
   assertThrowsAsync,
   beforeAll,
   describe,
@@ -75,5 +77,43 @@ describe("Authentication", () => {
       GQLError,
       ErrorType.INVALID_EMAIL_FORMAT,
     );
+  });
+
+  it("should fail because the given email is alreay taken", async () => {
+    await users.createUser({
+      email: "test@test.de",
+      name: "Max Mustermann",
+      password: "SuperSicheresPasswort#1337#%",
+    })
+
+    const props: RegisterProps = {
+      email: "test@test.de",
+      name: "Max Mustermann",
+      password: "SuperSicheresPasswort#1337#%",
+    };
+
+    await assertThrowsAsync(
+      async () => await controller.registerUser(props),
+      GQLError,
+      ErrorType.USER_ALREADY_EXISTS,
+    );
+  });
+
+
+  it("should create a new user and return the jwt tokens", async () => {
+    const props: RegisterProps = {
+      email: "test@hallo.de",
+      name: "Max Mustermann",
+      password: "SuperSicheresPasswort#1337#%",
+    };
+
+    const result = await controller.registerUser(props);
+
+    assertExists(result.user._id)
+    assertExists(result.accessToken)
+    assertExists(result.refreshToken)
+
+    assertEquals(result.user.email, props.email);
+    assertEquals(result.user.name, props.name);
   });
 });
