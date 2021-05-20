@@ -4,8 +4,8 @@ export class Database {
   private client: MongoClient;
 
   constructor(
-    public name: string = "saturn",
-    public url: string = "mongodb://localhost:27017",
+    public name: string,
+    public url: string,
   ) {
     this.client = {} as MongoClient;
   }
