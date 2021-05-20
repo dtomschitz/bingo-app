@@ -5,10 +5,11 @@ import { FlatButton, IconButton } from './components/common/Button';
 import { DialogContainer } from './components/common/Dialog';
 import { Divider } from './components/common/Divider';
 import { ProgressBar } from './components/common/ProgressBar';
-import { ProtectedRoute, useAuth } from './auth';
+import { useAuth } from './auth';
 import { AuthDialog, CreateGameDialog } from './dialogs';
-import Home from './Home';
-import Game from './Game';
+import GamesList from './GamesList';
+import { GamesListContext } from './services/contexts';
+import { BingoCard } from './components/bingo';
 
 interface AppBarProps {
   elevated: boolean;
@@ -18,6 +19,7 @@ interface AppBarProps {
 
 const App = () => {
   const auth = useAuth();
+  const [gamesList, setGamesList] = useState([]);
   const [elevateAppBar, setElevateAppBar] = useState(false);
 
   const [showCreateGameDialog, setShowCreateGameDialog] = useState(false);
@@ -35,30 +37,35 @@ const App = () => {
 
   return (
     <>
-      <AppBar
-        onCreateGame={() => setShowCreateGameDialog(true)}
-        onLogin={() => setShowAuthDialog(true)}
-        elevated={elevateAppBar}
-      />
-      <div
-        id="router-container"
-        onScroll={e => handleScroll(e.currentTarget.scrollTop)}
-      >
-        <Switch>
-          <Route path="/">
-            <Home />
-          </Route>
-        </Switch>
-      </div>
-      <DialogContainer />
-      <CreateGameDialog
-        show={showCreateGameDialog}
-        onHide={() => setShowCreateGameDialog(false)}
-      />
-      <AuthDialog
-        show={showAuthDialog}
-        onHide={() => setShowAuthDialog(false)}
-      />
+      <GamesListContext.Provider value={[gamesList, setGamesList]}>
+        <AppBar
+          onCreateGame={() => setShowCreateGameDialog(true)}
+          onLogin={() => setShowAuthDialog(true)}
+          elevated={elevateAppBar}
+        />
+        <div
+          id="router-container"
+          onScroll={e => handleScroll(e.currentTarget.scrollTop)}
+        >
+          <Switch>
+            <Route path="/game/:id">
+              <BingoCard />
+            </Route>
+            <Route path="/">
+              <GamesList />
+            </Route>
+          </Switch>
+        </div>
+        <DialogContainer />
+        <CreateGameDialog
+          show={showCreateGameDialog}
+          onHide={() => setShowCreateGameDialog(false)}
+        />
+        <AuthDialog
+          show={showAuthDialog}
+          onHide={() => setShowAuthDialog(false)}
+        />
+      </GamesListContext.Provider>
     </>
   );
 };

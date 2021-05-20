@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useContext } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { useMutation } from '@apollo/client';
 import gql from 'graphql-tag';
@@ -9,7 +9,7 @@ import {
   faInfoCircle,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { BingoField } from '@bingo/models';
+import { BingoField, BingoGame } from '@bingo/models';
 import { Button, FlatButton, IconButton } from '../components/common/Button';
 import {
   BaseDialog,
@@ -20,6 +20,8 @@ import {
   DialogProps,
 } from '../components/common/Dialog';
 import { Divider } from '../components/common/Divider';
+import { GamesListContext } from '../services/contexts';
+import { BingoPreviewCard } from '../components/bingo/BingoPreviewCard';
 
 interface AddBingoFieldInputProps {
   onSubmit: (value: string) => void;
@@ -32,19 +34,20 @@ interface BingoFieldItemProps {
 }
 
 const CREATE_GAME = gql`
-  mutation CreateGame($title: String!, $fields: [CreateBingoField!]!) {
+  mutation CreateGame($title: String!, $fields: [String!]!) {
     createGame(input: { title: $title, fields: $fields }) {
       _id
       title
       fields {
         _id
-        text
+        name
       }
     }
   }
 `;
 
 export const CreateGameDialog = (props: DialogProps) => {
+  const [gamesList, setGamesList] = useContext(GamesListContext);
   const [title, setTitle] = useState<string>('');
   const [fields, setFields] = useState<BingoField[]>(
     Array.from({ length: 31 }, (_, i) => i + 1).map(i => ({
@@ -54,17 +57,17 @@ export const CreateGameDialog = (props: DialogProps) => {
   );
   const [createGame] = useMutation(CREATE_GAME);
 
-  const canSave = fields.length < 30;
+  const canSave = fields.length <= 25;
 
-  const saveGame = () => {
-    createGame({
+  const saveGame = async () => {
+    const newGame = await createGame({
       variables: {
         title,
-        fields,
+        fields: fields.map(field => field.text),
       },
     });
-    //TODO: Create Game
-
+    const game = newGame.data.createGame as BingoGame;
+    setGamesList([...gamesList, <BingoPreviewCard key={`game-${gamesList.length}`} game={game} />])
     hide();
   };
 

@@ -2,34 +2,35 @@ import { withRouter } from 'react-router';
 import { useQuery, gql } from '@apollo/client';
 import { BingoGame } from '@bingo/models';
 import { BingoPreviewCard } from './components/bingo';
+import { GamesListContext } from './services/contexts';
+import { useContext, useEffect } from 'react';
 
 const GET_GAMES = gql`
   query GetGames {
     games {
       _id
       title
-      fields {
-        _id
-        text
-      }
     }
   }
 `;
 
-const Home = withRouter(({ history }) => {
+const GamesList = withRouter(({ history }) => {
+  const [gamesList, setGamesList] = useContext(GamesListContext);
   const { error, loading, data } = useQuery<{ games: BingoGame[] }>(GET_GAMES);
 
-  const openGame = (game: BingoGame) => {
-    history.push(`/game/${game._id}`);
-  };
+  useEffect(() => {
+    setGamesList(
+      data?.games.map((game, i) => (
+        <BingoPreviewCard key={`game-${i}`} game={game} />
+      )))
+  }, [data])
 
   return (
     <div className="home">
-      {data?.games.map(game => (
-        <BingoPreviewCard game={game} onClick={() => openGame(game)} />
-      ))}
+      {gamesList}
     </div>
   );
 });
 
-export default Home;
+export default GamesList;
+

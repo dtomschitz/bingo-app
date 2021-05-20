@@ -1,8 +1,10 @@
 import { useEffect, useReducer } from 'react';
 import { BingoField } from '@bingo/models';
+import { useQuery, gql } from '@apollo/client';
+import { useParams } from 'react-router-dom';
 
 interface BingoCardProps {
-  fields: BingoField[];
+  fields?: BingoField[];
   onWin?: () => void;
 }
 
@@ -21,10 +23,11 @@ interface State {
 
 type Action =
   | {
-      type: 'updateBingoField';
-      update: { id: string; tile: number; changes: Partial<BingoField> };
-    }
-  | { type: 'updateState'; update: Partial<State> };
+    type: 'updateBingoField';
+    update: { id: string; tile: number; changes: Partial<BingoField> };
+  }
+  | { type: 'updateState'; update: Partial<State> }
+  | { type: 'loadBingoField'; update: Partial<any> };
 
 const reducer = (state: State, action: Action): State => {
   switch (action.type) {
@@ -44,6 +47,8 @@ const reducer = (state: State, action: Action): State => {
         ...state,
         ...action.update,
       };
+    case 'loadBingoField':
+      return { fields: action.update?.instance?.map((field) => { return { _id: field._id, text: field.name } }), score: 0, hasWon: false };
   }
 };
 
@@ -66,8 +71,24 @@ const findWinningPattern = (score: number) => {
   return winPatterns.find(pattern => (pattern & score) === pattern) || 0;
 };
 
+const GET_INSTANCE = gql`
+query GetInstance($id: ID!){
+  instance(_id: $id){
+    _id,
+    name
+  }
+}
+`
+
 export const BingoCard = ({ fields, onWin }: BingoCardProps) => {
-  const initialState: State = { fields, score: 0, hasWon: false };
+  const { id } = useParams();
+  const { error, loading, data, refetch } = useQuery(GET_INSTANCE, {
+    variables: {
+      id: id,
+    }
+  });
+
+  const initialState: State = { fields: fields ?? data?.instance?.map((field) => { return { _id: field._id, text: field.name } }), score: 0, hasWon: false };
   const [state, dispatch] = useReducer(reducer, initialState);
 
   useEffect(() => {
@@ -89,11 +110,20 @@ export const BingoCard = ({ fields, onWin }: BingoCardProps) => {
     });
   };
 
+  useEffect(() => {
+    if (data) {
+      dispatch({
+        type: 'loadBingoField',
+        update: data
+      })
+    }
+  }, [data])
+
   return (
     <>
       <BingoCardHeader />
       <div className="bingo-card">
-        {state.fields.map((field, index) => (
+        {state.fields?.map((field, index) => (
           <BingoTile
             key={field._id}
             field={field}
@@ -126,8 +156,8 @@ const BingoTile = ({
   winningPattern,
 }: BingoFieldProps) => {
   const isWin = !!(winningPattern & (1 << tile));
-  const classes = `bingo-field 
-    ${field.isSelected ? 'selected' : ''} 
+  const classes = `bingo-field
+    ${field.isSelected ? 'selected' : ''}
     ${isWin ? 'win' : ''}`;
 
   return (

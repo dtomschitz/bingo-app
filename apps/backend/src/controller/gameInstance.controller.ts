@@ -45,7 +45,7 @@ export const getInstance = async (
     return gameInstance[0].fields.map((fieldId: string) => {
         return game.fields.find((fieldEntry: Field) =>
             fieldEntry._id === fieldId
-        )?.name ?? ''
+        );
     })
 }
 
