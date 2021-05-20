@@ -33,7 +33,7 @@ interface BingoFieldItemProps {
 
 const CREATE_GAME = gql`
   mutation CreateGame($title: String!, $fields: [CreateBingoField!]!) {
-    createGame(input: { title: $title, fields: $fields }) {
+    createGame(props: { title: $title, fields: $fields }) {
       _id
       title
       fields {
