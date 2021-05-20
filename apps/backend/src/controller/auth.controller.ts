@@ -1,7 +1,8 @@
 import { UserDatabase } from "../database/index.ts";
 import { JwtUtils, ValidationUtils } from "../utils/index.ts";
-import { bcrypt, Context, GQLError } from "../deps.ts";
+import { bcrypt, GQLError } from "../deps.ts";
 import {
+  AuthResult,
   CreateUserProps,
   ErrorType,
   LoginProps,
@@ -12,7 +13,7 @@ import {
 export class AuthController {
   constructor(private users: UserDatabase) {}
 
-  async registerUser(props: CreateUserProps) {
+  async registerUser(props: CreateUserProps): Promise<AuthResult> {
     if (!props.email || !props.name || !props.password) {
       throw new GQLError(ErrorType.INCORRECT_REQUEST);
     }
@@ -169,28 +170,3 @@ export class AuthController {
     return user;
   }
 }
-
-export const validateAuthentication = async (
-  context: Context,
-  users: UserDatabase,
-) => {
-  const requestToken = context.request.headers.get("Authorization");
-  if (!requestToken) {
-    context.throw(403, "The access token is required!");
-  }
-
-  const requestTokenArray = requestToken.split(" ");
-  const accessToken = requestTokenArray[1];
-
-  try {
-    const { email } = await JwtUtils.verifyAccessToken(accessToken);
-    const user = users.getUserByEmail(email);
-    if (!user) {
-      throw new GQLError(ErrorType.UNKNONW_USER);
-    }
-
-    return user;
-  } catch (_) {
-    throw new GQLError(ErrorType.UNAUTHORIZED);
-  }
-};

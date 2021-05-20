@@ -16,6 +16,11 @@ export class Database {
     this.client = client;
   }
 
+  public close() {
+    this.client.close();
+    this.client = {} as MongoClient;
+  }
+
   public getDatabase() {
     return this.client.database(this.name);
   }

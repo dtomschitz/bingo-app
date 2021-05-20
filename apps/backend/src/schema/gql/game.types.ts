@@ -2,6 +2,7 @@ import { gql } from "../../deps.ts";
 
 export const GameTypes = gql`
   input CreateBingoField {
+    _id: ID!
     text: String!
   }
 
