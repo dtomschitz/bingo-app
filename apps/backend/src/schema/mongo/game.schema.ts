@@ -9,7 +9,7 @@ export interface GameSchema {
 
 export interface Field {
   _id: string;
-  name: string;
+  text: string;
   checked: boolean
 }
 

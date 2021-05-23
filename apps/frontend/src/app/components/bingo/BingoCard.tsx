@@ -48,7 +48,7 @@ const reducer = (state: State, action: Action): State => {
         ...action.update,
       };
     case 'loadBingoField':
-      return { fields: action.update?.instance?.map((field) => { return { _id: field._id, text: field.name } }), score: 0, hasWon: false };
+      return { fields: action.update?.instance, score: 0, hasWon: false };
   }
 };
 
@@ -75,14 +75,14 @@ const GET_INSTANCE = gql`
 query GetInstance($id: ID!){
   instance(_id: $id){
     _id,
-    name
+    text
   }
 }
 `
 
 export const BingoCard = ({ fields, onWin }: BingoCardProps) => {
   const { id } = useParams();
-  const { error, loading, data, refetch } = useQuery(GET_INSTANCE, {
+  const { error, loading, data } = useQuery(GET_INSTANCE, {
     variables: {
       id: id,
     }
@@ -93,6 +93,7 @@ export const BingoCard = ({ fields, onWin }: BingoCardProps) => {
 
   useEffect(() => {
     if (findWinningPattern(state.score) !== 0) {
+
       onWin!();
     }
   }, [onWin, state]);

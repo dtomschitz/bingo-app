@@ -1,6 +1,6 @@
-import { GQLError, v4, Bson, Context } from "../deps.ts";
+import { GQLError, Bson, Context } from "../deps.ts";
 import { database } from "../db/database.ts";
-import { GameSchema, CreateGame } from "../schema/index.ts";
+import { GameSchema } from "../schema/index.ts";
 import { validateAuthentication } from "./auth.controller.ts";
 import { UserSchema } from './../schema/mongo/user.schema.ts';
 import { GameInstance, Field } from "../schema/mongo/game.schema.ts";
@@ -21,7 +21,7 @@ export const getInstance = async (
         })
     }
 
-    const game = await gameCollection.findOne({ _id: new Bson.ObjectId(_id) });
+    const game : GameSchema | undefined = await gameCollection.findOne({ _id: new Bson.ObjectId(_id) });
     if (!game) {
         throw new GQLError({
             message: "There is no game with the specified id",
@@ -64,7 +64,7 @@ export const createInstance = async (
         })
     }
 
-    const game = await gameCollection.findOne({ _id: new Bson.ObjectId(_id) });
+    const game: GameSchema | undefined = await gameCollection.findOne({ _id: new Bson.ObjectId(_id) });
     if (!game) {
         throw new GQLError({
             message: "There is no game with the specified id",
@@ -110,6 +110,6 @@ export const createInstance = async (
     )
 
     return randomFields.map((fieldIndex) => {
-        return fields[fieldIndex].name
+        return { _id: fields[fieldIndex]._id, text: fields[fieldIndex].text }
     })
 }

@@ -1,6 +1,6 @@
 import { GQLError, v4, Bson, Context } from "../deps.ts";
 import { database } from "../db/database.ts";
-import { GameSchema, CreateGame, Field } from "../schema/index.ts";
+import { GameSchema, CreateGame, Field, GameInstance } from "../schema/index.ts";
 import { validateAuthentication } from "./auth.controller.ts";
 import { UserSchema } from './../schema/mongo/user.schema.ts';
 
@@ -13,14 +13,27 @@ export const getGames = async (
   info: any
 ) => {
   const user: UserSchema | undefined = await validateAuthentication(context);
-  
+
   if (!user){
     throw new GQLError({
       message: "User not found"
     })
   }
-  
-  return await gameCollection.find({ author: new Bson.ObjectId(user._id) }).toArray();
+
+  const userGames: GameSchema[] = await gameCollection.find().toArray()
+
+  return userGames.map((game:GameSchema) => {
+
+    const userInstance: GameInstance[] | undefined = game?.gameInstances?.filter(instance => new Bson.ObjectId(instance.userId).toString() === new Bson.ObjectId(user._id).toString())
+
+    const userResolvedInstance = userInstance ? userInstance[0]?.fields.map((fieldId: string) => {
+      return game.fields.find((fieldEntry: Field) =>
+          fieldEntry._id === fieldId
+      );
+    }) : null;
+
+    return {...game, instance: userResolvedInstance}
+  });
 };
 
 export const getGame = async (
@@ -30,14 +43,14 @@ export const getGame = async (
   info: any
 ) => {
   const user: UserSchema | undefined = await validateAuthentication(context);
-  
+
   if (!user){
     throw new GQLError({
       message: "User not found"
     })
   }
 
-  const game = await gameCollection.findOne({ _id: new Bson.ObjectId(_id), author: new Bson.ObjectId(user._id) });
+  const game = await gameCollection.findOne({ _id: new Bson.ObjectId(_id) });
   if (!game) {
     throw new GQLError({
       message: "There is no game stored for this user with the specified id",
@@ -54,7 +67,7 @@ export const createGame = async (
   info: any
 ) => {
   const user: UserSchema | undefined = await validateAuthentication(context);
-  
+
   if (!user){
     throw new GQLError({
       message: "User not found"
@@ -72,7 +85,7 @@ export const createGame = async (
   }
 
   const gameFields: Field[] = input.fields.map((field) => ({
-    name: field,
+    text: field,
     _id: v4.generate(),
     checked: false,
   }));

@@ -2,6 +2,7 @@ export interface BingoGame {
   _id: string;
   title: string;
   fields: BingoField[];
+  instance?: BingoField[];
 }
 
 export interface BingoField {

@@ -1,4 +1,3 @@
-import { withRouter } from 'react-router';
 import { useQuery, gql } from '@apollo/client';
 import { BingoGame } from '@bingo/models';
 import { BingoPreviewCard } from './components/bingo';
@@ -8,29 +7,40 @@ import { useContext, useEffect } from 'react';
 const GET_GAMES = gql`
   query GetGames {
     games {
-      _id
+      _id,
       title
+      instance{
+        text
+      }
     }
   }
 `;
 
-const GamesList = withRouter(({ history }) => {
-  const [gamesList, setGamesList] = useContext(GamesListContext);
-  const { error, loading, data } = useQuery<{ games: BingoGame[] }>(GET_GAMES);
+const GamesList = () => {
+  const [doRefetch, setDoRefetch] = useContext(GamesListContext);
+  const { error, loading, data, refetch } = useQuery<{ games: BingoGame[] }>(GET_GAMES, {
+    fetchPolicy: "no-cache"
+  });
+
+  const reloadGames = async () => {
+    await refetch();
+  }
 
   useEffect(() => {
-    setGamesList(
-      data?.games.map((game, i) => (
-        <BingoPreviewCard key={`game-${i}`} game={game} />
-      )))
-  }, [data])
+    if (doRefetch) {
+      reloadGames();
+      setDoRefetch(false);
+    }
+  }, [doRefetch])
 
   return (
     <div className="home">
-      {gamesList}
+      {data && data?.games.map((game, i) => (
+        <BingoPreviewCard key={`game-${i}`} game={game} />
+      ))}
     </div>
   );
-});
+};
 
 export default GamesList;
 

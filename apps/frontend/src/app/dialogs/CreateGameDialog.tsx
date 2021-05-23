@@ -40,14 +40,14 @@ const CREATE_GAME = gql`
       title
       fields {
         _id
-        name
+        text
       }
     }
   }
 `;
 
 export const CreateGameDialog = (props: DialogProps) => {
-  const [gamesList, setGamesList] = useContext(GamesListContext);
+  const [doRefetch, setDoRefetch] = useContext(GamesListContext);
   const [title, setTitle] = useState<string>('');
   const [fields, setFields] = useState<BingoField[]>(
     Array.from({ length: 31 }, (_, i) => i + 1).map(i => ({
@@ -67,7 +67,9 @@ export const CreateGameDialog = (props: DialogProps) => {
       },
     });
     const game = newGame.data.createGame as BingoGame;
-    setGamesList([...gamesList, <BingoPreviewCard key={`game-${gamesList.length}`} game={game} />])
+    if (!doRefetch && game) {
+      setDoRefetch(true);
+    }
     hide();
   };
 
@@ -123,7 +125,7 @@ export const CreateGameDialog = (props: DialogProps) => {
           {canSave && (
             <div className="warning">
               <FontAwesomeIcon icon={faInfoCircle} />
-              Es müssen mindestens 30 Felder angelegt werden!
+              Es müssen mindestens 25 Felder angelegt werden!
             </div>
           )}
           <div className="buttons">

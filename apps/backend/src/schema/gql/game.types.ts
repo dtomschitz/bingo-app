@@ -15,17 +15,18 @@ export const GameTypes = gql`
 
   extend type Mutation {
     createGame(input: CreateGame!): BingoGame!
-    createInstance(_id: ID!): [String!]!
+    createInstance(_id: ID!): [Field!]!
   }
 
   type BingoGame {
     _id: ID
     title: String!
     fields: [Field!]!
+    instance: [Field]
   }
 
   type Field {
     _id: ID
-    name: String!
+    text: String
   }
 `;

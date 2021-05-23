@@ -35,7 +35,7 @@ mutation {
     title
     fields {
       _id
-      name
+      text
     }
   }
 }

@@ -1,15 +1,15 @@
 import { useEffect, useState } from 'react';
-import { Switch, Route, useHistory } from 'react-router-dom';
+import { Switch, Route, useHistory, Link } from 'react-router-dom';
 import { faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
 import { FlatButton, IconButton } from './components/common/Button';
-import { DialogContainer } from './components/common/Dialog';
 import { Divider } from './components/common/Divider';
 import { ProgressBar } from './components/common/ProgressBar';
 import { useAuth } from './auth';
 import { AuthDialog, CreateGameDialog } from './dialogs';
 import GamesList from './GamesList';
-import { GamesListContext } from './services/contexts';
+import { CreateInstanceContext, GamesListContext } from './services/contexts';
 import { BingoCard } from './components/bingo';
+import CreateInstanceDialog from './dialogs/CreateInstanceDialog';
 
 interface AppBarProps {
   elevated: boolean;
@@ -17,13 +17,22 @@ interface AppBarProps {
   onLogin: () => void;
 }
 
+export interface InstanceDialogState {
+  show: boolean;
+  setShow: React.Dispatch<React.SetStateAction<boolean>>;
+  title: string;
+  _id: string;
+}
+
 const App = () => {
   const auth = useAuth();
-  const [gamesList, setGamesList] = useState([]);
+  const [doRefetch, setDoRefetch] = useState<boolean>(false);
   const [elevateAppBar, setElevateAppBar] = useState(false);
 
   const [showCreateGameDialog, setShowCreateGameDialog] = useState(false);
   const [showAuthDialog, setShowAuthDialog] = useState(false);
+  const [showInstanceDialog, setShowInstanceDialog] = useState<boolean>(false);
+  const [instanceDialogState, setInstanceDialogState] = useState<InstanceDialogState>({ show: showInstanceDialog, setShow: setShowInstanceDialog, title: "", _id: "" });
 
   useEffect(() => {
     if (!auth.isLoggedIn && auth.refreshToken) {
@@ -37,34 +46,36 @@ const App = () => {
 
   return (
     <>
-      <GamesListContext.Provider value={[gamesList, setGamesList]}>
+      <GamesListContext.Provider value={[doRefetch, setDoRefetch]}>
         <AppBar
           onCreateGame={() => setShowCreateGameDialog(true)}
           onLogin={() => setShowAuthDialog(true)}
           elevated={elevateAppBar}
         />
-        <div
-          id="router-container"
-          onScroll={e => handleScroll(e.currentTarget.scrollTop)}
-        >
-          <Switch>
-            <Route path="/game/:id">
-              <BingoCard />
-            </Route>
-            <Route path="/">
-              <GamesList />
-            </Route>
-          </Switch>
-        </div>
-        <DialogContainer />
-        <CreateGameDialog
-          show={showCreateGameDialog}
-          onHide={() => setShowCreateGameDialog(false)}
-        />
-        <AuthDialog
-          show={showAuthDialog}
-          onHide={() => setShowAuthDialog(false)}
-        />
+        <CreateInstanceContext.Provider value={[instanceDialogState, setInstanceDialogState]}>
+          <div
+            id="router-container"
+            onScroll={e => handleScroll(e.currentTarget.scrollTop)}
+          >
+            <Switch>
+              <Route path="/game/:id">
+                <BingoCard />
+              </Route>
+              <Route path="/">
+                <GamesList />
+              </Route>
+            </Switch>
+          </div>
+          <CreateGameDialog
+            show={showCreateGameDialog}
+            onHide={() => setShowCreateGameDialog(false)}
+          />
+          <AuthDialog
+            show={showAuthDialog}
+            onHide={() => setShowAuthDialog(false)}
+          />
+          <CreateInstanceDialog show={showInstanceDialog} onHide={setShowInstanceDialog} />
+        </CreateInstanceContext.Provider>
       </GamesListContext.Provider>
     </>
   );
@@ -92,9 +103,9 @@ const AppBar = ({ onCreateGame, onLogin, elevated }: AppBarProps) => {
   return (
     <div className={`app-bar ${elevated ? 'elevated' : ''}`}>
       <div className="container">
-        <span className="title" onClick={() => history.push('/')}>
+        <Link className="title" to="/" >
           BINGO
-        </span>
+        </Link>
         <div className="flex-spacer" />
         <div className="actions">{renderActions()}</div>
       </div>
