@@ -8,9 +8,10 @@ import {
   GQLError,
   it
 } from "./test.deps.ts";
+import { getDatabase } from "./common.ts";
 import { AuthController } from "../src/controller/index.ts";
 import { Database, UserDatabase } from "../src/database/index.ts";
-import { ErrorType, RegisterProps } from "../src/models.ts";
+import { ErrorType, RegisterProps, RefreshAccessTokenProps } from "../src/models.ts";
 
 import "https://deno.land/x/dotenv/load.ts";
 
@@ -19,17 +20,11 @@ describe("Authentication", () => {
   let users: UserDatabase;
   let controller: AuthController;
 
-  beforeAll(async () => {    
-    const databaseUser = Deno.env.get("MONGO_ROOT_USER");
-    const databasePassword = Deno.env.get("MONGO_ROOT_PASSWORD");    
-
-    database = new Database(
-      "saturn_testing",
-      `mongodb://${databaseUser}:${databasePassword}@localhost:27017`,
-    );
-    await database.connect();
-
+  beforeAll(async () => {
+    database = await getDatabase();
     users = new UserDatabase(database);
+    await users.clear();
+
     controller = new AuthController(users);
   });
 
@@ -117,5 +112,6 @@ describe("Authentication", () => {
       assertEquals(result.user.email, props.email);
       assertEquals(result.user.name, props.name);
     });
-  })
+  });
+
 });

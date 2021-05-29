@@ -1,20 +1,21 @@
-import { MongoClient } from "./test.deps.ts";
+import { Database } from "../src/database/index.ts";
 
-const hostname = "127.0.0.1";
+export const getDatabase = async (options?: {
+  name?: string;
+  url?: string;
+  user?: string;
+  password?: string;
+}) => {
+  const databaseUser = options?.user ?? Deno.env.get("MONGO_ROOT_USER");
+  const databasePassword = options?.password ??
+    Deno.env.get("MONGO_ROOT_PASSWORD");
 
-export async function testWithClient(
-  name: string,
-  fn: (client: MongoClient) => void | Promise<void>,
-) {
-  Deno.test(name, async () => {
-    const client = await getClient();
-    await fn(client);
-    client.close();
-  });
-}
+  const database = new Database(
+    options?.name ?? "saturn_testing",
+    options?.url ??
+      `mongodb://${databaseUser}:${databasePassword}@localhost:27017`,
+  );
 
-async function getClient(): Promise<MongoClient> {
-  const client = new MongoClient();
-  await client.connect(`mongodb://${hostname}:27017`);
-  return client;
-}
+  await database.connect();
+  return database;
+};

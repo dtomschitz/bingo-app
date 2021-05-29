@@ -21,4 +21,12 @@ export class UserDatabase {
   updateUser = (_id: string, update: UpdateUserProps) => {
     return this.users.updateOne({ _id }, { $set: update }, { upsert: true });
   }
+
+  clear = () => {
+    return this.users.deleteMany({});
+  }
+
+  drop = () => {
+    return this.users.drop();
+  }
 }
