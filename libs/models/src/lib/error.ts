@@ -9,6 +9,7 @@ export enum ErrorType {
   USER_ALREADY_EXISTS = 'USER_ALREADY_EXISTS',
   USER_DOES_NOT_EXIST = 'USER_DOES_NOT_EXIST',
   USER_CREATION_FAILED = 'USER_CREATION_FAILED',
+  INVALID_SERIALIZED_JWT_TOKEN = 'INVALID_SERIALIZED_JWT_TOKEN',
 }
 
 export const errorMessages: { [key in ErrorType]: string } = {
@@ -23,6 +24,7 @@ export const errorMessages: { [key in ErrorType]: string } = {
   USER_ALREADY_EXISTS: 'There is already a user registered with this email!',
   USER_DOES_NOT_EXIST: 'The given user is not registered!',
   USER_CREATION_FAILED: 'Failed to create the new user!',
+  INVALID_SERIALIZED_JWT_TOKEN: 'The serialization of the jwt is invalid',
 };
 
 export const getErrorMessage = (type: ErrorType) => {

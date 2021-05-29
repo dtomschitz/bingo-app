@@ -92,7 +92,7 @@ export class JwtUtils {
     }, options.secret);
   };
 
-  private static verifyToken = (
+  private static verifyToken = async (
     token: string,
     type: "access" | "refresh",
   ) => {
@@ -103,8 +103,13 @@ export class JwtUtils {
       throw new GQLError(ErrorType.MISSING_JWT_TOKEN_SECRET);
     }
 
-    return jwt.verify(token, secret, defaultJwtHeader.alg) as Promise<
-      JwtVerify
-    >;
+    let verify: jwt.Payload;
+    try {
+      verify = await jwt.verify(token, secret, defaultJwtHeader.alg);
+    } catch (e) {      
+      throw new GQLError(ErrorType.INVALID_SERIALIZED_JWT_TOKEN);
+    }
+
+    return verify as JwtVerify;
   };
 }

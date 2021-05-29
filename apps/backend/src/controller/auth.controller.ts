@@ -109,7 +109,7 @@ export class AuthController {
    * Refreshes the access token for the `User` with the given refresh token.
    */
   async verifyUser(props: RefreshAccessTokenProps) {
-    if (!props.refreshToken || !props.email) {
+    if (!props.refreshToken) {
       throw new GQLError(ErrorType.INCORRECT_REQUEST);
     }
 
@@ -120,6 +120,9 @@ export class AuthController {
 
     const { email } = await JwtUtils.verifyRefreshToken(props.refreshToken);
     const user = await this.users.getUserByEmail(email);
+    if (!user) {
+      throw new GQLError(ErrorType.USER_DOES_NOT_EXIST);
+    }
 
     return user;
   }
@@ -128,7 +131,7 @@ export class AuthController {
    * Refreshes the access token for the `User` with the given refresh token.
    */
   async refreshAccessToken(props: RefreshAccessTokenProps) {
-    if (!props.refreshToken || !props.email) {
+    if (!props.refreshToken) {
       throw new GQLError(ErrorType.INCORRECT_REQUEST);
     }
 
