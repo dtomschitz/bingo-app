@@ -37,7 +37,11 @@ export class GameController {
         message: "Ydwadad",
       });
     }
+    
+    console.log(game);
+    
 
+    
     return game;
   }
 }

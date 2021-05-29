@@ -2,7 +2,6 @@ import { Database } from "../database/database.ts";
 import { GameSchema } from '../schema/mongo/game.schema.ts';
 import { CreateGameProps } from "../models.ts";
 
-
 export class GameDatabase {
   private games;
 
