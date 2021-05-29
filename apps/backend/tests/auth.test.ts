@@ -10,7 +10,7 @@ import {
 } from "./test.deps.ts";
 import { AuthController } from "../src/controller/index.ts";
 import { Database, UserDatabase } from "../src/database/index.ts";
-import { ErrorType, RegisterProps } from "../src/models.ts";
+import { ErrorType, RegisterProps, LogoutProps, RefreshAccessTokenProps } from "../src/models.ts";
 
 import "https://deno.land/x/dotenv/load.ts";
 
@@ -116,6 +116,100 @@ describe("Authentication", () => {
   
       assertEquals(result.user.email, props.email);
       assertEquals(result.user.name, props.name);
+    });
+  })
+
+  describe("logoutUser", () => {
+
+    it("should fail because request is incorrect", async () => {
+      const props: LogoutProps = {
+        email : "",
+      }
+
+      await assertThrowsAsync(
+        async () => await controller.logoutUser(props),
+        GQLError,
+        ErrorType.INCORRECT_REQUEST,
+      );
+
+    });
+
+    it("should fail because given email does not exist", async () => {
+      const props: LogoutProps = {
+        email: "logouttest@test.de",
+      };
+  
+      await assertThrowsAsync(
+        async () => await controller.logoutUser(props),
+        GQLError,
+        ErrorType.USER_DOES_NOT_EXIST,
+      );
+    });
+
+
+
+    
+
+  })
+
+  describe("verifyUser", () => {
+    it("should fail because given refreshToken or email is empty", async () =>{
+      const props : RefreshAccessTokenProps = {
+        email: "",
+        refreshToken: "",
+      };
+      await assertThrowsAsync(
+        async () => await controller.verifyUser(props),
+        GQLError,
+        ErrorType.INCORRECT_REQUEST,
+      );
+    });
+  })
+
+  describe("refreshAccessToken", () => {
+    it("should fail because given refreshToken or email is empty", async () =>{
+      const props : RefreshAccessTokenProps = {
+        email: "",
+        refreshToken: "",
+      };
+      await assertThrowsAsync(
+        async () => await controller.refreshAccessToken(props),
+        GQLError,
+        ErrorType.INCORRECT_REQUEST,
+      );
+    });
+  })
+
+
+  describe("validateUser", () => {
+    it("should fail because there is no user with this email", async () =>{
+      const incorrectRequestProps = {
+        email: "testValidateUser@test.de",
+        password: "SuperSicheresPasswort#1337#%",
+      };
+      await assertThrowsAsync(
+        async () => await controller.validateUser(incorrectRequestProps.email, incorrectRequestProps.password),
+        GQLError,
+        ErrorType.INCORRECT_REQUEST,
+      );
+    });
+    it("should fail because the password is incorrect", async () => {
+      const props: RegisterProps = {
+        email: "test@hallo.de",
+        name: "Max Mustermann",
+        password: "SuperSicheresPasswort#1337#%",
+      };
+      await controller.registerUser(props);
+
+      const incorrectPasswordProps = {
+        email: "test@hallo.de",
+        password: "invalidPassword123",
+      };
+      await assertThrowsAsync(
+        async () => await controller.validateUser(incorrectPasswordProps.email, incorrectPasswordProps.password),
+        GQLError,
+        ErrorType.INCORRECT_PASSWORD,
+      );
     });
   })
 });
