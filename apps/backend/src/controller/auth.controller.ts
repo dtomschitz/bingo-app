@@ -109,7 +109,7 @@ export class AuthController {
    * Refreshes the access token for the `User` with the given refresh token.
    */
   async verifyUser(props: RefreshAccessTokenProps) {
-    if (!props.refreshToken) {
+    if (!props.refreshToken || !props.email) {
       throw new GQLError(ErrorType.INCORRECT_REQUEST);
     }
 
@@ -128,7 +128,7 @@ export class AuthController {
    * Refreshes the access token for the `User` with the given refresh token.
    */
   async refreshAccessToken(props: RefreshAccessTokenProps) {
-    if (!props.refreshToken) {
+    if (!props.refreshToken || !props.email) {
       throw new GQLError(ErrorType.INCORRECT_REQUEST);
     }
 
