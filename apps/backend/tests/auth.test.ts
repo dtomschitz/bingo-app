@@ -11,7 +11,7 @@ import {
 import { getDatabase } from "./common.ts";
 import { AuthController } from "../src/controller/index.ts";
 import { Database, UserDatabase } from "../src/database/index.ts";
-import { ErrorType, RegisterProps, RefreshAccessTokenProps } from "../src/models.ts";
+import { ErrorType, RegisterProps, LoginProps } from "../src/models.ts";
 
 import "https://deno.land/x/dotenv/load.ts";
 
@@ -113,5 +113,62 @@ describe("Authentication", () => {
       assertEquals(result.user.name, props.name);
     });
   });
+
+  describe("loginUser", () => {
+    it("should fail because login request is incorrect", async () => {
+      const props: LoginProps = {
+        email: "",
+        password: "",
+      };
+  
+      await assertThrowsAsync(
+        async () => await controller.loginUser(props),
+        GQLError,
+        ErrorType.INCORRECT_REQUEST,
+      );
+    });
+
+    it("should fail because the given login password is invalid", async () => {
+      const props: LoginProps = {
+        email: "test@test.de",
+        password: "",
+      };
+  
+      await assertThrowsAsync(
+        async () => await controller.loginUser(props),
+        GQLError,
+        ErrorType.INVALID_PASSWORD_FORMAT,
+      );
+    });
+  
+    it("should fail because the given email is invalid", async () => {
+      const props: LoginProps = {
+        email: "test@test.",
+        password: "SuperSicheresPasswort#1337#%",
+      };
+  
+      await assertThrowsAsync(
+        async () => await controller.loginUser(props),
+        GQLError,
+        ErrorType.INVALID_EMAIL_FORMAT,
+      );
+    });
+  
+    it("should validate the user and return the jwt tokens", async () => {
+      const props: LoginProps = {
+        email: "test@hallo.de",
+        password: "SuperSicheresPasswort#1337#%",
+      };
+  
+      const result = await controller.loginUser(props);
+  
+      assertExists(result.user._id)
+      assertExists(result.accessToken)
+      assertExists(result.refreshToken)
+
+      assertEquals(result.user.email, props.email);
+    });
+  })
+
 
 });
