@@ -8,7 +8,7 @@ import {
   GQLError,
   it,
 } from "./test.deps.ts";
-import { getDatabase } from "./common.ts";
+import { defaultInvalidRequestTest, getDatabase } from "./common.ts";
 import { AuthController } from "../src/controller/index.ts";
 import { Database, UserDatabase } from "../src/database/index.ts";
 import {
@@ -57,19 +57,15 @@ describe("Authentication", () => {
     openConnection();
     closeConnection();
 
-    it("should fail because request is incorrect", async () => {
-      const props: RegisterProps = {
-        email: "",
-        name: "",
-        password: "",
-      };
-
-      await assertThrowsAsync(
-        async () => await controller.registerUser(props),
-        GQLError,
-        ErrorType.INCORRECT_REQUEST,
-      );
-    });
+    defaultInvalidRequestTest(
+      "should fail because request is incorrect",
+      () =>
+        controller.registerUser({
+          email: "",
+          name: "",
+          password: "",
+        }),
+    );
 
     it("should fail because the given password is not valid", async () => {
       const props: RegisterProps = {
@@ -135,18 +131,14 @@ describe("Authentication", () => {
     openConnection();
     closeConnection();
 
-    it("should fail because login request is incorrect", async () => {
-      const props: LoginProps = {
-        email: "",
-        password: "",
-      };
-
-      await assertThrowsAsync(
-        async () => await controller.loginUser(props),
-        GQLError,
-        ErrorType.INCORRECT_REQUEST,
-      );
-    });
+    defaultInvalidRequestTest(
+      "should fail because login request is incorrect",
+      () =>
+        controller.loginUser({
+          email: "",
+          password: "",
+        }),
+    );
 
     it("should fail because the given login password is invalid", async () => {
       const props: LoginProps = {
@@ -193,17 +185,10 @@ describe("Authentication", () => {
     openConnection();
     closeConnection();
 
-    it("should fail because request is incorrect", async () => {
-      const props: LogoutProps = {
-        email: "",
-      };
-
-      await assertThrowsAsync(
-        async () => await controller.logoutUser(props),
-        GQLError,
-        ErrorType.INCORRECT_REQUEST,
-      );
-    });
+    defaultInvalidRequestTest(
+      "should fail because logout request is incorrect",
+      () => controller.logoutUser({ email: "" }),
+    );
 
     it("should fail because no use is associated with the given email", async () => {
       const props: LogoutProps = {
@@ -229,17 +214,10 @@ describe("Authentication", () => {
     openConnection();
     closeConnection();
 
-    it("should fail because request is incorrect", async () => {
-      const props: RefreshAccessTokenProps = {
-        refreshToken: "",
-      };
-
-      await assertThrowsAsync(
-        async () => await controller.verifyUser(props),
-        GQLError,
-        ErrorType.INCORRECT_REQUEST,
-      );
-    });
+    defaultInvalidRequestTest(
+      "should fail because request is incorrect",
+      () => controller.verifyUser({ refreshToken: "" }),
+    );
 
     it("should fail because the refresh token is serialized wrong", async () => {
       const props: RefreshAccessTokenProps = {
@@ -270,17 +248,10 @@ describe("Authentication", () => {
     openConnection();
     closeConnection();
 
-    it("should fail because request is incorrect", async () => {
-      const props: RefreshAccessTokenProps = {
-        refreshToken: "",
-      };
-
-      await assertThrowsAsync(
-        async () => await controller.refreshAccessToken(props),
-        GQLError,
-        ErrorType.INCORRECT_REQUEST,
-      );
-    });
+    defaultInvalidRequestTest(
+      "should fail because request is incorrect",
+      () => controller.refreshAccessToken({ refreshToken: "" }),
+    );
 
     it("should fail because the refresh token is serialized wrong", async () => {
       const props: RefreshAccessTokenProps = {

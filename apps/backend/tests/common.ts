@@ -1,3 +1,5 @@
+import { assertThrowsAsync, GQLError, it } from "./test.deps.ts";
+import { ErrorType } from "../src/models.ts";
 import { Database } from "../src/database/index.ts";
 
 export const getDatabase = async (options?: {
@@ -18,4 +20,14 @@ export const getDatabase = async (options?: {
 
   await database.connect();
   return database;
+};
+
+export const defaultInvalidRequestTest = <T>(name: string, fn: () => Promise<T>) => {
+  return it(name, async () => {
+    await assertThrowsAsync(
+      async () => await fn(),
+      GQLError,
+      ErrorType.INCORRECT_REQUEST,
+    );
+  });
 };
