@@ -1,7 +1,9 @@
+import { Bson } from "../../deps.ts";
+
 export interface GameSchema {
   _id?: { $oid: string };
   title: string;
-  author: string;
+  author: Bson.ObjectId;
   fields: Field[];
   gameInstances?: GameInstance[];
   podium?: podium[];

@@ -35,7 +35,7 @@ interface BingoFieldItemProps {
 
 const CREATE_GAME = gql`
   mutation CreateGame($title: String!, $fields: [String!]!) {
-    createGame(input: { title: $title, fields: $fields }) {
+    createGame(props: { title: $title, fields: $fields }) {
       _id
       title
       fields {
@@ -66,10 +66,12 @@ export const CreateGameDialog = (props: DialogProps) => {
         fields: fields.map(field => field.text),
       },
     });
+
     const game = newGame.data.createGame as BingoGame;
     if (!doRefetch && game) {
       setDoRefetch(true);
     }
+
     hide();
   };
 

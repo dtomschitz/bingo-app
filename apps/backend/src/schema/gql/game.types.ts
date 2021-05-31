@@ -14,7 +14,7 @@ export const GameTypes = gql`
   }
 
   extend type Mutation {
-    createGame(input: CreateGame!): BingoGame!
+    createGame(props: CreateGame!): BingoGame!
     createInstance(_id: ID!): [Field!]!
   }
 

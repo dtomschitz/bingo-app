@@ -1,101 +1,171 @@
-import { GQLError, v4, Bson, Context } from "../deps.ts";
-import { database } from "../db/database.ts";
-import { GameSchema, CreateGame, Field, GameInstance } from "../schema/index.ts";
-import { validateAuthentication } from "./auth.controller.ts";
-import { UserSchema } from './../schema/mongo/user.schema.ts';
+import { Bson, GQLError, v4 } from "../deps.ts";
+import { ErrorType, GraphQLResolverContext } from "../models.ts";
+import { GameDatabase } from "../database/index.ts";
+import {
+  CreateGame,
+  Field,
+  GameInstance,
+  GameSchema,
+} from "../schema/index.ts";
 
-const gameCollection = database.getDatabase().collection<GameSchema>("game");
+export class GameController {
+  constructor(private games: GameDatabase) {}
 
-export const getGames = async (
-  parent: any,
-  { }: any,
-  context: Context,
-  info: any
-) => {
-  const user: UserSchema | undefined = await validateAuthentication(context);
+  async getGames(context: GraphQLResolverContext) {
+    const user = context.user;
+    if (!user) {
+      throw new GQLError(ErrorType.UNKNONW_USER);
+    }
 
-  if (!user){
-    throw new GQLError({
-      message: "User not found"
-    })
+    const games = await this.games.getGames();
+
+    return games.map((game: GameSchema) => {
+      const userInstance: GameInstance[] | undefined = game?.gameInstances
+        ?.filter((instance) =>
+          new Bson.ObjectId(instance.userId).toString() ===
+            new Bson.ObjectId(user._id).toString()
+        );
+
+      const userResolvedInstance = userInstance
+        ? userInstance[0]?.fields.map((fieldId: string) => {
+          return game.fields.find((fieldEntry: Field) =>
+            fieldEntry._id === fieldId
+          );
+        })
+        : null;
+
+      return { ...game, instance: userResolvedInstance };
+    });
   }
 
-  const userGames: GameSchema[] = await gameCollection.find().toArray()
+  async getGame(context: GraphQLResolverContext, id: string) {
+    if (!context.user) {
+      throw new GQLError(ErrorType.UNKNONW_USER);
+    }
 
-  return userGames.map((game:GameSchema) => {
+    const game = await this.games.getGame(id);
+    if (!game) {
+      throw new GQLError(ErrorType.GAME_NOT_FOUND);
+    }
 
-    const userInstance: GameInstance[] | undefined = game?.gameInstances?.filter(instance => new Bson.ObjectId(instance.userId).toString() === new Bson.ObjectId(user._id).toString())
+    return game;
+  }
 
-    const userResolvedInstance = userInstance ? userInstance[0]?.fields.map((fieldId: string) => {
+  async getInstance(context: GraphQLResolverContext, id: string) {
+    const user = context.user;
+    if (!user) {
+      throw new GQLError(ErrorType.UNKNONW_USER);
+    }
+
+    const game = await this.games.getGame(id);
+    if (!game) {
+      throw new GQLError(ErrorType.GAME_NOT_FOUND);
+    }
+
+    if (!game.gameInstances) {
+      throw new GQLError({
+        message: "This game doesn't have any instances",
+      });
+    }
+
+    const gameInstance: GameInstance[] = game.gameInstances.filter((instance) =>
+      new Bson.ObjectId(instance.userId).toString() ===
+        new Bson.ObjectId(user._id).toString()
+    );
+
+    if (!gameInstance[0]) {
+      throw new GQLError({
+        message: "There is no Instance with the specified id for this user",
+      });
+    }
+
+    return gameInstance[0].fields.map((fieldId: string) => {
       return game.fields.find((fieldEntry: Field) =>
-          fieldEntry._id === fieldId
+        fieldEntry._id === fieldId
       );
-    }) : null;
-
-    return {...game, instance: userResolvedInstance}
-  });
-};
-
-export const getGame = async (
-  parent: any,
-  { _id }: { _id: any },
-  context: Context,
-  info: any
-) => {
-  const user: UserSchema | undefined = await validateAuthentication(context);
-
-  if (!user){
-    throw new GQLError({
-      message: "User not found"
-    })
-  }
-
-  const game = await gameCollection.findOne({ _id: new Bson.ObjectId(_id) });
-  if (!game) {
-    throw new GQLError({
-      message: "There is no game stored for this user with the specified id",
     });
   }
 
-  return game;
-};
+  async createGame(context: GraphQLResolverContext, props: CreateGame) {      
+    if (!context.user) {
+      throw new GQLError(ErrorType.UNKNONW_USER);
+    }
 
-export const createGame = async (
-  parent: any,
-  { input }: { input: CreateGame },
-  context: Context,
-  info: any
-) => {
-  const user: UserSchema | undefined = await validateAuthentication(context);
+    if (!props.title || !props.fields) {
+      throw new GQLError(ErrorType.INCORRECT_REQUEST);
+    }
 
-  if (!user){
-    throw new GQLError({
-      message: "User not found"
-    })
-  }
+    if (props.fields.length < 25) {
+      throw new GQLError(ErrorType.GAME_CONTAINS_TOO_FEW_FIELDS);
+    }
 
-  if (!input.title || !input.fields) {
-    throw new GQLError({ message: "Your request has the wrong format" });
-  }
+    const fields: Field[] = props.fields.map((field) => ({
+      text: field,
+      _id: v4.generate(),
+      checked: false,
+    }));
 
-  if (input.fields.length < 25) {
-    throw new GQLError({
-      message: "Your request contains either too many or to few bingo fields",
+    return await this.games.createGame({
+      title: props.title,
+      fields,
+      author: new Bson.ObjectId(context.user._id),
     });
   }
 
-  const gameFields: Field[] = input.fields.map((field) => ({
-    text: field,
-    _id: v4.generate(),
-    checked: false,
-  }));
+  async createInstance(context: GraphQLResolverContext, id: string) {
+    const user = context.user;
+    if (!user) {
+      throw new GQLError(ErrorType.UNKNONW_USER);
+    }
 
-  const { title, fields } = input;
-  const gameId = await gameCollection.insertOne({
-    title: input.title,
-    fields: gameFields,
-    author: new Bson.ObjectId(user._id),
-  });
+    const game = await this.games.getGame(id);
+    if (!game) {
+      throw new GQLError(ErrorType.GAME_NOT_FOUND);
+    }
 
-  return await gameCollection.findOne({ _id: gameId });
-};
+    const fields = game.fields;
+    if (
+      game.gameInstances?.some((instance) =>
+        new Bson.ObjectId(instance.userId).toString() ===
+          new Bson.ObjectId(user._id).toString()
+      )
+    ) {
+      throw new GQLError({
+        message: "Only one instance allowed per user",
+      });
+    }
+
+    const randomNumber = function (min: number, max: number) {
+      return Math.floor(Math.random() * (max - min + 1) + min);
+    };
+    
+    const randomFields: number[] = [];
+    while (randomFields.length < 25) {
+      const index = randomNumber(0, (fields.length - 1));
+
+      if (!randomFields.includes(index)) {
+        randomFields.push(index);
+      }
+    }
+
+    const fieldMap = randomFields.map((fieldIndex) => {
+      return fields[fieldIndex]._id;
+    });
+
+    await this.games.collection.updateOne(
+      { _id: new Bson.ObjectId(id) },
+      {
+        $push: {
+          gameInstances: {
+            userId: new Bson.ObjectId(user._id),
+            fields: fieldMap,
+          },
+        },
+      },
+    );
+
+    return randomFields.map((fieldIndex) => {
+      return { _id: fields[fieldIndex]._id, text: fields[fieldIndex].text };
+    });
+  }
+}
