@@ -1,8 +1,12 @@
-import { AuthController, GameController } from "../controller/index.ts";
-import { gqlRequestWrapper, requiresAuthentication } from "../utils/index.ts";
-import { CreateGame } from "../schema/index.ts";
 import {
-  AuthResult,
+  AuthController,
+  GameController,
+  GameInstanceController,
+} from "../controller/index.ts";
+import { gqlRequestWrapper, requiresAuthentication } from "../utils/index.ts";
+import {
+  ArgProps,
+  CreateGameProps,
   CreateUserProps,
   LoginProps,
   LogoutProps,
@@ -10,25 +14,25 @@ import {
 } from "../models.ts";
 
 export const authMutations = (controller: AuthController) => {
-  const registerUser = gqlRequestWrapper<CreateUserProps, Promise<AuthResult>>((
-    { props },
-  ) => controller.registerUser(props));
+  const registerUser = gqlRequestWrapper<ArgProps<CreateUserProps>>((
+    { args },
+  ) => controller.registerUser(args.props));
 
   const loginUser = gqlRequestWrapper<LoginProps>((
-    { props },
-  ) => controller.loginUser(props));
+    { args },
+  ) => controller.loginUser(args.email, args.password));
 
   const logoutUser = gqlRequestWrapper<LogoutProps>((
-    { props },
-  ) => controller.logoutUser(props));
+    { args },
+  ) => controller.logoutUser(args.email));
 
   const verifyUser = gqlRequestWrapper<RefreshAccessTokenProps>((
-    { props },
-  ) => controller.verifyUser(props));
+    { args },
+  ) => controller.verifyUser(args.refreshToken));
 
   const refreshAccessToken = gqlRequestWrapper<RefreshAccessTokenProps>((
-    { props },
-  ) => controller.refreshAccessToken(props));
+    { args },
+  ) => controller.refreshAccessToken(args.refreshToken));
 
   return {
     registerUser,
@@ -40,17 +44,21 @@ export const authMutations = (controller: AuthController) => {
 };
 
 export const gameMutations = (controller: GameController) => {
-  const createGame = gqlRequestWrapper<CreateGame>(
-    requiresAuthentication(({ context, props }) =>
-      controller.createGame(context, props)
+  const createGame = gqlRequestWrapper<ArgProps<CreateGameProps>>(
+    requiresAuthentication(({ context, args }) =>
+      controller.createGame(args.props, context.user)
     ),
   );
 
-  const createInstance = gqlRequestWrapper<{ _id: string }>(
-    requiresAuthentication(({ context, props }) =>
-      controller.createInstance(context, props._id)
-    ),
+  return { createGame };
+};
+
+export const gameInstanceMutations = (controller: GameInstanceController) => {
+  const createGameInstance = gqlRequestWrapper<{ _id: string }>(
+    requiresAuthentication(({ context, args }) => {
+      return controller.createGameInstance(args._id, context.user);
+    }),
   );
 
-  return { createGame, createInstance };
+  return { createGameInstance };
 };

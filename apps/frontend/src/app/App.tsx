@@ -1,20 +1,22 @@
-import { useEffect, useState } from 'react';
-import { Switch, Route, useHistory, Link } from 'react-router-dom';
-import { faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
-import { FlatButton, IconButton } from './components/common/Button';
-import { Divider } from './components/common/Divider';
-import { ProgressBar } from './components/common/ProgressBar';
-import { useAuth } from './auth';
+import React, { useEffect, useState } from 'react';
+import { Switch, Route, Link } from 'react-router-dom';
+import { useMediaQuery } from 'react-responsive';
+import { faCartPlus, faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
+import {
+  FlatButton,
+  IconButton,
+  DialogContainer,
+  Divider,
+  ProgressBar,
+} from './components/common';
+import { AppBarProvider, useAppBar, useAuthContext, useDialog } from './hooks';
 import { AuthDialog, CreateGameDialog } from './dialogs';
+import Game from './Game';
 import GamesList from './GamesList';
-import { CreateInstanceContext, GamesListContext } from './services/contexts';
-import { BingoCard } from './components/bingo';
-import CreateInstanceDialog from './dialogs/CreateInstanceDialog';
 
 interface AppBarProps {
   elevated: boolean;
   onCreateGame: () => void;
-  onLogin: () => void;
 }
 
 export interface InstanceDialogState {
@@ -25,65 +27,59 @@ export interface InstanceDialogState {
 }
 
 const App = () => {
-  const auth = useAuth();
-  const [doRefetch, setDoRefetch] = useState<boolean>(false);
   const [elevateAppBar, setElevateAppBar] = useState(false);
 
-  const [showCreateGameDialog, setShowCreateGameDialog] = useState(false);
-  const [showAuthDialog, setShowAuthDialog] = useState(false);
-  const [showInstanceDialog, setShowInstanceDialog] = useState<boolean>(false);
-  const [instanceDialogState, setInstanceDialogState] = useState<InstanceDialogState>({ show: showInstanceDialog, setShow: setShowInstanceDialog, title: "", _id: "" });
+  const auth = useAuthContext();
+  const createGameDialog = useDialog();
 
   useEffect(() => {
-    if (!auth.isLoggedIn && auth.refreshToken) {
-      auth.verify();
-    }
+    auth.verify();
   }, []);
+
+  useEffect(() => {
+    if (!auth.isLoggedIn && !auth.isVerifying && !auth.dialog.show) {
+      auth.dialog.open();
+    }
+  }, [auth.isLoggedIn, auth.isVerifying, auth.dialog]);
 
   const handleScroll = (scrollTop: number) => {
     setElevateAppBar(scrollTop > 10 ? true : false);
   };
 
   return (
-    <>
-      <GamesListContext.Provider value={[doRefetch, setDoRefetch]}>
-        <AppBar
-          onCreateGame={() => setShowCreateGameDialog(true)}
-          onLogin={() => setShowAuthDialog(true)}
-          elevated={elevateAppBar}
-        />
-        <CreateInstanceContext.Provider value={[instanceDialogState, setInstanceDialogState]}>
-          <div
-            id="router-container"
-            onScroll={e => handleScroll(e.currentTarget.scrollTop)}
-          >
-            <Switch>
-              <Route path="/game/:id">
-                <BingoCard />
-              </Route>
-              <Route path="/">
-                <GamesList />
-              </Route>
-            </Switch>
-          </div>
-          <CreateGameDialog
-            show={showCreateGameDialog}
-            onHide={() => setShowCreateGameDialog(false)}
-          />
-          <AuthDialog
-            show={showAuthDialog}
-            onHide={() => setShowAuthDialog(false)}
-          />
-          <CreateInstanceDialog show={showInstanceDialog} onHide={setShowInstanceDialog} />
-        </CreateInstanceContext.Provider>
-      </GamesListContext.Provider>
-    </>
+    <AppBarProvider>
+      <AppBar onCreateGame={createGameDialog.open} elevated={elevateAppBar} />
+      <div
+        id="router-container"
+        onScroll={e => handleScroll(e.currentTarget.scrollTop)}
+      >
+        <Switch>
+          <Route path="/game/:gameId" component={Game} />
+          <Route path="/">
+            <GamesList />
+          </Route>
+        </Switch>
+      </div>
+      <DialogContainer />
+      <AuthDialog {...auth.dialog} />
+      <CreateGameDialog {...createGameDialog} />
+    </AppBarProvider>
   );
 };
 
-const AppBar = ({ onCreateGame, onLogin, elevated }: AppBarProps) => {
-  const history = useHistory();
-  const auth = useAuth();
+const AppBar = ({ onCreateGame, elevated }: AppBarProps) => {
+  const isMoileSmall = useMediaQuery({ query: '(min-width: 500px)' });
+
+  const auth = useAuthContext();
+  const appBar = useAppBar();
+
+  useEffect(() => {
+    appBar.showLoadingBar(auth.isPending);
+  }, [auth.isPending]);
+
+  const onLogin = () => {
+    auth.dialog.open();
+  };
 
   const renderActions = () => {
     if (auth.isPending) {
@@ -92,8 +88,22 @@ const AppBar = ({ onCreateGame, onLogin, elevated }: AppBarProps) => {
 
     return auth.user ? (
       <>
-        <FlatButton onClick={onCreateGame}>Spiel erstellen</FlatButton>
-        <IconButton icon={faSignOutAlt} onClick={() => auth.logout()} />
+        {isMoileSmall ? (
+          <FlatButton className="create-game-button" onClick={onCreateGame}>
+            Spiel erstellen
+          </FlatButton>
+        ) : (
+          <IconButton
+            className="create-game-button"
+            icon={faCartPlus}
+            onClick={onCreateGame}
+          />
+        )}
+        <IconButton
+          className="logout-button"
+          icon={faSignOutAlt}
+          onClick={() => auth.logout()}
+        />
       </>
     ) : (
       <FlatButton onClick={onLogin}>Anmelden</FlatButton>
@@ -103,14 +113,14 @@ const AppBar = ({ onCreateGame, onLogin, elevated }: AppBarProps) => {
   return (
     <div className={`app-bar ${elevated ? 'elevated' : ''}`}>
       <div className="container">
-        <Link className="title" to="/" >
+        <Link className="title" to="/">
           BINGO
         </Link>
         <div className="flex-spacer" />
         <div className="actions">{renderActions()}</div>
       </div>
       <div className="progress-bar-container">
-        {auth.isPending && <ProgressBar />}
+        {appBar.loading && <ProgressBar />}
       </div>
       {!elevated && <Divider />}
     </div>

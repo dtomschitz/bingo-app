@@ -10,19 +10,20 @@ export const GameTypes = gql`
   extend type Query {
     games: [BingoGame!]!
     game(_id: ID!): BingoGame!
-    instance(_id: ID!): [Field!]!
+    instance(_id: ID!): BingoGame!
   }
 
   extend type Mutation {
     createGame(props: CreateGame!): BingoGame!
-    createInstance(_id: ID!): [Field!]!
+    createGameInstance(_id: ID!): BingoGame!
   }
 
   type BingoGame {
     _id: ID
+    authorId: String!
     title: String!
     fields: [Field!]!
-    instance: [Field]
+    hasInstance: Boolean
   }
 
   type Field {

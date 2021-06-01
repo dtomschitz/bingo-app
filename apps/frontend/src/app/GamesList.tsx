@@ -1,46 +1,51 @@
-import { useQuery, gql } from '@apollo/client';
 import { BingoGame } from '@bingo/models';
+import { useEffect } from 'react';
+import { useHistory } from 'react-router';
 import { BingoPreviewCard } from './components/bingo';
-import { GamesListContext } from './services/contexts';
-import { useContext, useEffect } from 'react';
-
-const GET_GAMES = gql`
-  query GetGames {
-    games {
-      _id,
-      title
-      instance{
-        text
-      }
-    }
-  }
-`;
+import {
+  CreateGameInstanceDialog,
+  CreateGameInstanceDialogData,
+} from './dialogs';
+import { useAuthContext, useDialog, useGamesContext } from './hooks';
 
 const GamesList = () => {
-  const [doRefetch, setDoRefetch] = useContext(GamesListContext);
-  const { error, loading, data, refetch } = useQuery<{ games: BingoGame[] }>(GET_GAMES, {
-    fetchPolicy: "no-cache"
-  });
-
-  const reloadGames = async () => {
-    await refetch();
-  }
+  const history = useHistory();
+  const auth = useAuthContext();
+  const dialog = useDialog<CreateGameInstanceDialogData>();
+  const { games, loadGames } = useGamesContext();
 
   useEffect(() => {
-    if (doRefetch) {
-      reloadGames();
-      setDoRefetch(false);
+    if (auth.isLoggedIn) {
+      loadGames();
     }
-  }, [doRefetch])
+  }, [auth.isLoggedIn]);
+
+  const onClick = (game: BingoGame) => {
+    if (game.hasInstance) {
+      history.push(`/game/${game._id}`);
+      return;
+    }
+
+    dialog.open({
+      _id: game._id,
+      title: game.title,
+    });
+  };
 
   return (
     <div className="home">
-      {data && data?.games.map((game, i) => (
-        <BingoPreviewCard key={`game-${i}`} game={game} />
-      ))}
+      <div className="games">
+        {games.map((game, i) => (
+          <BingoPreviewCard
+            key={`game-${i}`}
+            game={game}
+            onClick={() => onClick(game)}
+          />
+        ))}
+      </div>
+      <CreateGameInstanceDialog {...dialog} />
     </div>
   );
 };
 
 export default GamesList;
-

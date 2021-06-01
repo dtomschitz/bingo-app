@@ -1,14 +1,7 @@
 import { UserDatabase } from "../database/index.ts";
 import { JwtUtils, ValidationUtils } from "../utils/index.ts";
 import { bcrypt, GQLError } from "../deps.ts";
-import {
-  AuthResult,
-  CreateUserProps,
-  ErrorType,
-  LoginProps,
-  LogoutProps,
-  RefreshAccessTokenProps,
-} from "../models.ts";
+import { AuthResult, CreateUserProps, ErrorType } from "../models.ts";
 
 export class AuthController {
   constructor(private users: UserDatabase) {}
@@ -59,21 +52,21 @@ export class AuthController {
    * The authentication tokens are only generated if these are correct and belong
    * to a `User`.
    */
-  async loginUser(props: LoginProps) {
-    if (!props.email || !props.password) {
+  async loginUser(email: string, password: string) {
+    if (!email || !password) {
       throw new GQLError(ErrorType.INCORRECT_REQUEST);
     }
 
-    if (!ValidationUtils.isPasswordValid(props.password)) {
+    if (!ValidationUtils.isPasswordValid(password)) {
       throw new GQLError(ErrorType.INVALID_PASSWORD_FORMAT);
     }
 
-    const email = props.email.toLowerCase();
+    email = email.toLowerCase();
     if (!ValidationUtils.isEmailValid(email)) {
       throw new GQLError(ErrorType.INVALID_EMAIL_FORMAT);
     }
 
-    const user = await this.validateUser(email, props.password);
+    const user = await this.validateUser(email, password);
     const { accessToken, refreshToken } = await JwtUtils.generateTokens({
       _id: user._id,
       email: user.email,
@@ -88,28 +81,26 @@ export class AuthController {
     };
   }
 
-  async logoutUser(props: LogoutProps) {
-    if (!props.email) {
+  async logoutUser(email: string) {
+    if (!email) {
       throw new GQLError(ErrorType.INCORRECT_REQUEST);
     }
 
-    const user = await this.users.getUserByEmail(props.email);
+    const user = await this.users.getUserByEmail(email);
     if (!user) {
       throw new GQLError(ErrorType.USER_DOES_NOT_EXIST);
     }
 
     await this.users.updateUser(user._id, { refreshToken: undefined });
 
-    return {
-      success: true,
-    };
+    return true;
   }
 
   /**
    * Refreshes the access token for the `User` with the given refresh token.
    */
-  async verifyUser(props: RefreshAccessTokenProps) {
-    if (!props.refreshToken) {
+  async verifyUser(refreshToken: string) {
+    if (!refreshToken) {
       throw new GQLError(ErrorType.INCORRECT_REQUEST);
     }
 
@@ -118,7 +109,7 @@ export class AuthController {
       throw new GQLError(ErrorType.MISSING_JWT_TOKEN_SECRET);
     }
 
-    const { email } = await JwtUtils.verifyRefreshToken(props.refreshToken);
+    const { email } = await JwtUtils.verifyRefreshToken(refreshToken);
     const user = await this.users.getUserByEmail(email);
     if (!user) {
       throw new GQLError(ErrorType.USER_DOES_NOT_EXIST);
@@ -130,8 +121,8 @@ export class AuthController {
   /**
    * Refreshes the access token for the `User` with the given refresh token.
    */
-  async refreshAccessToken(props: RefreshAccessTokenProps) {
-    if (!props.refreshToken) {
+  async refreshAccessToken(refreshToken: string) {
+    if (!refreshToken) {
       throw new GQLError(ErrorType.INCORRECT_REQUEST);
     }
 
@@ -140,16 +131,12 @@ export class AuthController {
       throw new GQLError(ErrorType.MISSING_JWT_TOKEN_SECRET);
     }
 
-    const { _id, email } = await JwtUtils.verifyRefreshToken(
-      props.refreshToken,
-    );
+    const { _id, email } = await JwtUtils.verifyRefreshToken(refreshToken);
 
-    return {
-      accessToken: JwtUtils.generateAccessToken({
-        _id,
-        email,
-      }),
-    };
+    return JwtUtils.generateAccessToken({
+      _id,
+      email,
+    });
   }
 
   /**

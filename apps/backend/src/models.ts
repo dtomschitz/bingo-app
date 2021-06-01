@@ -4,12 +4,15 @@ export * from "../../../libs/models/src/lib/error.ts";
 
 import { User } from "../../../libs/models/src/lib/auth.ts";
 
-
-export interface GraphQLArgs<T> {
-  props: T,
+export interface ArgProps<T> {
+  props: T;
 }
 
-export interface GraphQLResolverContext {
+export interface BaseContext {
   authenticated: boolean;
-  user?: User
+  user?: User;
+}
+
+export interface AuthenticationContext extends BaseContext {
+  user: User;
 }

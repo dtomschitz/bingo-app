@@ -1,5 +1,6 @@
-import { Database } from "../database/database.ts";
-import { GameSchema } from '../schema/mongo/game.schema.ts';
+import { Database } from "../database/index.ts";
+import { GameInstanceSchema, GameSchema } from "../schema/index.ts";
+import { Document, Bson } from "../deps.ts";
 
 export class GameDatabase {
   public readonly collection;
@@ -12,12 +13,25 @@ export class GameDatabase {
     return this.collection.find().toArray();
   }
 
-  getGame(_id: string) {
-    return this.collection.findOne({ _id });
+  async getGame(_id: string | Document) {
+    return await this.collection.findOne({ _id: new Bson.ObjectId(_id) });
   }
 
-  async createGame(game: GameSchema) {
+  async createGame(game: Omit<GameSchema, "_id">) {
     const _id = await this.collection.insertOne(game);
-    return this.collection.findOne({ _id });
+    return this.getGame(_id);
+  }
+
+  createGameInstance(_id: string, instance: GameInstanceSchema) {
+    return this.collection.updateOne(
+      { _id: new Bson.ObjectId(_id) },
+      {
+        $set: {
+          "instances": {
+            [instance.userId]: instance,
+          },
+        },
+      },
+    );
   }
 }

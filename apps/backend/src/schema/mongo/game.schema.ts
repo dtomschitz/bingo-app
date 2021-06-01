@@ -1,35 +1,28 @@
-import { Bson } from "../../deps.ts";
-
 export interface GameSchema {
-  _id?: { $oid: string };
+  _id: string;
   title: string;
-  author: Bson.ObjectId;
-  fields: Field[];
-  gameInstances?: GameInstance[];
-  podium?: podium[];
+  authorId: string;
+  fields: GameField[];
+  instances: { [key: string]: GameInstanceSchema };
+  podium?: Podium[];
 }
 
-export interface Field {
+export interface GameField {
   _id: string;
   text: string;
-  checked: boolean
+  checked: boolean;
 }
 
-export interface GameInstance {
+export interface GameInstanceSchema {
   userId: string;
   fields: string[];
 }
 
-export interface podium {
+export interface Podium {
   userId: string;
-  placement: placement;
+  placement: Placement;
 }
 
-export interface CreateGame {
-  title: string;
-  fields: string[];
-}
-
-enum placement {
+enum Placement {
   first, second, third
 }

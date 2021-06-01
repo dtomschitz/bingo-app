@@ -1,7 +1,16 @@
 import { DetailedHTMLProps, HTMLAttributes } from 'react';
 import Modal, { ModalProps } from 'react-overlays/Modal';
 
-export interface DialogProps extends ModalProps { }
+export interface DialogState<T = any> {
+  show: boolean;
+  data?: T;
+  open: (data?: T) => void;
+  close: () => void;
+}
+
+export interface DialogProps<T = any> extends ModalProps {
+  data?: T;
+}
 
 type DivProps = DetailedHTMLProps<
   HTMLAttributes<HTMLDivElement>,
@@ -16,9 +25,16 @@ export const DialogContainer = () => {
   return <div id="dialog-container"></div>;
 };
 
-export const BaseDialog = (props: any) => {
+export const BaseDialog = (props: DialogProps) => {
   const containerRef = document.getElementById('dialog-container');
   const renderBackdrop = (props: any) => <DialogBackdrop {...props} />;
+
+  props = {
+    ...props,
+    open: undefined,
+    close: undefined,
+    data: undefined,
+  };
 
   return (
     <Modal

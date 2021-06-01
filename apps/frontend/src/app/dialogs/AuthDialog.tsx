@@ -1,15 +1,17 @@
 import { useState } from 'react';
-import { useHistory, withRouter } from 'react-router';
-import { useAuth } from '../auth';
-import { FlatButton } from '../components/common/Button';
-import { Card, CardActions, CardContent } from '../components/common/Card';
 import {
+  FlatButton,
+  Card,
+  CardActions,
+  CardContent,
   BaseDialog,
   DialogContent,
   DialogPane,
   DialogProps,
-} from '../components/common/Dialog';
-import { Tab, Tabs } from '../components/common/Tabs';
+  Tab,
+  Tabs,
+} from '../components/common';
+import { useAuthContext } from '../hooks';
 
 interface LoginProps {
   onLogin: (email: string, password: string) => void;
@@ -20,17 +22,17 @@ interface RegisterProps {
 }
 
 export const AuthDialog = (props: DialogProps) => {
-  const auth = useAuth();
+  const auth = useAuthContext();
 
   const onLogin = (email: string, password: string) => {
-    auth.login({ email, password }).then(() => {
-      props.onHide();
+    auth.login(email, password).then(() => {
+      props.close();
     });
   };
 
   const onRegister = (name: string, email: string, password: string) => {
     auth.register({ name, email, password }).then(() => {
-      props.onHide();
+      props.close();
     });
   };
 

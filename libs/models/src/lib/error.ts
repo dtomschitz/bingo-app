@@ -11,6 +11,8 @@ export enum ErrorType {
   USER_CREATION_FAILED = 'USER_CREATION_FAILED',
   INVALID_SERIALIZED_JWT_TOKEN = 'INVALID_SERIALIZED_JWT_TOKEN',
   GAME_NOT_FOUND = 'GAME_NOT_FOUND',
+  GAME_INSTANCE_NOT_FOUND = 'GAME_INSTANCE_NOT_FOUND',
+  GAME_INSTANCE_ALREADY_CREATED = 'GAME_INSTANCE_ALREADY_CREATED',
   GAME_CONTAINS_TOO_FEW_FIELDS = 'GAME_CONTAINS_TOO_FEW_FIELDS',
 }
 
@@ -28,6 +30,9 @@ export const errorMessages: { [key in ErrorType]: string } = {
   USER_CREATION_FAILED: 'Failed to create the new user!',
   INVALID_SERIALIZED_JWT_TOKEN: 'The serialization of the jwt is invalid',
   GAME_NOT_FOUND: 'There is no game stored for this user with the specified id',
+  GAME_INSTANCE_NOT_FOUND:
+    'There is no Instance with the specified id for this user',
+  GAME_INSTANCE_ALREADY_CREATED: 'There is only one instance allowed per user',
   GAME_CONTAINS_TOO_FEW_FIELDS:
     'Your request contains either too many or to few bingo fields',
 };

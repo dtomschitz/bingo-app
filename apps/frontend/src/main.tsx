@@ -11,24 +11,25 @@ import {
 } from '@apollo/client';
 import { setContext } from '@apollo/client/link/context';
 import { onError } from '@apollo/client/link/error';
-import { RefreshAccessTokenResult, ErrorType } from '@bingo/models';
+import { ErrorType } from '@bingo/models';
 import { BrowserRouter } from 'react-router-dom';
-import { AuthProvider } from './app/auth';
+import {
+  AuthProvider,
+  AppBarProvider,
+  GameInstanceProvider,
+  GamesProvider,
+} from './app/hooks';
 import App from './app/App';
 
 const REFRESH_ACCESS_TOKEN = gql`
   mutation RefreshAccessToken($refreshToken: String!) {
-    refreshAccessToken(props: { refreshToken: $refreshToken }) {
-      accessToken
-    }
+    refreshAccessToken(refreshToken: $refreshToken)
   }
 `;
 
-const refreshAccessToken = () => {
-  const refreshToken = localStorage.getItem('refreshToken');
-
+const refreshAccessToken = (refreshToken: string) => {
   return client
-    .mutate<{ refreshAccessToken: RefreshAccessTokenResult }>({
+    .mutate<{ refreshAccessToken: string }>({
       mutation: REFRESH_ACCESS_TOKEN,
       variables: {
         refreshToken,
@@ -36,9 +37,8 @@ const refreshAccessToken = () => {
       fetchPolicy: 'no-cache',
     })
     .then(result => {
-      const token = result.data.refreshAccessToken.accessToken;
+      const token = result.data.refreshAccessToken;
       localStorage.setItem('accessToken', token);
-
       return token;
     });
 };
@@ -49,8 +49,13 @@ const errorLink = onError(
       for (const i in graphQLErrors) {
         const error = graphQLErrors[i];
         if (error.message === ErrorType.UNAUTHORIZED) {
+          const refreshToken = localStorage.getItem('refreshToken');
+          if (!refreshToken) {
+            return forward(operation);
+          }
+
           return new Observable(observer => {
-            refreshAccessToken()
+            refreshAccessToken(refreshToken)
               .then(accessToken => {
                 console.log(accessToken);
 
@@ -97,19 +102,39 @@ const httpLink = createHttpLink({
   uri: 'http://localhost:8000/graphql',
 });
 
+const cache = new InMemoryCache({
+  typePolicies: {
+    BingoGame: {
+      fields: {
+        fields: {
+          merge(existing, incoming) {
+            return incoming;
+          },
+        },
+      },
+    },
+  },
+});
+
 const client = new ApolloClient({
   link: from([errorLink, authLink, httpLink]),
-  cache: new InMemoryCache(),
+  cache: cache,
 });
 
 ReactDOM.render(
   <StrictMode>
     <BrowserRouter>
-      <AuthProvider client={client}>
-        <ApolloProvider client={client}>
-          <App />
-        </ApolloProvider>
-      </AuthProvider>
+      <AppBarProvider>
+        <AuthProvider client={client}>
+          <GamesProvider client={client}>
+            <GameInstanceProvider client={client}>
+              <ApolloProvider client={client}>
+                <App />
+              </ApolloProvider>
+            </GameInstanceProvider>
+          </GamesProvider>
+        </AuthProvider>
+      </AppBarProvider>
     </BrowserRouter>
   </StrictMode>,
   document.getElementById('root'),

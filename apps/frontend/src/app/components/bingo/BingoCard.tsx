@@ -1,7 +1,5 @@
 import { useEffect, useReducer } from 'react';
 import { BingoField } from '@bingo/models';
-import { useQuery, gql } from '@apollo/client';
-import { useParams } from 'react-router-dom';
 
 interface BingoCardProps {
   fields?: BingoField[];
@@ -23,11 +21,10 @@ interface State {
 
 type Action =
   | {
-    type: 'updateBingoField';
-    update: { id: string; tile: number; changes: Partial<BingoField> };
-  }
-  | { type: 'updateState'; update: Partial<State> }
-  | { type: 'loadBingoField'; update: Partial<any> };
+      type: 'updateBingoField';
+      update: { id: string; tile: number; changes: Partial<BingoField> };
+    }
+  | { type: 'updateState'; update: Partial<State> };
 
 const reducer = (state: State, action: Action): State => {
   switch (action.type) {
@@ -47,8 +44,6 @@ const reducer = (state: State, action: Action): State => {
         ...state,
         ...action.update,
       };
-    case 'loadBingoField':
-      return { fields: action.update?.instance, score: 0, hasWon: false };
   }
 };
 
@@ -71,30 +66,17 @@ const findWinningPattern = (score: number) => {
   return winPatterns.find(pattern => (pattern & score) === pattern) || 0;
 };
 
-const GET_INSTANCE = gql`
-query GetInstance($id: ID!){
-  instance(_id: $id){
-    _id,
-    text
-  }
-}
-`
-
 export const BingoCard = ({ fields, onWin }: BingoCardProps) => {
-  const { id } = useParams();
-  const { error, loading, data } = useQuery(GET_INSTANCE, {
-    variables: {
-      id: id,
-    }
-  });
-
-  const initialState: State = { fields: fields ?? data?.instance?.map((field) => { return { _id: field._id, text: field.name } }), score: 0, hasWon: false };
+  const initialState: State = {
+    fields,
+    score: 0,
+    hasWon: false,
+  };
   const [state, dispatch] = useReducer(reducer, initialState);
 
   useEffect(() => {
     if (findWinningPattern(state.score) !== 0) {
-
-      onWin!();
+      onWin();
     }
   }, [onWin, state]);
 
@@ -110,15 +92,6 @@ export const BingoCard = ({ fields, onWin }: BingoCardProps) => {
       },
     });
   };
-
-  useEffect(() => {
-    if (data) {
-      dispatch({
-        type: 'loadBingoField',
-        update: data
-      })
-    }
-  }, [data])
 
   return (
     <>
