@@ -160,7 +160,6 @@ const BingoFieldItem = ({
   const onSave = () => {
     if (!value.trim()) {
       setValue(initialValue);
-      console.log('dadwad');
     } else {
       onUpdate(index, value);
     }

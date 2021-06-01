@@ -133,34 +133,20 @@ describe("Authentication", () => {
 
     defaultInvalidRequestTest(
       "should fail because login request is incorrect",
-      () =>
-        controller.loginUser({
-          email: "",
-          password: "",
-        }),
+      () => controller.loginUser("", ""),
     );
 
     it("should fail because the given login password is invalid", async () => {
-      const props: LoginProps = {
-        email: "test@test.de",
-        password: "dwadadawd",
-      };
-
       await assertThrowsAsync(
-        async () => await controller.loginUser(props),
+        async () => await controller.loginUser("test@test.de", "dwadadawd"),
         GQLError,
         ErrorType.INVALID_PASSWORD_FORMAT,
       );
     });
 
     it("should fail because the given email is invalid", async () => {
-      const props: LoginProps = {
-        email: "test@test.",
-        password: "SuperSicheresPasswort#1337#%",
-      };
-
       await assertThrowsAsync(
-        async () => await controller.loginUser(props),
+        async () => await controller.loginUser("test@test.", "SuperSicheresPasswort#1337#%"),
         GQLError,
         ErrorType.INVALID_EMAIL_FORMAT,
       );
@@ -168,10 +154,7 @@ describe("Authentication", () => {
 
     it("should login the user and return the jwt tokens", async () => {
       const { props } = await registerDefaultUser();
-      const result = await controller.loginUser({
-        email: props.email,
-        password: props.password,
-      });
+      const result = await controller.loginUser(props.email, props.password);
 
       assertExists(result.user._id);
       assertExists(result.accessToken);
@@ -187,16 +170,12 @@ describe("Authentication", () => {
 
     defaultInvalidRequestTest(
       "should fail because logout request is incorrect",
-      () => controller.logoutUser({ email: "" }),
+      () => controller.logoutUser(""),
     );
 
-    it("should fail because no use is associated with the given email", async () => {
-      const props: LogoutProps = {
-        email: "logouttest@test.de",
-      };
-
+    it("should fail because no use is associated with the given email", async () => {    
       await assertThrowsAsync(
-        async () => await controller.logoutUser(props),
+        async () => await controller.logoutUser("logouttest@test.de"),
         GQLError,
         ErrorType.USER_DOES_NOT_EXIST,
       );
@@ -204,9 +183,9 @@ describe("Authentication", () => {
 
     it("should logout the user with the given email", async () => {
       const { props: { email } } = await registerDefaultUser();
-      const result = await controller.logoutUser({ email });
+      const result = await controller.logoutUser(email);
 
-      assertEquals(result.success, true);
+      assertEquals(result, true);
     });
   });
 
@@ -216,16 +195,12 @@ describe("Authentication", () => {
 
     defaultInvalidRequestTest(
       "should fail because request is incorrect",
-      () => controller.verifyUser({ refreshToken: "" }),
+      () => controller.verifyUser(""),
     );
 
     it("should fail because the refresh token is serialized wrong", async () => {
-      const props: RefreshAccessTokenProps = {
-        refreshToken: "invalid_refresh_token",
-      };
-
       await assertThrowsAsync(
-        async () => await controller.verifyUser(props),
+        async () => await controller.verifyUser("invalid_refresh_token"),
         GQLError,
         ErrorType.INVALID_SERIALIZED_JWT_TOKEN,
       );
@@ -233,9 +208,7 @@ describe("Authentication", () => {
 
     it("should verify the user based on the given refresh token", async () => {
       const { result } = await registerDefaultUser();
-      const user = await controller.verifyUser({
-        refreshToken: result.refreshToken,
-      });
+      const user = await controller.verifyUser(result.refreshToken);
 
       assertEquals(user._id, result.user._id);
       assertEquals(user.name, result.user.name);
@@ -250,16 +223,12 @@ describe("Authentication", () => {
 
     defaultInvalidRequestTest(
       "should fail because request is incorrect",
-      () => controller.refreshAccessToken({ refreshToken: "" }),
+      () => controller.refreshAccessToken(""),
     );
 
     it("should fail because the refresh token is serialized wrong", async () => {
-      const props: RefreshAccessTokenProps = {
-        refreshToken: "invalid_refresh_token",
-      };
-
       await assertThrowsAsync(
-        async () => await controller.refreshAccessToken(props),
+        async () => await controller.refreshAccessToken("invalid_refresh_token"),
         GQLError,
         ErrorType.INVALID_SERIALIZED_JWT_TOKEN,
       );
@@ -267,9 +236,9 @@ describe("Authentication", () => {
 
     it("should refresh the access token with the given refresh token", async () => {
       const { result: { refreshToken } } = await registerDefaultUser();
-      const result = await controller.refreshAccessToken({ refreshToken });
+      const result = await controller.refreshAccessToken(refreshToken);
 
-      assertExists(result.accessToken);
+      assertExists(result);
     });
   });
 

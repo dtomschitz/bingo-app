@@ -25,8 +25,6 @@ export const CreateGameInstanceDialog = (
   const joinGame = async () => {
     const result = await createGameInstance(props.data?._id);
     if (!result) {
-      console.log('TEAdadwa');
-
       props.close();
       return;
     }

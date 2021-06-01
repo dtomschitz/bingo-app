@@ -37,10 +37,7 @@ export class GameInstanceController {
     return gameInstance;
   }
 
-  async createGameInstance(id: string, user: User) {
-    console.log(id);
-    
-
+  async createGameInstance(id: string, user: User) {    
     const game = await this.games.getGame(id);
     if (!game) {
       throw new GQLError(ErrorType.GAME_NOT_FOUND);
