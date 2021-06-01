@@ -2,10 +2,17 @@ export * from "../../../libs/models/src/lib/auth.ts";
 export * from "../../../libs/models/src/lib/bingo.ts";
 export * from "../../../libs/models/src/lib/error.ts";
 
-export interface GraphQLArgs<T> {
-  props: T,
+import { User } from "../../../libs/models/src/lib/auth.ts";
+
+export interface ArgProps<T> {
+  props: T;
 }
 
-export interface GraphQLResolverContext {
+export interface BaseContext {
   authenticated: boolean;
+  user?: User;
+}
+
+export interface AuthenticationContext extends BaseContext {
+  user: User;
 }

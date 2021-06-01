@@ -1,32 +1,34 @@
 import { Database } from "../database/index.ts";
-import { UserSchema } from '../schema/mongo/user.schema.ts';
+import { UserSchema } from "../schema/mongo/user.schema.ts";
 import { CreateUserProps, UpdateUserProps } from "../models.ts";
 
 export class UserDatabase {
-  private users;
+  public readonly collection;
 
   constructor(database: Database) {
-    this.users = database.getDatabase().collection<UserSchema>("users");
+    this.collection = database.getDatabase().collection<UserSchema>("users");
   }
 
   getUserByEmail = (email: string) => {
-    return this.users.findOne({ email });
-  }
+    return this.collection.findOne({ email });
+  };
 
   createUser = async (user: CreateUserProps) => {
-    const _id = await this.users.insertOne(user);
-    return this.users.findOne({ _id });
-  }
+    const _id = await this.collection.insertOne(user);
+    return this.collection.findOne({ _id });
+  };
 
   updateUser = (_id: string, update: UpdateUserProps) => {
-    return this.users.updateOne({ _id }, { $set: update }, { upsert: true });
-  }
+    return this.collection.updateOne({ _id }, { $set: update }, {
+      upsert: true,
+    });
+  };
 
   clear = () => {
-    return this.users.deleteMany({});
-  }
+    return this.collection.deleteMany({});
+  };
 
   drop = () => {
-    return this.users.drop();
-  }
+    return this.collection.drop();
+  };
 }

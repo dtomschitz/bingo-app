@@ -2,7 +2,7 @@ import { useEffect, useReducer } from 'react';
 import { BingoField } from '@bingo/models';
 
 interface BingoCardProps {
-  fields: BingoField[];
+  fields?: BingoField[];
   onWin?: () => void;
 }
 
@@ -67,12 +67,16 @@ const findWinningPattern = (score: number) => {
 };
 
 export const BingoCard = ({ fields, onWin }: BingoCardProps) => {
-  const initialState: State = { fields, score: 0, hasWon: false };
+  const initialState: State = {
+    fields,
+    score: 0,
+    hasWon: false,
+  };
   const [state, dispatch] = useReducer(reducer, initialState);
 
   useEffect(() => {
     if (findWinningPattern(state.score) !== 0) {
-      onWin!();
+      onWin();
     }
   }, [onWin, state]);
 
@@ -93,7 +97,7 @@ export const BingoCard = ({ fields, onWin }: BingoCardProps) => {
     <>
       <BingoCardHeader />
       <div className="bingo-card">
-        {state.fields.map((field, index) => (
+        {state.fields?.map((field, index) => (
           <BingoTile
             key={field._id}
             field={field}
@@ -126,8 +130,8 @@ const BingoTile = ({
   winningPattern,
 }: BingoFieldProps) => {
   const isWin = !!(winningPattern & (1 << tile));
-  const classes = `bingo-field 
-    ${field.isSelected ? 'selected' : ''} 
+  const classes = `bingo-field
+    ${field.isSelected ? 'selected' : ''}
     ${isWin ? 'win' : ''}`;
 
   return (

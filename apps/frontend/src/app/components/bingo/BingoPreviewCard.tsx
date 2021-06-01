@@ -2,8 +2,9 @@ import { BingoGame } from '@bingo/models';
 import { Card, CardTitle } from '../common/Card';
 
 interface BingoPreviewCardProps {
+  key: string;
   game: BingoGame;
-  onClick: () => void;
+  onClick?: () => void;
 }
 
 export const BingoPreviewCard = ({ game, onClick }: BingoPreviewCardProps) => {

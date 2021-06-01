@@ -1,95 +1,67 @@
 import { useState } from 'react';
-import { v4 as uuidv4 } from 'uuid';
-import { useMutation } from '@apollo/client';
-import gql from 'graphql-tag';
 import {
-  faTrash,
-  faCheck,
   faCandyCane,
+  faCheck,
   faInfoCircle,
+  faTrash,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { BingoField } from '@bingo/models';
-import { Button, FlatButton, IconButton } from '../components/common/Button';
 import {
   BaseDialog,
+  Button,
   DialogActions,
   DialogContent,
   DialogHeader,
   DialogPane,
   DialogProps,
-} from '../components/common/Dialog';
-import { Divider } from '../components/common/Divider';
+  Divider,
+  FlatButton,
+  IconButton,
+} from '../components/common';
+import { useGamesContext } from '../hooks';
 
 interface AddBingoFieldInputProps {
   onSubmit: (value: string) => void;
 }
 
 interface BingoFieldItemProps {
-  field: BingoField;
-  onUpdate: (value: string) => void;
-  onDelete: (id: string) => void;
+  index: number;
+  text: string;
+  onUpdate: (index: number, value: string) => void;
+  onDelete: (index: number) => void;
 }
 
-const CREATE_GAME = gql`
-  mutation CreateGame($title: String!, $fields: [CreateBingoField!]!) {
-    createGame(props: { title: $title, fields: $fields }) {
-      _id
-      title
-      fields {
-        _id
-        text
-      }
-    }
-  }
-`;
-
 export const CreateGameDialog = (props: DialogProps) => {
+  const { createGame } = useGamesContext();
+
   const [title, setTitle] = useState<string>('');
-  const [fields, setFields] = useState<BingoField[]>(
-    Array.from({ length: 31 }, (_, i) => i + 1).map(i => ({
-      _id: uuidv4(),
-      text: `TEST ${i}`,
-    })),
+  const [fields, setFields] = useState<string[]>(
+    Array.from({ length: 31 }, (_, i) => i + 1).map(i => `TEST ${i}`),
   );
-  const [createGame] = useMutation(CREATE_GAME);
 
-  const canSave = fields.length < 30;
+  const canSave = fields.length <= 25;
 
-  const saveGame = () => {
-    createGame({
-      variables: {
-        title,
-        fields,
-      },
-    });
-    //TODO: Create Game
-
-    hide();
-  };
-
-  const hide = () => {
-    props.onHide?.call(this);
+  const saveGame = async () => {
+    await createGame({ title, fields });
+    props.close();
   };
 
   const addBingoField = (text: string) => {
-    setFields(currentFields => [
-      ...currentFields,
-      {
-        _id: uuidv4(),
-        text,
-      },
-    ]);
+    setFields(currentFields => [...currentFields, text]);
   };
 
-  const updateBingoField = (id: string, text: string) => {
-    setFields(
-      fields.map(field => (field._id === id ? { ...field, text } : field)),
-    );
+  const updateBingoField = (index: number, text: string) => {
+    const updatedFields = [...fields];
+    updatedFields[index] = text;
+
+    setFields(updatedFields);
   };
 
-  const deleteBingoField = (id: string) => {
-    setFields(fields.filter(field => field._id !== id));
+  const deleteBingoField = (index: number) => {
+    const updatedFields = [...fields];
+    updatedFields.splice(index, 1);
+
+    setFields(updatedFields);
   };
 
   return (
@@ -106,11 +78,12 @@ export const CreateGameDialog = (props: DialogProps) => {
           </div>
           <AddBingoFieldInput onSubmit={addBingoField} />
           <div className="bingo-fields">
-            {fields.map(field => (
+            {fields.map((text, index) => (
               <BingoFieldItem
-                key={field._id}
-                field={field}
-                onUpdate={value => updateBingoField(field._id, value)}
+                key={`field-${index}`}
+                index={index}
+                text={text}
+                onUpdate={updateBingoField}
                 onDelete={deleteBingoField}
               />
             ))}
@@ -120,11 +93,11 @@ export const CreateGameDialog = (props: DialogProps) => {
           {canSave && (
             <div className="warning">
               <FontAwesomeIcon icon={faInfoCircle} />
-              Es müssen mindestens 30 Felder angelegt werden!
+              Es müssen mindestens 25 Felder angelegt werden!
             </div>
           )}
           <div className="buttons">
-            <Button onClick={hide}>Abbrechen</Button>
+            <Button onClick={props.close}>Abbrechen</Button>
             <FlatButton onClick={saveGame} disabled={canSave}>
               Speichern
             </FlatButton>
@@ -168,8 +141,13 @@ const AddBingoFieldInput = (props: AddBingoFieldInputProps) => {
   );
 };
 
-const BingoFieldItem = ({ field, onUpdate, onDelete }: BingoFieldItemProps) => {
-  const initialValue = field.text;
+const BingoFieldItem = ({
+  index,
+  text,
+  onUpdate,
+  onDelete,
+}: BingoFieldItemProps) => {
+  const initialValue = text;
 
   const [value, setValue] = useState(initialValue);
   const [editMode, setEditMode] = useState(false);
@@ -182,8 +160,9 @@ const BingoFieldItem = ({ field, onUpdate, onDelete }: BingoFieldItemProps) => {
   const onSave = () => {
     if (!value.trim()) {
       setValue(initialValue);
+      console.log('dadwad');
     } else {
-      onUpdate(value);
+      onUpdate(index, value);
     }
 
     setEditMode(false);
@@ -208,7 +187,7 @@ const BingoFieldItem = ({ field, onUpdate, onDelete }: BingoFieldItemProps) => {
         {editMode && <IconButton onClick={onSave} icon={faCheck} />}
         {editMode && <IconButton onClick={onCancel} icon={faCandyCane} />}
         {editMode && <Divider vertical />}
-        <IconButton onClick={() => onDelete(field._id)} icon={faTrash} />
+        <IconButton onClick={() => onDelete(index)} icon={faTrash} />
       </div>
     </div>
   );

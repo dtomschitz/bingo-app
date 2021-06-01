@@ -1,11 +1,11 @@
 mutation {
   registerUser(
-    userRegister: {
+    props: {
       email: "x-email@test.de"
       name: "test"
       password: "Test1234!"
     }
   ) {
-    done
+    accessToken
   }
 }

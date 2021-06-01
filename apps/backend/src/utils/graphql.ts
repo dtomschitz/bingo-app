@@ -1,14 +1,18 @@
 import { UserDatabase } from "../database/index.ts";
 import { JwtUtils } from "../utils/index.ts";
 import { Context, GQLError } from "../deps.ts";
-import { ErrorType, GraphQLArgs, GraphQLResolverContext } from "../models.ts";
+import {
+  AuthenticationContext,
+  BaseContext,
+  ErrorType,
+} from "../models.ts";
 
-type ResolverFn<T, R> = (resolver: Resolver<T>) => R;
+type ResolverFn<T, C, R> = (resolver: Resolver<T, C>) => R;
 
-interface Resolver<T> {
+interface Resolver<T, C> {
   parent: any;
-  args: GraphQLArgs<T>;
-  context: GraphQLResolverContext;
+  args: T;
+  context: C;
   info: any;
 }
 
@@ -17,13 +21,13 @@ const wrap = <T extends Array<any>, U>(fn: (...args: T) => U) => {
 };
 
 export const gqlRequestWrapper = <T, R = any>(
-  resolver: ResolverFn<T, R>,
+  resolver: ResolverFn<T, BaseContext, R>,
 ) => {
   return wrap(
     (
       parent: any,
-      args: GraphQLArgs<T>,
-      context: GraphQLResolverContext,
+      args: T,
+      context: BaseContext,
       info: any,
     ) => {
       return resolver({ parent, args, context, info });
@@ -32,22 +36,33 @@ export const gqlRequestWrapper = <T, R = any>(
 };
 
 export const requiresAuthentication = <T, R = any>(
-  context: GraphQLResolverContext,
-  resolver: ResolverFn<T, R>,
+  resolverFn: ResolverFn<T, AuthenticationContext, R>,
 ) => {
-  if (!context.authenticated) {    
-    throw new GQLError(ErrorType.UNAUTHORIZED);
-  }
+  return (resolver: Resolver<T, BaseContext>) => {
+    const context = resolver.context;
+    const user = context.user;
 
-  return resolver;
+    if (!user) {
+      throw new GQLError(ErrorType.UNAUTHORIZED);
+    }
+
+    return resolverFn({
+      ...resolver,
+      context: {
+        ...context,
+        user
+      }
+    });
+  };
 };
 
 export const createContext = async (
   { request }: Context,
   users: UserDatabase,
 ) => {
-  const context: GraphQLResolverContext = {
+  const context: BaseContext = {
     authenticated: false,
+    user: undefined,
   };
 
   const requestToken = request.headers.get("Authorization");
@@ -60,7 +75,8 @@ export const createContext = async (
 
   try {
     const { email } = await JwtUtils.verifyAccessToken(accessToken);
-    const user = users.getUserByEmail(email);
+    const user = await users.getUserByEmail(email);
+
     if (!user) {
       return context;
     }
@@ -68,6 +84,7 @@ export const createContext = async (
     return {
       ...context,
       authenticated: true,
+      user,
     };
   } catch {
     return context;

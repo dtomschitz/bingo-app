@@ -1,18 +1,12 @@
-import { useContext, useState } from 'react';
+import { createContext, ReactNode, useContext, useState } from 'react';
 import { gql, ApolloClient, NormalizedCacheObject } from '@apollo/client';
-import {
-  User,
-  AuthResult,
-  LogoutResult,
-  LoginProps,
-  RegisterProps,
-  RefreshAccessTokenResult,
-} from '@bingo/models';
-import { authContext } from './AuthProvider';
+import { User, AuthResult, RegisterProps } from '@bingo/models';
+import { useDialog } from './useDialog';
+import { DialogState } from '../components/common';
 
 const USER_LOGIN = gql`
   mutation UserLogin($email: String!, $password: String!) {
-    loginUser(props: { email: $email, password: $password }) {
+    loginUser(email: $email, password: $password) {
       user {
         name
         email
@@ -25,7 +19,7 @@ const USER_LOGIN = gql`
 
 const USER_LOGOUT = gql`
   mutation UserLogout($email: String!) {
-    logoutUser(props: { email: $email }) {
+    logoutUser(email: $email) {
       success
     }
   }
@@ -46,20 +40,40 @@ const REGISTER_USER = gql`
 
 const VERIFY_USER = gql`
   mutation VerifyUser($refreshToken: String!) {
-    verifyUser(props: { refreshToken: $refreshToken }) {
+    verifyUser(refreshToken: $refreshToken) {
       name
       email
     }
   }
 `;
 
-export const useAuth = () => {
-  return useContext(authContext);
-};
+interface AuthProviderProps {
+  children: ReactNode;
+  client: ApolloClient<NormalizedCacheObject>;
+}
 
-export const useProvideAuth = (client: ApolloClient<NormalizedCacheObject>) => {
+export interface AuthContext {
+  user: User;
+  dialog: DialogState;
+  isPending: boolean;
+  isLoggedIn: boolean;
+  isVerifying: boolean;
+  accessToken: string;
+  refreshToken: string;
+  login: (email: string, password: string) => Promise<boolean>;
+  register: (props: RegisterProps) => Promise<boolean>;
+  logout: () => Promise<boolean>;
+  verify: () => Promise<boolean>;
+}
+
+const context = createContext<AuthContext>(null);
+
+export const AuthProvider = ({ children, client }: AuthProviderProps) => {
   const [user, setUser] = useState<User>(undefined);
   const [isPending, setIsPending] = useState<boolean>(false);
+  const [isVerifying, setIsVerifying] = useState<boolean>(true);
+
+  const dialog = useDialog();
 
   const isLoggedIn = !!user;
   const accessToken = localStorage.getItem('accessToken');
@@ -85,7 +99,7 @@ export const useProvideAuth = (client: ApolloClient<NormalizedCacheObject>) => {
     localStorage.setItem('refreshToken', token);
   };
 
-  const login = ({ email, password }: LoginProps) => {
+  const login = (email: string, password: string) => {
     return client
       .mutate<{ loginUser: AuthResult }>({
         mutation: USER_LOGIN,
@@ -98,13 +112,12 @@ export const useProvideAuth = (client: ApolloClient<NormalizedCacheObject>) => {
       .then(result => {
         setAuthContext(result.data.loginUser);
         return true;
-      })
-      .catch(() => false);
+      });
   };
 
   const logout = () => {
     return client
-      .mutate<{ logoutUser: LogoutResult }>({
+      .mutate<{ logoutUser: boolean }>({
         mutation: USER_LOGOUT,
         variables: {
           email: user.email,
@@ -141,10 +154,12 @@ export const useProvideAuth = (client: ApolloClient<NormalizedCacheObject>) => {
 
   const verify = () => {
     if (!refreshToken) {
+      setIsVerifying(false);
       return;
     }
 
     setIsPending(true);
+
     return client
       .mutate<{ verifyUser: User }>({
         mutation: VERIFY_USER,
@@ -155,30 +170,37 @@ export const useProvideAuth = (client: ApolloClient<NormalizedCacheObject>) => {
       })
       .then(result => {
         setUser(result.data.verifyUser);
-
-        setTimeout(() => {
-          setIsPending(false);
-        }, 1000);
-
         return true;
       })
-      .catch(() => {
+      .catch(e => {
         resetAuthContext();
+        throw e;
+      })
+      .finally(() => {
         setIsPending(false);
-
-        return false;
+        setIsVerifying(false);
       });
   };
 
-  return {
-    user,
-    login,
-    logout,
-    register,
-    verify,
-    isPending,
-    isLoggedIn,
-    accessToken,
-    refreshToken,
-  };
+  return (
+    <context.Provider
+      value={{
+        user,
+        dialog,
+        isPending,
+        isLoggedIn,
+        isVerifying,
+        accessToken,
+        refreshToken,
+        login,
+        logout,
+        register,
+        verify,
+      }}
+    >
+      {children}
+    </context.Provider>
+  );
 };
+
+export const useAuthContext = () => useContext(context);

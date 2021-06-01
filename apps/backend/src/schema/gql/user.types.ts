@@ -7,24 +7,10 @@ export const UserTypes = gql`
     password: String
   }
 
-  input UserLogin {
-    email: String
-    password: String
-  }
-
-  input UserLogout {
-    email: String
-  }
-
   input UserRegister {
     name: String
     email: String
     password: String
-  }
-
-  input RefreshAccessTokenProps {
-    email: String
-    refreshToken: String
   }
 
   type AuthResult {
@@ -43,9 +29,9 @@ export const UserTypes = gql`
 
   extend type Mutation {
     registerUser(props: UserRegister!): AuthResult!
-    loginUser(props: UserLogin!): AuthResult!
-    logoutUser(props: UserLogout!): UserLogoutResult!
-    verifyUser(props: RefreshAccessTokenProps!): User!
-    refreshAccessToken(props: RefreshAccessTokenProps!): RefreshAccessTokenResult!
+    loginUser(email: String!, password: String!): AuthResult!
+    logoutUser(email: String!): Boolean!
+    verifyUser(refreshToken: String!): User!
+    refreshAccessToken(refreshToken: String!): String!
   }
 `;
