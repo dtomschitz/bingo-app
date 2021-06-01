@@ -1,74 +1,47 @@
-import { GQLError, v4, Bson, Context } from "../deps.ts";
-import { database } from "../db/database.ts";
-import { GameSchema } from "../schema/index.ts";
-import { validateAuthentication } from "./auth.controller.ts";
+import { GameDatabase } from "../database/index.ts";
+import { GQLError } from "../deps.ts";
+import { CreateGameProps, ErrorType } from "../models.ts";
 
-const gameCollection = database.getDatabase().collection<GameSchema>("game");
+export class GameController {
+  constructor(private games: GameDatabase) {}
 
-interface CreateGame {
-  title: string;
-  fields: BingoField[];
+  async getGames() {
+    return await this.games.getGames();
+  }
+
+  async getGame(_id: string) {
+    const game = await this.games.getGame(_id);
+    if (!game) {
+      throw new GQLError({
+        message: "There is no game stored with the specified id",
+      });
+    }
+
+    return game;
+  }
+
+  async createGame(props: CreateGameProps) {
+    if (!props.title || !props.fields) {
+      throw new GQLError(ErrorType.INCORRECT_REQUEST);
+    }
+  
+    /*if (props.fields.length < 25) {
+      throw new GQLError({
+        message: "Your request contains either too many or to few bingo fields",
+      });
+    }*/
+
+    const game = await this.games.createGame(props);
+    if (!game) {
+      throw new GQLError({
+        message: "Ydwadad",
+      });
+    }
+    
+    console.log(game);
+    
+
+    
+    return game;
+  }
 }
-
-interface BingoField {
-  _id: string;
-  text: string;
-  isSelected?: boolean;
-}
-
-export const getGames = async (
-  parent: any,
-  {}: any,
-  context: Context,
-  info: any
-) => {
-  return await gameCollection.find().toArray();
-};
-
-export const getGame = async (
-  parent: any,
-  { _id }: { _id: any },
-  context: Context,
-  info: any
-) => {
-  const game = await gameCollection.findOne({ _id: new Bson.ObjectId(_id) });
-  if (!game) {
-    throw new GQLError({
-      message: "There is no game stored with the specified id",
-    });
-  }
-
-  return game;
-};
-
-export const createGame = async (
-  parent: any,
-  { input }: { input: CreateGame },
-  context: Context,
-  info: any
-) => {  
-  await validateAuthentication(context);
-
-  if (!input.title || !input.fields) {
-    throw new GQLError({ message: "Your request has the wrong format" });
-  }
-
-  if (input.fields.length < 25) {
-    throw new GQLError({
-      message: "Your request contains either too many or to few bingo fields",
-    });
-  }
-
-  /*input.fields = input.fields.map((field) => ({
-    ...field,
-    _id: v4.generate(),
-  }));*/
-
-  const { title, fields } = input;
-  const gameId = await gameCollection.insertOne({
-    title,
-    fields,
-  });
-
-  return await gameCollection.findOne({ _id: gameId });
-};

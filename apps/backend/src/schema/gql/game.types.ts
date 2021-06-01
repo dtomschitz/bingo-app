@@ -2,6 +2,7 @@ import { gql } from "../../deps.ts";
 
 export const GameTypes = gql`
   input CreateBingoField {
+    _id: String!
     text: String!
   }
 
@@ -16,7 +17,7 @@ export const GameTypes = gql`
   }
 
   extend type Mutation {
-    createGame(input: CreateGame!): BingoGame!
+    createGame(props: CreateGame!): BingoGame!
   }
 
   type BingoGame {
@@ -26,7 +27,7 @@ export const GameTypes = gql`
   }
 
   type BingoField {
-    _id: ID
+    _id: String
     text: String!
   }
 `;

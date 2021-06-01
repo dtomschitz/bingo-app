@@ -62,6 +62,5 @@ export interface RegisterProps extends LoginProps {
 }
 
 export interface RefreshAccessTokenProps {
-  email: string;
   refreshToken: string;
 }
