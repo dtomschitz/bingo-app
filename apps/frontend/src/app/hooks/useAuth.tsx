@@ -1,51 +1,14 @@
 import { createContext, ReactNode, useContext, useState } from 'react';
-import { gql, ApolloClient, NormalizedCacheObject } from '@apollo/client';
+import { ApolloClient, NormalizedCacheObject } from '@apollo/client';
 import { User, AuthResult, RegisterProps } from '@bingo/models';
+import {
+  REGISTER_USER,
+  USER_LOGIN,
+  USER_LOGOUT,
+  VERIFY_USER,
+} from '@bingo/gql';
 import { useDialog } from './useDialog';
 import { DialogState } from '../components/common';
-
-const USER_LOGIN = gql`
-  mutation UserLogin($email: String!, $password: String!) {
-    loginUser(email: $email, password: $password) {
-      user {
-        name
-        email
-      }
-      accessToken
-      refreshToken
-    }
-  }
-`;
-
-const USER_LOGOUT = gql`
-  mutation UserLogout($email: String!) {
-    logoutUser(email: $email) {
-      success
-    }
-  }
-`;
-
-const REGISTER_USER = gql`
-  mutation UserRegister($name: String!, $email: String!, $password: String!) {
-    registerUser(props: { name: $name, email: $email, password: $password }) {
-      user {
-        name
-        email
-      }
-      accessToken
-      refreshToken
-    }
-  }
-`;
-
-const VERIFY_USER = gql`
-  mutation VerifyUser($refreshToken: String!) {
-    verifyUser(refreshToken: $refreshToken) {
-      name
-      email
-    }
-  }
-`;
 
 interface AuthProviderProps {
   children: ReactNode;

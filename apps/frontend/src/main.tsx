@@ -14,6 +14,8 @@ import {
 import { setContext } from '@apollo/client/link/context';
 import { onError } from '@apollo/client/link/error';
 import { ErrorType, getErrorMessage } from '@bingo/models';
+import { REFRESH_ACCESS_TOKEN } from '@bingo/gql';
+
 import {
   AuthProvider,
   AppBarProvider,
@@ -21,12 +23,6 @@ import {
   GamesProvider,
 } from './app/hooks';
 import App from './app/App';
-
-const REFRESH_ACCESS_TOKEN = gql`
-  mutation RefreshAccessToken($refreshToken: String!) {
-    refreshAccessToken(refreshToken: $refreshToken)
-  }
-`;
 
 const refreshAccessToken = (refreshToken: string) => {
   return client

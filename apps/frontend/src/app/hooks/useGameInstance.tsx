@@ -1,36 +1,7 @@
 import { createContext, ReactNode, useContext, useState } from 'react';
-import { gql, ApolloClient, NormalizedCacheObject } from '@apollo/client';
+import { ApolloClient, NormalizedCacheObject } from '@apollo/client';
 import { BingoGame, ErrorType } from '@bingo/models';
-
-const GET_GAME_INSTANCE = gql`
-  query GetGameInstance($id: ID!) {
-    instance(_id: $id) {
-      _id
-      authorId
-      title
-      fields {
-        _id
-        text
-      }
-      hasInstance
-    }
-  }
-`;
-
-const CREATE_GAME_INSTANCE = gql`
-  mutation CreateGameInstance($id: ID!) {
-    createGameInstance(_id: $id) {
-      _id
-      authorId
-      title
-      fields {
-        _id
-        text
-      }
-      hasInstance
-    }
-  }
-`;
+import { GET_GAME_INSTANCE, CREATE_GAME_INSTANCE } from '@bingo/gql';
 
 interface GameProviderProps {
   children: ReactNode;
