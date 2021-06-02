@@ -73,7 +73,10 @@ const Login = ({ onLogin }: LoginProps) => {
         />
       </CardContent>
       <CardActions>
-        <FlatButton onClick={() => onLogin(email, password)}>
+        <FlatButton
+          disabled={!email || !password}
+          onClick={() => onLogin(email, password)}
+        >
           Anmelden
         </FlatButton>
       </CardActions>

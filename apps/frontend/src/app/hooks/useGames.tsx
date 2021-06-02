@@ -25,21 +25,6 @@ const CREATE_GAME = gql`
   }
 `;
 
-const CREATE_GAME_INSTANCE = gql`
-  mutation CreateGameInstance($id: ID!) {
-    createGameInstance(_id: $id) {
-      _id
-      authorId
-      title
-      fields {
-        _id
-        text
-      }
-      hasInstance
-    }
-  }
-`;
-
 interface GamesProviderProps {
   children: ReactNode;
   client: ApolloClient<NormalizedCacheObject>;
@@ -47,18 +32,15 @@ interface GamesProviderProps {
 
 interface GamesContext {
   games: BingoGame[];
-  currentGame: BingoGame;
   loading: boolean;
   loadGames: () => Promise<boolean>;
   createGame: (props: CreateGameProps) => Promise<boolean>;
-  createGameInstance: (id: string) => Promise<boolean>;
 }
 
 const context = createContext<GamesContext>(undefined);
 
 export const GamesProvider = ({ children, client }: GamesProviderProps) => {
   const [games, setGames] = useState<BingoGame[]>([]);
-  const [currentGame, setCurrentGame] = useState<BingoGame>(undefined);
   const [loading, setLoading] = useState<boolean>(false);
 
   const loadGames = () => {
@@ -90,29 +72,13 @@ export const GamesProvider = ({ children, client }: GamesProviderProps) => {
       });
   };
 
-  const createGameInstance = (id: string) => {
-    setLoading(true);
-    return client
-      .mutate<{ createGameInstance: BingoGame }>({
-        mutation: CREATE_GAME_INSTANCE,
-        variables: { id },
-      })
-      .then(result => {
-        setCurrentGame(result.data.createGameInstance);
-        return true;
-      })
-      .finally(() => setLoading(false));
-  };
-
   return (
     <context.Provider
       value={{
         games,
-        currentGame,
         loading,
         loadGames,
         createGame,
-        createGameInstance,
       }}
     >
       {children}

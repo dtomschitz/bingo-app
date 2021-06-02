@@ -9,7 +9,7 @@ import {
   FlatButton,
   DialogProps,
 } from '../components/common';
-import { useGamesContext } from '../hooks';
+import { useGameInstanceContext } from '../hooks';
 
 export interface CreateGameInstanceDialogData {
   _id: string;
@@ -20,11 +20,11 @@ export const CreateGameInstanceDialog = (
   props: DialogProps<CreateGameInstanceDialogData>,
 ) => {
   const history = useHistory();
-  const { createGameInstance } = useGamesContext();
+  const { createGameInstance } = useGameInstanceContext();
 
   const joinGame = async () => {
-    const result = await createGameInstance(props.data?._id);
-    if (!result) {
+    const success = await createGameInstance(props.data?._id);
+    if (!success) {
       props.close();
       return;
     }

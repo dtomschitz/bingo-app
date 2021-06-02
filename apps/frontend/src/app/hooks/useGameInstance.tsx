@@ -17,6 +17,21 @@ const GET_GAME_INSTANCE = gql`
   }
 `;
 
+const CREATE_GAME_INSTANCE = gql`
+  mutation CreateGameInstance($id: ID!) {
+    createGameInstance(_id: $id) {
+      _id
+      authorId
+      title
+      fields {
+        _id
+        text
+      }
+      hasInstance
+    }
+  }
+`;
+
 interface GameProviderProps {
   children: ReactNode;
   client: ApolloClient<NormalizedCacheObject>;
@@ -28,6 +43,7 @@ interface GameInstanceContext {
   loading: boolean;
   hasGame: boolean;
   getGameInstance: (id: string) => Promise<void>;
+  createGameInstance: (id: string) => Promise<boolean>;
 }
 
 const context = createContext<GameInstanceContext>(undefined);
@@ -59,9 +75,31 @@ export const GameInstanceProvider = ({
       .finally(() => setLoading(false));
   };
 
+  const createGameInstance = (id: string) => {
+    setLoading(true);
+    return client
+      .mutate<{ createGameInstance: BingoGame }>({
+        mutation: CREATE_GAME_INSTANCE,
+        variables: { id },
+      })
+      .then(() => true)
+      .catch(({ message }) => {
+        setError(message as ErrorType);
+        return true;
+      })
+      .finally(() => setLoading(false));
+  };
+
   return (
     <context.Provider
-      value={{ game, error, hasGame, loading, getGameInstance }}
+      value={{
+        game,
+        error,
+        hasGame,
+        loading,
+        getGameInstance,
+        createGameInstance,
+      }}
     >
       {children}
     </context.Provider>
