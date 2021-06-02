@@ -1,5 +1,7 @@
 import { StrictMode } from 'react';
 import * as ReactDOM from 'react-dom';
+import { BrowserRouter } from 'react-router-dom';
+import toast, { Toaster } from 'react-hot-toast';
 import {
   ApolloClient,
   ApolloProvider,
@@ -11,8 +13,7 @@ import {
 } from '@apollo/client';
 import { setContext } from '@apollo/client/link/context';
 import { onError } from '@apollo/client/link/error';
-import { ErrorType } from '@bingo/models';
-import { BrowserRouter } from 'react-router-dom';
+import { ErrorType, getErrorMessage } from '@bingo/models';
 import {
   AuthProvider,
   AppBarProvider,
@@ -80,6 +81,13 @@ const errorLink = onError(
               });
           });
         }
+
+        const message = getErrorMessage(error.message as ErrorType);
+        if (message) {
+          toast.error(message);
+        }
+
+        return forward(operation);
       }
     }
 
@@ -136,6 +144,10 @@ ReactDOM.render(
         </AuthProvider>
       </AppBarProvider>
     </BrowserRouter>
+    <Toaster
+      position="top-right"
+      toastOptions={{ className: 'notification' }}
+    />
   </StrictMode>,
   document.getElementById('root'),
 );

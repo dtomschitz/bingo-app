@@ -29,7 +29,7 @@ export const errorMessages: { [key in ErrorType]: string } = {
   USER_DOES_NOT_EXIST: 'The given user is not registered!',
   USER_CREATION_FAILED: 'Failed to create the new user!',
   INVALID_SERIALIZED_JWT_TOKEN: 'The serialization of the jwt is invalid',
-  GAME_NOT_FOUND: 'There is no game stored for this user with the specified id',
+  GAME_NOT_FOUND: 'There is no active game with this id',
   GAME_INSTANCE_NOT_FOUND:
     'There is no Instance with the specified id for this user',
   GAME_INSTANCE_ALREADY_CREATED: 'There is only one instance allowed per user',
@@ -37,6 +37,6 @@ export const errorMessages: { [key in ErrorType]: string } = {
     'Your request contains either too many or to few bingo fields',
 };
 
-export const getErrorMessage = (type: ErrorType) => {
-  return errorMessages[type];
+export const getErrorMessage = (type: ErrorType | keyof typeof ErrorType) => {
+  return errorMessages[typeof type === 'string' ? ErrorType[type] : type];
 };

@@ -32,30 +32,9 @@ input {
   font-size: 16px;
 }
 
-/*button {
-  background: transparent;
-  display: inline-block;
-  border: 2px solid $primary;
-  color: $primary;
-  border-radius: 5px;
-  //padding: 0.5rem 0;
-  padding: 0.6rem 16px;
-  //margin: 0.5rem 1rem;
-  //width: 10rem;
-  cursor: pointer;
-}*/
-
 input:focus {
   background-color: rgba(255, 255, 255, 0.1);
 }
-
-/*button:hover {
-  background-color: rgba(255, 255, 255, 0.1);
-}
-
-button:active {
-  transform: translateY(1px);
-}*/
 
 ::-webkit-scrollbar {
   width: 10px;
@@ -88,4 +67,9 @@ button:active {
 
 .flex-spacer {
   flex: 1;
+}
+
+.notification {
+  color: white !important;
+  background-color: $light-background !important;
 }
