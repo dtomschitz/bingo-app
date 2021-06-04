@@ -85,3 +85,11 @@ export const MUTATE_FIELD = gql`
     }
   }
 `;
+
+export const UPDATE_TITLE = gql`
+  mutation Title($id: ID!, $title: String!) {
+    title(_id: $id, title: $title) {
+      title
+    }
+  }
+`;
