@@ -13,6 +13,7 @@ import { AppBarProvider, useAppBar, useAuthContext, useDialog } from './hooks';
 import { AuthDialog, CreateGameDialog } from './dialogs';
 import Game from './Game';
 import GamesList from './GamesList';
+import AdminPage from './components/bingo/admin/AdminPage';
 
 interface AppBarProps {
   elevated: boolean;
@@ -54,6 +55,7 @@ const App = () => {
         onScroll={e => handleScroll(e.currentTarget.scrollTop)}
       >
         <Switch>
+          <Route path="/game/:gameId/edit" component={AdminPage} />
           <Route path="/game/:gameId" component={Game} />
           <Route path="/">
             <GamesList />

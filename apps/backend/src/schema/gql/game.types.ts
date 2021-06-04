@@ -30,4 +30,10 @@ export const GameTypes = gql`
     _id: ID
     text: String
   }
+
+  enum MutationOperation {
+    ADD
+    UPDATE
+    DELETE
+  }
 `;

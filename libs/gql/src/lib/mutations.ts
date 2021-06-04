@@ -76,3 +76,12 @@ export const CREATE_GAME_INSTANCE = gql`
     }
   }
 `;
+
+export const MUTATE_FIELD = gql`
+  mutation Field($id: ID!, $operation: MutationOperation!, $field: Field!) {
+    field(_id: $id, operation: $operation, field: $field) {
+      _id
+      text
+    }
+  }
+`;

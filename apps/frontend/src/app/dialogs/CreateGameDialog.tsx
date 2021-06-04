@@ -108,7 +108,7 @@ export const CreateGameDialog = (props: DialogProps) => {
   );
 };
 
-const AddBingoFieldInput = (props: AddBingoFieldInputProps) => {
+export const AddBingoFieldInput = (props: AddBingoFieldInputProps) => {
   const [value, setValue] = useState('');
   const [state, setState] = useState(true);
 
@@ -141,7 +141,7 @@ const AddBingoFieldInput = (props: AddBingoFieldInputProps) => {
   );
 };
 
-const BingoFieldItem = ({
+export const BingoFieldItem = ({
   index,
   text,
   onUpdate,
@@ -158,6 +158,7 @@ const BingoFieldItem = ({
   };
 
   const onSave = () => {
+    console.log(value);
     if (!value.trim()) {
       setValue(initialValue);
     } else {
