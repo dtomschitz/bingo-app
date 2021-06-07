@@ -15,7 +15,6 @@ import { setContext } from '@apollo/client/link/context';
 import { onError } from '@apollo/client/link/error';
 import { ErrorType, getErrorMessage } from '@bingo/models';
 import { REFRESH_ACCESS_TOKEN } from '@bingo/gql';
-
 import {
   AuthProvider,
   AppBarProvider,
@@ -23,6 +22,8 @@ import {
   GamesProvider,
 } from './app/hooks';
 import App from './app/App';
+
+import '@szhsin/react-menu/dist/index.css';
 
 const refreshAccessToken = (refreshToken: string) => {
   return client

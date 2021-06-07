@@ -25,7 +25,7 @@ input {
   height: 40px;
   border: $primary 2px solid;
   border-radius: 5px;
-  color: $secondary;
+  color: #fff;
   background-color: transparent;
   outline: none;
   box-sizing: border-box;
@@ -45,7 +45,7 @@ input:focus {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: lighten($color: $background, $amount: 20%);
+  background: lighten($background, 20%);
   border-radius: 100px;
 }
 

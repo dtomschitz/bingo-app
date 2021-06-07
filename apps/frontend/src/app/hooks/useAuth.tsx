@@ -16,7 +16,7 @@ interface AuthProviderProps {
 }
 
 export interface AuthContext {
-  user: User;
+  user?: User;
   dialog: DialogState;
   isPending: boolean;
   isLoggedIn: boolean;
@@ -29,7 +29,19 @@ export interface AuthContext {
   verify: () => Promise<boolean>;
 }
 
-const context = createContext<AuthContext>(null);
+const context = createContext<AuthContext>({
+  user: undefined,
+  dialog: undefined,
+  isPending: true,
+  isLoggedIn: false,
+  isVerifying: true,
+  accessToken: undefined,
+  refreshToken: undefined,
+  login: undefined,
+  register: undefined,
+  logout: undefined,
+  verify: undefined,
+});
 
 export const AuthProvider = ({ children, client }: AuthProviderProps) => {
   const [user, setUser] = useState<User>(undefined);

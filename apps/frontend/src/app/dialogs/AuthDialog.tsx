@@ -6,7 +6,6 @@ import {
   CardContent,
   BaseDialog,
   DialogContent,
-  DialogPane,
   DialogProps,
   Tab,
   Tabs,
@@ -37,19 +36,17 @@ export const AuthDialog = (props: DialogProps) => {
   };
 
   return (
-    <BaseDialog {...props}>
-      <DialogPane className="auth-dialog">
-        <DialogContent>
-          <Tabs>
-            <Tab label="Anmelden">
-              <Login onLogin={onLogin} />
-            </Tab>
-            <Tab label="Registrieren">
-              <Register onRegister={onRegister} />
-            </Tab>
-          </Tabs>
-        </DialogContent>
-      </DialogPane>
+    <BaseDialog {...props} className="auth-dialog">
+      <DialogContent>
+        <Tabs>
+          <Tab label="Anmelden">
+            <Login onLogin={onLogin} />
+          </Tab>
+          <Tab label="Registrieren">
+            <Register onRegister={onRegister} />
+          </Tab>
+        </Tabs>
+      </DialogContent>
     </BaseDialog>
   );
 };

@@ -7,7 +7,7 @@ export const gameQueries = (controller: GameController) => {
   );
 
   const getGame = gqlRequestWrapper<{ _id: string }>(
-    requiresAuthentication(({ context, args }) =>
+    requiresAuthentication(({ args }) =>
       controller.getGame(args._id)
     ),
   );

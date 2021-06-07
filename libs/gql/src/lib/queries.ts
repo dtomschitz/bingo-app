@@ -4,9 +4,23 @@ export const GET_GAMES = gql`
   query GetGames {
     games {
       _id
+      authorId
       title
       phase
       hasInstance
+    }
+  }
+`;
+
+export const GET_GAME = gql`
+  query GetGame($id: ID!) {
+    game(_id: $id){
+      _id
+      title
+      fields {
+        _id
+        text
+      }
     }
   }
 `;

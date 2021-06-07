@@ -20,12 +20,25 @@
   }
 }
 
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+
+  .card-title {
+    margin-bottom: 0;
+  }
+}
+
 .card-title {
+  flex: 1;
   color: #fff;
   font-size: 26px;
   font-weight: 500;
   margin-bottom: 16px;
-  width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .card-content {

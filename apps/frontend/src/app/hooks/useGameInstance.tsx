@@ -17,7 +17,14 @@ interface GameInstanceContext {
   createGameInstance: (id: string) => Promise<boolean>;
 }
 
-const context = createContext<GameInstanceContext>(undefined);
+const context = createContext<GameInstanceContext>({
+  game: undefined,
+  error: undefined,
+  loading: false,
+  hasGame: false,
+  getGameInstance: undefined,
+  createGameInstance: undefined,
+});
 
 export const GameInstanceProvider = ({
   children,
