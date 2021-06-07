@@ -9,6 +9,8 @@ import {
   DeleteGameDialogData,
   ModifyGameFieldsDialog,
   ModifyGameFieldsDialogData,
+  ModifyGameTitleDialog,
+  ModifyGameTitleDialogData,
 } from './dialogs';
 import { useAuthContext, useDialog, useGamesContext } from './hooks';
 
@@ -18,6 +20,7 @@ const Games = () => {
   const { games, loadGames } = useGamesContext();
 
   const gameInstanceDialog = useDialog<CreateGameInstanceDialogData>();
+  const modifyGameTitleDialog = useDialog<ModifyGameTitleDialogData>();
   const modifyGameFieldsDialog = useDialog<ModifyGameFieldsDialogData>();
   const deleteGameDialog = useDialog<DeleteGameDialogData>();
 
@@ -49,6 +52,7 @@ const Games = () => {
               game.authorId === auth.user._id && (
                 <BingoGameContextMenu
                   {...game}
+                  onModifyTitle={() => modifyGameTitleDialog.open({ game })}
                   onModifyFields={() => modifyGameFieldsDialog.open({ game })}
                   onDeleteGame={() => deleteGameDialog.open({ game })}
                 />
@@ -60,6 +64,7 @@ const Games = () => {
         ))}
       </div>
       <CreateGameInstanceDialog {...gameInstanceDialog} />
+      <ModifyGameTitleDialog {...modifyGameTitleDialog} />
       <ModifyGameFieldsDialog {...modifyGameFieldsDialog} />
       <DeleteGameDialog {...deleteGameDialog} />
     </div>
