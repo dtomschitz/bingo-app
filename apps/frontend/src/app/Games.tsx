@@ -1,4 +1,4 @@
-import { BingoGame } from '@bingo/models';
+import { BingoGame, Phase } from '@bingo/models';
 import { useEffect } from 'react';
 import { useHistory } from 'react-router';
 import { BingoGameContextMenu, BingoPreviewCard } from './components/bingo';
@@ -14,7 +14,11 @@ import {
 } from './dialogs';
 import { useAuthContext, useDialog, useGamesContext } from './hooks';
 
-const Games = () => {
+interface GamesListProps {
+  phase: Phase;
+}
+
+const Games = (props: GamesListProps) => {
   const history = useHistory();
   const auth = useAuthContext();
   const { games, loadGames } = useGamesContext();
@@ -45,23 +49,25 @@ const Games = () => {
   return (
     <div className="home">
       <div className="games">
-        {games.map((game, i) => (
-          <BingoPreviewCard
-            key={`game-${i}`}
-            menu={
-              game.authorId === auth.user._id && (
-                <BingoGameContextMenu
-                  {...game}
-                  onModifyTitle={() => modifyGameTitleDialog.open({ game })}
-                  onModifyFields={() => modifyGameFieldsDialog.open({ game })}
-                  onDeleteGame={() => deleteGameDialog.open({ game })}
-                />
-              )
-            }
-            game={game}
-            onClick={() => openGame(game)}
-          />
-        ))}
+        {games
+          .filter(game => game.phase === props.phase)
+          .map((game, i) => (
+            <BingoPreviewCard
+              key={`game-${i}`}
+              menu={
+                game.authorId === auth.user._id && (
+                  <BingoGameContextMenu
+                    {...game}
+                    onModifyTitle={() => modifyGameTitleDialog.open({ game })}
+                    onModifyFields={() => modifyGameFieldsDialog.open({ game })}
+                    onDeleteGame={() => deleteGameDialog.open({ game })}
+                  />
+                )
+              }
+              game={game}
+              onClick={() => openGame(game)}
+            />
+          ))}
       </div>
       <CreateGameInstanceDialog {...gameInstanceDialog} />
       <ModifyGameTitleDialog {...modifyGameTitleDialog} />
