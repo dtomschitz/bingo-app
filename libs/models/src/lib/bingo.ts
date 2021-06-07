@@ -2,6 +2,7 @@ export interface BingoGame {
   _id: string;
   authorId: string;
   title: string;
+  phase: Phase;
   fields: BingoField[];
   hasInstance: boolean;
 }
@@ -14,6 +15,8 @@ export interface BingoField {
 }
 
 export type BingoFields = { [id: string]: BingoField };
+
+export type Phase = 'editing' | 'open' | 'playing' | 'finished';
 
 export interface CreateGame {
   title: string;

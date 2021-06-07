@@ -57,6 +57,7 @@ export const CREATE_GAME = gql`
     createGame(props: { title: $title, fields: $fields }) {
       _id
       title
+      phase
       fields {
         _id
         text

@@ -58,6 +58,7 @@ export const GameTypes = gql`
     _id: ID
     authorId: String!
     title: String!
+    phase: String!
     fields: [BingoField!]!
     hasInstance: Boolean
   }

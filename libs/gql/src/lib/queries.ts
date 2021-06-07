@@ -6,6 +6,7 @@ export const GET_GAMES = gql`
       _id
       authorId
       title
+      phase
       hasInstance
     }
   }

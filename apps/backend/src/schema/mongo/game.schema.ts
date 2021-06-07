@@ -5,6 +5,7 @@ export interface GameSchema {
   fields: GameField[];
   instances: { [key: string]: GameInstanceSchema };
   podium?: Podium[];
+  phase: Phase;
 }
 
 export interface GameField {
@@ -22,6 +23,8 @@ export interface Podium {
   userId: string;
   placement: Placement;
 }
+
+export type Phase = "editing" | "open" | "playing" | "finished";
 
 enum Placement {
   first, second, third

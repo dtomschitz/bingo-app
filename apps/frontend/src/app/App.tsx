@@ -8,6 +8,8 @@ import {
   DialogContainer,
   Divider,
   ProgressBar,
+  Tabs,
+  Tab,
 } from './components/common';
 import { AppBarProvider, useAppBar, useAuthContext, useDialog } from './hooks';
 import { AuthDialog, CreateGameDialog } from './dialogs';
@@ -59,7 +61,17 @@ const App = () => {
         <Switch>
           <Route path="/game/:gameId" component={Game} />
           <Route path="/">
-            <Games />
+            <Tabs>
+              <Tab label="closed games">
+                <Games phase="editing" />
+              </Tab>
+              <Tab label="open for registration">
+                <Games phase="open" />
+              </Tab>
+              <Tab label="currently playing">
+                <Games phase="playing" />
+              </Tab>
+            </Tabs>
           </Route>
         </Switch>
       </div>

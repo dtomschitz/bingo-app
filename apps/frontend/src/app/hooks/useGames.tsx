@@ -64,6 +64,7 @@ export const GamesProvider = ({ children, client }: GamesProviderProps) => {
         variables: {
           title,
           fields,
+          phase: "editing"
         },
       })
       .then(() => {
