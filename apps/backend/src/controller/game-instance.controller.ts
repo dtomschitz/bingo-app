@@ -30,6 +30,7 @@ export class GameInstanceController {
       _id: game._id,
       authorId: game.authorId,
       title: game.title,
+      phase: game.phase,
       fields,
       hasInstance: true,
     };
@@ -69,6 +70,7 @@ export class GameInstanceController {
       _id: game._id,
       authorId: game.authorId,
       title: game.title,
+      phase: game.phase,
       fields: randomFields.map(({ _id, text }) => ({ _id, text })),
       hasInstance: true,
     };

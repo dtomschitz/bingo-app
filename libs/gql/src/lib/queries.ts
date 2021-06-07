@@ -5,6 +5,7 @@ export const GET_GAMES = gql`
     games {
       _id
       title
+      phase
       hasInstance
     }
   }

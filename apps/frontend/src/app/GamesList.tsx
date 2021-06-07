@@ -1,4 +1,4 @@
-import { BingoGame } from '@bingo/models';
+import { BingoGame, Phase } from '@bingo/models';
 import { useEffect } from 'react';
 import { useHistory } from 'react-router';
 import { BingoPreviewCard } from './components/bingo';
@@ -8,7 +8,11 @@ import {
 } from './dialogs';
 import { useAuthContext, useDialog, useGamesContext } from './hooks';
 
-const GamesList = () => {
+interface GamesListProps {
+  phase: Phase;
+}
+
+const GamesList = (props: GamesListProps) => {
   const history = useHistory();
   const auth = useAuthContext();
   const dialog = useDialog<CreateGameInstanceDialogData>();
@@ -35,7 +39,7 @@ const GamesList = () => {
   return (
     <div className="home">
       <div className="games">
-        {games.map((game, i) => (
+        {games.filter(game => game.phase === props.phase).map((game, i) => (
           <BingoPreviewCard
             key={`game-${i}`}
             game={game}

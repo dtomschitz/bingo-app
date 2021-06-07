@@ -44,6 +44,7 @@ export class GameController {
       authorId: user._id,
       fields,
       instances: {},
+      phase: "editing"
     });
   }
 }
