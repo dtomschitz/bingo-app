@@ -18,7 +18,7 @@ export type BingoFields = { [id: string]: BingoField };
 
 export type Phase = 'editing' | 'open' | 'playing' | 'finished';
 
-export interface CreateGameProps {
+export interface CreateGame {
   title: string;
   fields: string[];
 }
