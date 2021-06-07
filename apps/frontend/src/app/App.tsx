@@ -12,8 +12,7 @@ import {
 import { AppBarProvider, useAppBar, useAuthContext, useDialog } from './hooks';
 import { AuthDialog, CreateGameDialog } from './dialogs';
 import Game from './Game';
-import GamesList from './GamesList';
-import AdminPage from './components/bingo/admin/AdminPage';
+import Games from './Games';
 
 interface AppBarProps {
   elevated: boolean;
@@ -44,7 +43,10 @@ const App = () => {
   }, [auth.isLoggedIn, auth.isVerifying, auth.dialog]);
 
   const handleScroll = (scrollTop: number) => {
-    setElevateAppBar(scrollTop > 10 ? true : false);
+    const elevated = scrollTop > 10 ? true : false;
+    if (elevateAppBar !== elevated) {
+      setElevateAppBar(elevated);
+    }
   };
 
   return (
@@ -55,10 +57,9 @@ const App = () => {
         onScroll={e => handleScroll(e.currentTarget.scrollTop)}
       >
         <Switch>
-          <Route path="/game/:gameId/edit" component={AdminPage} />
           <Route path="/game/:gameId" component={Game} />
           <Route path="/">
-            <GamesList />
+            <Games />
           </Route>
         </Switch>
       </div>
@@ -88,7 +89,7 @@ const AppBar = ({ onCreateGame, elevated }: AppBarProps) => {
       return undefined;
     }
 
-    return auth.user ? (
+    return auth.isLoggedIn ? (
       <>
         {isMoileSmall ? (
           <FlatButton className="create-game-button" onClick={onCreateGame}>

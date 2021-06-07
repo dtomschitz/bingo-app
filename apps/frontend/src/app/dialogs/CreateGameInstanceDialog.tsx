@@ -4,7 +4,6 @@ import {
   DialogActions,
   DialogContent,
   DialogHeader,
-  DialogPane,
   Button,
   FlatButton,
   DialogProps,
@@ -33,17 +32,15 @@ export const CreateGameInstanceDialog = (
   };
 
   return (
-    <BaseDialog {...props}>
-      <DialogPane className="create-game">
-        <DialogHeader>Spiel beitreten</DialogHeader>
-        <DialogContent>
-          <p>Möchtest du dem Spiel "{props.data?.title}" beitreten?</p>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={props.close}>Abbrechen</Button>
-          <FlatButton onClick={joinGame}>Beitreten</FlatButton>
-        </DialogActions>
-      </DialogPane>
+    <BaseDialog {...props} className="create-game">
+      <DialogHeader>Spiel beitreten</DialogHeader>
+      <DialogContent>
+        <p>Möchtest du dem Spiel "{props.data?.title}" beitreten?</p>
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={props.close}>Abbrechen</Button>
+        <FlatButton onClick={joinGame}>Beitreten</FlatButton>
+      </DialogActions>
     </BaseDialog>
   );
 };

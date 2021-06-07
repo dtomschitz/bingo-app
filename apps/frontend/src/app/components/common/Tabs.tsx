@@ -60,5 +60,5 @@ export const TabLabel = ({ label, onClick, isActive }: TabLabelProps) => {
 };
 
 export const Tab = (props: TabProps) => {
-  return <div className="tab"></div>;
+  return <div className="tab">{props.children}</div>;
 };

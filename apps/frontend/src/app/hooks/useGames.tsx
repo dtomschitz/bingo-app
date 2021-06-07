@@ -1,7 +1,18 @@
 import { createContext, ReactNode, useContext, useState } from 'react';
 import { ApolloClient, NormalizedCacheObject } from '@apollo/client';
-import { BingoGame, CreateGameProps } from '@bingo/models';
-import { GET_GAMES, CREATE_GAME } from '@bingo/gql';
+import {
+  BingoGame,
+  CreateGame,
+  UpdateGame,
+  FieldMutations,
+} from '@bingo/models';
+import {
+  GET_GAMES,
+  CREATE_GAME,
+  UPDATE_GAME,
+  DELETE_GAME,
+  MUTATE_FIELD,
+} from '@bingo/gql';
 
 interface GamesProviderProps {
   children: ReactNode;
@@ -12,10 +23,21 @@ interface GamesContext {
   games: BingoGame[];
   loading: boolean;
   loadGames: () => Promise<boolean>;
-  createGame: (props: CreateGameProps) => Promise<boolean>;
+  createGame: (props: CreateGame) => Promise<boolean>;
+  updateGame: (update: UpdateGame) => Promise<boolean>;
+  deleteGame: (id: string) => Promise<boolean>;
+  mutateField: (id: string, mutation: FieldMutations) => Promise<boolean>;
 }
 
-const context = createContext<GamesContext>(undefined);
+const context = createContext<GamesContext>({
+  games: [],
+  loading: false,
+  loadGames: undefined,
+  createGame: undefined,
+  updateGame: undefined,
+  deleteGame: undefined,
+  mutateField: undefined,
+});
 
 export const GamesProvider = ({ children, client }: GamesProviderProps) => {
   const [games, setGames] = useState<BingoGame[]>([]);
@@ -35,7 +57,7 @@ export const GamesProvider = ({ children, client }: GamesProviderProps) => {
       .finally(() => setLoading(false));
   };
 
-  const createGame = ({ title, fields }: CreateGameProps) => {
+  const createGame = ({ title, fields }: CreateGame) => {
     return client
       .mutate<{ game: BingoGame[] }>({
         mutation: CREATE_GAME,
@@ -50,6 +72,54 @@ export const GamesProvider = ({ children, client }: GamesProviderProps) => {
       });
   };
 
+  const updateGame = (update: UpdateGame) => {
+    return client
+      .mutate<{ game: BingoGame[] }>({
+        mutation: UPDATE_GAME,
+        variables: {
+          update,
+        },
+      })
+      .then(() => {
+        loadGames();
+        return true;
+      })
+      .catch(e => {
+        console.log(e);
+
+        return false;
+      });
+  };
+
+  const deleteGame = (id: string) => {
+    return client
+      .mutate<{ deleteGame: boolean }>({
+        mutation: DELETE_GAME,
+        variables: { id },
+      })
+      .then(() => {
+        loadGames();
+        return true;
+      })
+      .catch(() => false);
+  };
+
+  const mutateField = (id: string, mutation: FieldMutations) => {
+    return client
+      .mutate<{ mutateField: boolean }>({
+        mutation: MUTATE_FIELD,
+        variables: { id, mutation },
+      })
+      .then(result => {
+        loadGames();
+        return result.data.mutateField;
+      })
+      .catch(e => {
+        console.log(e);
+        return false;
+      });
+  };
+
   return (
     <context.Provider
       value={{
@@ -57,6 +127,9 @@ export const GamesProvider = ({ children, client }: GamesProviderProps) => {
         loading,
         loadGames,
         createGame,
+        updateGame,
+        deleteGame,
+        mutateField,
       }}
     >
       {children}

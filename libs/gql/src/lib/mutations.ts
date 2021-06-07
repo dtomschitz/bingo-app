@@ -4,6 +4,7 @@ export const USER_LOGIN = gql`
   mutation UserLogin($email: String!, $password: String!) {
     loginUser(email: $email, password: $password) {
       user {
+        _id
         name
         email
       }
@@ -25,6 +26,7 @@ export const REGISTER_USER = gql`
   mutation UserRegister($name: String!, $email: String!, $password: String!) {
     registerUser(props: { name: $name, email: $email, password: $password }) {
       user {
+        _id
         name
         email
       }
@@ -37,6 +39,7 @@ export const REGISTER_USER = gql`
 export const VERIFY_USER = gql`
   mutation VerifyUser($refreshToken: String!) {
     verifyUser(refreshToken: $refreshToken) {
+      _id
       name
       email
     }
@@ -77,12 +80,30 @@ export const CREATE_GAME_INSTANCE = gql`
   }
 `;
 
-export const MUTATE_FIELD = gql`
-  mutation Field($id: ID!, $operation: MutationOperation!, $field: Field!) {
-    field(_id: $id, operation: $operation, field: $field) {
+export const UPDATE_GAME = gql`
+  mutation UpdateGame($update: UpdateGame!) {
+    updateGame(props: $update) {
       _id
-      text
+      authorId
+      title
+      fields {
+        _id
+        text
+      }
+      hasInstance
     }
+  }
+`;
+
+export const DELETE_GAME = gql`
+  mutation DeleteGame($id: ID!) {
+    deleteGame(_id: $id)
+  }
+`;
+
+export const MUTATE_FIELD = gql`
+  mutation MutateField($id: ID!, $mutation: MutateField!) {
+    mutateField(props: { _id: $id, mutation: $mutation })
   }
 `;
 

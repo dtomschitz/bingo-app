@@ -1,18 +1,16 @@
-import {
-  GraphQLEnumType,
-} from 'graphql';
+import { GraphQLEnumType } from 'graphql';
 
-export const MutationOperation = new GraphQLEnumType({
-  name: 'MutationOperation',
+export const MutationType = new GraphQLEnumType({
+  name: 'MutationType',
   values: {
-      ADD: {
-          value: 0,
-      },
-      UPDATE: {
-          value: 1,
-      },
-      DELETE: {
-          value: 2,
-      },
+    CREATE: {
+      value: 0,
+    },
+    UPDATE: {
+      value: 1,
+    },
+    DELETE: {
+      value: 2,
+    },
   },
 });

@@ -1,13 +1,18 @@
-import { ButtonHTMLAttributes, DetailedHTMLProps } from 'react';
+import {
+  ButtonHTMLAttributes,
+  DetailedHTMLProps,
+  forwardRef,
+  LegacyRef,
+} from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import classNames from 'classnames';
 
-type ButtonProps = DetailedHTMLProps<
+export type ButtonProps = DetailedHTMLProps<
   ButtonHTMLAttributes<HTMLButtonElement>,
   HTMLButtonElement
 >;
 
-interface IconButtonProps extends Omit<ButtonProps, 'children'> {
+export interface IconButtonProps extends Omit<ButtonProps, 'children'> {
   icon: any;
 }
 
@@ -35,7 +40,7 @@ export const FlatButton = (props: ButtonProps) => {
   );
 };
 
-export const IconButton = (props: IconButtonProps) => {
+/*export const IconButton = (props: IconButtonProps) => {
   const className = classNames('icon-button', props?.className, {
     disabled: props?.disabled || false,
   });
@@ -47,4 +52,20 @@ export const IconButton = (props: IconButtonProps) => {
       </div>
     </button>
   );
-};
+};*/
+
+export const IconButton = forwardRef(
+  (props: IconButtonProps, ref: LegacyRef<HTMLButtonElement>) => {
+    const className = classNames('icon-button', props?.className, {
+      disabled: props?.disabled || false,
+    });
+
+    return (
+      <button {...props} ref={ref} className={className}>
+        <div className="icon">
+          <FontAwesomeIcon icon={props.icon} />
+        </div>
+      </button>
+    );
+  },
+);

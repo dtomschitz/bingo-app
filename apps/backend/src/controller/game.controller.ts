@@ -1,7 +1,14 @@
 import { GQLError, v4 } from "../deps.ts";
-import { CreateGameProps, ErrorType, User } from "../models.ts";
+import {
+  CreateGame,
+  ErrorType,
+  FieldMutations,
+  MutationType,
+  UpdateGame,
+  User,
+} from "../models.ts";
 import { GameDatabase } from "../database/index.ts";
-import { GameSchema, GameField } from "../schema/index.ts";
+import { GameField, GameSchema } from "../schema/index.ts";
 
 export class GameController {
   constructor(private games: GameDatabase) {}
@@ -24,7 +31,7 @@ export class GameController {
     return game;
   }
 
-  async createGame(props: CreateGameProps, user: User) {
+  async createGame(props: CreateGame, user: User) {
     if (!props.title || !props.fields) {
       throw new GQLError(ErrorType.INCORRECT_REQUEST);
     }
@@ -45,5 +52,69 @@ export class GameController {
       fields,
       instances: {},
     });
+  }
+
+  async updateGame(props: UpdateGame) {
+    if (!props._id || !props.changes) {
+      throw new GQLError(ErrorType.INCORRECT_REQUEST);
+    }
+
+    if (!await this.games.getGame(props._id)) {
+      throw new GQLError(ErrorType.GAME_NOT_FOUND);
+    }
+
+    return await this.games.updateGame(props);
+  }
+
+  async mutateGameField(_id: string, mutation: FieldMutations) {
+    console.log(mutation);
+
+    const game = await this.games.getGame(_id);
+    if (!game) {
+      throw new GQLError(ErrorType.GAME_NOT_FOUND);
+    }
+
+    if (mutation.type === MutationType.CREATE) {
+      await this.games.updateGame({
+        _id,
+        changes: {
+          fields: [...game.fields, {
+            _id: mutation._id,
+            text: mutation.text,
+          }],
+        },
+      });
+    } else if (mutation.type === MutationType.UPDATE) {
+      await this.games.updateGame({
+        _id,
+        changes: {
+          fields: game.fields.map((
+            field,
+          ) => (field._id === mutation._id
+            ? { ...field, ...mutation.changes }
+            : field)
+          ),
+        },
+      });
+    } else {
+      await this.games.updateGame({
+        _id,
+        changes: {
+          fields: game.fields.filter((field) => field._id !== mutation._id),
+        },
+      });
+    }
+
+    return true;
+  }
+
+  async deleteGame(id: string) {
+    const game = await this.games.getGame(id);
+    if (!game) {
+      throw new GQLError(ErrorType.GAME_NOT_FOUND);
+    }
+
+    await this.games.deleteGame(id);    
+    return true;
   }
 }

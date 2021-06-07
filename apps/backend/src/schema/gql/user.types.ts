@@ -2,6 +2,7 @@ import { gql } from "../../deps.ts";
 
 export const UserTypes = gql`
   type User {
+    _id: String
     email: String
     name: String
     password: String

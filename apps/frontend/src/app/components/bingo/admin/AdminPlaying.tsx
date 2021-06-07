@@ -1,5 +1,5 @@
-import React from 'react'
-import { Button } from '../../common'
+import React from 'react';
+import { Button } from '../../common';
 
 const AdminPlaying = () => {
   return (
@@ -8,7 +8,7 @@ const AdminPlaying = () => {
       <h3>Draw</h3>
       <Button>Zieh einen Eintrag</Button>
     </div>
-  )
-}
+  );
+};
 
-export default AdminPlaying
+export default AdminPlaying;

@@ -1,0 +1,12 @@
+.editable-input-field-container {
+  display: flex;
+
+  .actions {
+    display: flex;
+    margin-left: 16px;
+
+    .divider {
+      margin: 0 8px;
+    }
+  }
+}

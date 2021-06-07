@@ -1,4 +1,4 @@
-import { useMutation } from '@apollo/client';
+/*import { useMutation } from '@apollo/client';
 import { MUTATE_FIELD, MutationOperation, UPDATE_TITLE } from '@bingo/gql';
 import { BingoField, BingoGame } from '@bingo/models'
 import React, { useState } from 'react'
@@ -86,3 +86,4 @@ const AdminRegister: React.VFC<AdminRegisterProps> = ({ game, setIsRegister }) =
 }
 
 export default AdminRegister
+*/

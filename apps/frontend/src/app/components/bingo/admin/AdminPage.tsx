@@ -1,4 +1,4 @@
-import { useQuery } from '@apollo/client'
+/*import { useQuery } from '@apollo/client'
 import { GET_GAME } from '@bingo/gql';
 import { BingoGame } from '@bingo/models';
 import React, { useState } from 'react'
@@ -39,4 +39,4 @@ const AdminPage = () => {
   )
 }
 
-export default AdminPage
+export default AdminPage*/

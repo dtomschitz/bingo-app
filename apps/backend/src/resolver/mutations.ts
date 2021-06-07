@@ -6,11 +6,13 @@ import {
 import { gqlRequestWrapper, requiresAuthentication } from "../utils/index.ts";
 import {
   ArgProps,
-  CreateGameProps,
+  CreateGame,
+  UpdateGame,
   CreateUserProps,
   LoginProps,
   LogoutProps,
   RefreshAccessTokenProps,
+  MutateGameField
 } from "../models.ts";
 
 export const authMutations = (controller: AuthController) => {
@@ -44,13 +46,31 @@ export const authMutations = (controller: AuthController) => {
 };
 
 export const gameMutations = (controller: GameController) => {
-  const createGame = gqlRequestWrapper<ArgProps<CreateGameProps>>(
+  const createGame = gqlRequestWrapper<ArgProps<CreateGame>>(
     requiresAuthentication(({ context, args }) =>
       controller.createGame(args.props, context.user)
     ),
   );
 
-  return { createGame };
+  const updateGame = gqlRequestWrapper<ArgProps<UpdateGame>>(
+    requiresAuthentication(({ args }) =>
+      controller.updateGame(args.props)
+    ),
+  );
+
+  const deleteGame = gqlRequestWrapper<{ _id: string }>(
+    requiresAuthentication(({ args }) =>
+      controller.deleteGame(args._id)
+    ),
+  );
+
+  const mutateField = gqlRequestWrapper<ArgProps<MutateGameField>>(
+    requiresAuthentication(({ args }) =>
+      controller.mutateGameField(args.props._id, args.props.mutation)
+    ),
+  );
+
+  return { createGame, updateGame, deleteGame, mutateField};
 };
 
 export const gameInstanceMutations = (controller: GameInstanceController) => {

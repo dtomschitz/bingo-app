@@ -1,25 +1,25 @@
 import { BingoGame } from '@bingo/models';
-import { useHistory } from 'react-router-dom';
-import { useAuthContext } from '../../hooks/useAuth';
-import { Card, CardTitle } from '../common/Card';
+import { ReactNode } from 'react';
+import { Card, CardHeader, CardTitle } from '../common';
 
 interface BingoPreviewCardProps {
   key: string;
   game: BingoGame;
-  onClick?: () => void;
+  menu: ReactNode;
+  onClick: () => void;
 }
 
-export const BingoPreviewCard = ({ game, onClick }: BingoPreviewCardProps) => {
-  const history = useHistory();
-  const auth = useAuthContext();
-
-  //TODO null mit auth user id ersetzen
+export const BingoPreviewCard = ({
+  game,
+  menu,
+  onClick,
+}: BingoPreviewCardProps) => {
   return (
-    <Card>
-      <button onClick={onClick}>
+    <Card onClick={onClick}>
+      <CardHeader>
         <CardTitle>{game.title}</CardTitle>
-      </button>
-      {game.authorId !== null && <button onClick={() => history.push(`/game/${game._id}/edit`)}>Admin</button>}
+        {menu}
+      </CardHeader>
     </Card>
   );
 };

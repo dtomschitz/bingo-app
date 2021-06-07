@@ -20,6 +20,11 @@ export const Card = (props: CardProps) => {
   );
 };
 
+export const CardHeader = (props: CardProps) => {
+  const className = classNames('card-header', props?.className);
+  return <div className={className}>{props.children}</div>;
+};
+
 export const CardTitle = (props: CardProps) => {
   const className = classNames('card-title', props?.className);
   return <div className={className}>{props.children}</div>;
