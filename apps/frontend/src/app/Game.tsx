@@ -39,8 +39,21 @@ const Game = (props: RouteComponentProps<GameProps>) => {
 
   return (
     <div className="game">
-      {!loading && hasGame && <BingoCard fields={game.fields} onWin={onWin} />}
-      {!loading && <FlatButton className="bingo-button">BINGO</FlatButton>}
+      {!loading && (
+        <>
+          <AdminControls />
+          {hasGame && <BingoCard fields={game.fields} onWin={onWin} />}
+          <FlatButton className="bingo-button">BINGO</FlatButton>
+        </>
+      )}
+    </div>
+  );
+};
+
+const AdminControls = () => {
+  return (
+    <div>
+      <h1>Admin Panel</h1>
     </div>
   );
 };

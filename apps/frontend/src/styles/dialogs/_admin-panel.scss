@@ -1,0 +1,34 @@
+.admin-panel-dialog {
+  width: 500px;
+  min-height: 400px;
+  margin: 4px 0;
+
+  .dialog-content-container {
+    padding: 0;
+  }
+
+  .tab-content {
+    padding: 24px;
+  }
+
+  .general-tab,
+  .bingo-fields-tab {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+  }
+
+  .divider {
+    margin: 4px 0;
+  }
+
+  .control-buttons {
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+
+    button {
+      text-align: left;
+    }
+  }
+}

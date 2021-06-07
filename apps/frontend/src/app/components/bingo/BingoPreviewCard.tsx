@@ -1,16 +1,25 @@
 import { BingoGame } from '@bingo/models';
-import { Card, CardTitle } from '../common/Card';
+import { ReactNode } from 'react';
+import { Card, CardHeader, CardTitle } from '../common';
 
 interface BingoPreviewCardProps {
   key: string;
   game: BingoGame;
-  onClick?: () => void;
+  menu: ReactNode;
+  onClick: () => void;
 }
 
-export const BingoPreviewCard = ({ game, onClick }: BingoPreviewCardProps) => {
+export const BingoPreviewCard = ({
+  game,
+  menu,
+  onClick,
+}: BingoPreviewCardProps) => {
   return (
     <Card onClick={onClick}>
-      <CardTitle>{game.title}</CardTitle>
+      <CardHeader>
+        <CardTitle>{game.title}</CardTitle>
+        {menu}
+      </CardHeader>
     </Card>
   );
 };

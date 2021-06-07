@@ -6,32 +6,9 @@
       flex: 1;
     }
 
-    .title,
-    .input-container {
+    .title {
       display: flex;
       margin-bottom: 32px;
-    }
-
-    .input-container,
-    .bingo-field-container {
-      input {
-        margin-right: 16px;
-      }
-    }
-
-    .bingo-fields {
-      .bingo-field-container {
-        display: flex;
-        margin-bottom: 16px;
-
-        .actions {
-          display: flex;
-
-          .divider {
-            margin: 0 8px;
-          }
-        }
-      }
     }
   }
 

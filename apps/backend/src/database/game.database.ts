@@ -1,6 +1,7 @@
 import { Database } from "../database/index.ts";
 import { GameInstanceSchema, GameSchema } from "../schema/index.ts";
-import { Document, Bson } from "../deps.ts";
+import { Bson, Document } from "../deps.ts";
+import { UpdateGame } from "../models.ts";
 
 export class GameDatabase {
   public readonly collection;
@@ -13,13 +14,25 @@ export class GameDatabase {
     return this.collection.find().toArray();
   }
 
-  async getGame(_id: string | Document) {
-    return await this.collection.findOne({ _id: new Bson.ObjectId(_id) });
+  async getGame(id: string | Document) {
+    return await this.collection.findOne({ _id: new Bson.ObjectId(id) });
   }
 
   async createGame(game: Omit<GameSchema, "_id">) {
     const _id = await this.collection.insertOne(game);
     return this.getGame(_id);
+  }
+
+  async updateGame({ _id, changes }: UpdateGame) {
+    await this.collection.updateOne({ _id: new Bson.ObjectId(_id) }, {
+      $set: changes,
+    });
+
+    return this.getGame(_id);
+  }
+
+  async deleteGame(id: string) {
+    return await this.collection.deleteOne({ _id: new Bson.ObjectId(id) });
   }
 
   createGameInstance(_id: string, instance: GameInstanceSchema) {

@@ -1,54 +1,32 @@
-import { DetailedHTMLProps, forwardRef, HTMLAttributes } from 'react';
-import Modal, {
-  ModalHandle,
-  ModalProps,
-  RenderModalBackdropProps,
-} from 'react-overlays/Modal';
-
-export interface DialogState<T = any> {
-  show: boolean;
-  data?: T;
-  open: (data?: T) => void;
-  close: () => void;
-}
-
-export interface DialogProps<T = any> extends ModalProps {
-  data?: T;
-}
+import React, { DetailedHTMLProps, HTMLAttributes, ReactNode } from 'react';
+import Modal, { RenderModalBackdropProps } from 'react-overlays/Modal';
+import { faTimes } from '@fortawesome/free-solid-svg-icons';
+import classNames from 'classnames';
+import { IconButton } from './Button';
+import { Divider } from './Divider';
 
 type DivProps = DetailedHTMLProps<
   HTMLAttributes<HTMLDivElement>,
   HTMLDivElement
 >;
 
-export const DialogContainer = () => {
-  return <div id="dialog-container"></div>;
-};
+export interface DialogState<T = any> {
+  show: boolean;
+  fullscreen: boolean;
+  data?: T;
+  open: (data?: T) => void;
+  close: () => void;
+}
 
-export const BaseDialog = (props: DialogProps) => {
-  const containerRef = document.getElementById('dialog-container');
-  const renderBackdrop = (props: RenderModalBackdropProps) => (
-    <div {...props} className="dialog-backdrop"></div>
-  );
+export interface DialogProps<T = any> extends DialogState<T> {
+  children?: ReactNode;
+  className?: string;
+  hideTopDivider?: boolean;
+  hideBottomDivider?: boolean;
+  hideCloseButton?: boolean;
+}
 
-  props = {
-    ...props,
-    open: undefined,
-    close: undefined,
-    data: undefined,
-  };
-
-  return (
-    <Modal
-      className="dialog-wrapper"
-      container={containerRef}
-      renderBackdrop={renderBackdrop}
-      {...props}
-    ></Modal>
-  );
-};
-
-export const DialogPane = (props: DivProps) => {
+const DialogPane = (props: DivProps) => {
   return (
     <div {...props} className={`dialog-pane ${props?.className ?? ''}`}>
       <div className="dialog-container">{props.children}</div>
@@ -56,8 +34,82 @@ export const DialogPane = (props: DivProps) => {
   );
 };
 
+const renderBackdrop = (props: RenderModalBackdropProps) => (
+  <div {...props} className="dialog-backdrop"></div>
+);
+
+export const BaseDialog = (props: DialogProps) => {
+  const containerRef = document.getElementById('dialog-container');
+
+  const dialogClassName = classNames('dialog-wrapper', {
+    fullscreen: props.fullscreen,
+  });
+
+  const closeDialog = () => {
+    props.close();
+  };
+
+  return (
+    <Modal
+      className={dialogClassName}
+      container={containerRef}
+      renderBackdrop={renderBackdrop}
+      show={props.show}
+    >
+      <DialogPane className={props?.className}>
+        {React.Children.map(props.children, child => {
+          if (React.isValidElement(child)) {
+            if (child.type === DialogHeader) {
+              return (
+                <>
+                  <div className="dialog-header-container">
+                    {React.cloneElement(child)}
+                    {!props.hideCloseButton && (
+                      <IconButton onClick={closeDialog} icon={faTimes} />
+                    )}
+                  </div>
+                  {!props.hideTopDivider && <Divider />}
+                </>
+              );
+            }
+
+            if (child.type === DialogContent) {
+              return (
+                <div className="dialog-content-container">
+                  {React.cloneElement(child)}
+                </div>
+              );
+            }
+
+            if (child.type === DialogActions) {
+              return (
+                <>
+                  {!props.hideBottomDivider && <Divider />}
+                  <div className="dialog-actions-container">
+                    {React.cloneElement(child)}
+                  </div>
+                </>
+              );
+            }
+          }
+
+          return child;
+        })}
+      </DialogPane>
+    </Modal>
+  );
+};
+
+export const DialogContainer = () => {
+  return <div id="dialog-container"></div>;
+};
+
 export const DialogHeader = (props: DivProps) => {
-  return <div className="dialog-header" {...props}></div>;
+  return (
+    <div className="dialog-header" {...props}>
+      {props?.children}
+    </div>
+  );
 };
 
 export const DialogContent = (props: DivProps) => {
