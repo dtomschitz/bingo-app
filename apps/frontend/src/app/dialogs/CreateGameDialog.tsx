@@ -19,7 +19,7 @@ export const CreateGameDialog = (props: DialogProps) => {
   const state = useBingoFieldListState();
 
   const validateFieldsLength = state.fields.length <= 25;
-  const disableSaveButton = !validateFieldsLength && !title.trim();
+  const disableSaveButton = validateFieldsLength || !title.trim();
 
   const saveGame = async () => {
     await createGame({ title, fields: state.fields.map(field => field.text) });
