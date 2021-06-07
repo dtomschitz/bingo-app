@@ -2,6 +2,10 @@
   max-width: 750px;
   width: 100%;
 
+  @media only screen and (min-width: 1280px) {
+		max-width: 1000px;
+  }
+
   .bingo-button {
     width: 100%;
     height: 60px;
