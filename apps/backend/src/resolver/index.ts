@@ -10,6 +10,7 @@ import {
   gameMutations,
 } from "./mutations.ts";
 import { gameInstanceQueries, gameQueries } from "./queries.ts";
+import { gameSubscriptions } from "./subscriptions.ts";
 
 export const resolvers = (
   userDatabase: UserDatabase,
@@ -29,5 +30,8 @@ export const resolvers = (
       ...gameMutations(gameController),
       ...gameInstanceMutations(gameInstanceController),
     },
+    Subscription: {
+      ...gameSubscriptions()
+    }
   };
 };

@@ -34,7 +34,7 @@ export const GameTypes = gql`
     text: String
     changes: FieldChanges
   }
- 
+
   input FieldChanges {
     text: String
     checked: Boolean
@@ -52,6 +52,11 @@ export const GameTypes = gql`
     deleteGame(_id: ID!): Boolean!
     createGameInstance(_id: ID!): BingoGame!
     mutateField(props: MutateGameField!): Boolean!
+  }
+
+  extend type Subscription {
+    gameState(_id: ID!): BingoField!
+    test: String
   }
 
   type BingoGame {

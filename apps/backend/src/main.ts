@@ -18,7 +18,7 @@ await database.connect();
 const userDatabase = new UserDatabase(database);
 const gameDatabase = new GameDatabase(database);
 
-const GraphQLService = await applyGraphQL<Router>({
+const GraphQLService:any = await applyGraphQL<Router>({
   Router,
   typeDefs: GraphQLSchema,
   resolvers: resolvers(userDatabase, gameDatabase),
@@ -32,6 +32,8 @@ app.use(
     origin: "http://localhost:3000",
   }),
 );
+
+console.log(GraphQLService.routes()?.router)
 
 app.use(GraphQLService.routes(), GraphQLService.allowedMethods());
 
