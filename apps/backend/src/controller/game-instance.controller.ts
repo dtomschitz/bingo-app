@@ -1,6 +1,15 @@
 import { GQLError, WebSocket } from "../deps.ts";
-import { BingoField, BingoGame, ErrorType, User, BaseContext } from "../models.ts";
+import {
+  BingoField,
+  BingoGame,
+  ErrorType,
+  GameEvent,
+  GameEvents,
+  User,
+} from "../models.ts";
+import { Utils } from "../utils/utils.ts";
 import { GameDatabase } from "../database/index.ts";
+import { AuthController } from "../controller/index.ts";
 
 export class GameInstanceController {
   constructor(private games: GameDatabase) {}
@@ -37,7 +46,7 @@ export class GameInstanceController {
     return gameInstance;
   }
 
-  async createGameInstance(id: string, user: User) {    
+  async createGameInstance(id: string, user: User) {
     const game = await this.games.getGame(id);
     if (!game) {
       throw new GQLError(ErrorType.GAME_NOT_FOUND);
@@ -52,7 +61,7 @@ export class GameInstanceController {
     const randomFields: BingoField[] = [];
 
     while (randomFields.length < 25) {
-      const index = this.getRandomNumber(0, (game.fields.length - 1));
+      const index = Utils.getRandomNumber(0, (game.fields.length - 1));
       const field = fields[index];
 
       if (!randomFields.includes(field)) {
@@ -75,19 +84,5 @@ export class GameInstanceController {
     };
 
     return gameInstance;
-  }
-
-  async handleGameEvents(socket: WebSocket) {
-    for await (const e of socket) {
-      if (typeof e === 'string') {
-        const event = JSON.parse(e);
-        console.log(event.type);
-        await socket.send('HALLO TEST');
-      }
-    }
-  }
-
-  private getRandomNumber(min: number, max: number) {
-    return Math.floor(Math.random() * (max - min + 1) + min);
   }
 }

@@ -1,20 +1,26 @@
-import { useEffect, useMemo, useRef } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import useWebSocket, { ReadyState } from 'react-use-websocket';
 import { RouteComponentProps } from 'react-router';
 import { BingoCard } from './components/bingo';
 import { FlatButton } from './components/common';
-import { useAppBar, useGameInstanceContext, useGameSocket } from './hooks';
+import {
+  useAppBar,
+  useAuthContext,
+  useGameInstanceContext,
+  useGameSocket,
+} from './hooks';
 import { GameEvents } from '@bingo/models';
 
 interface GameProps {
   gameId: string;
 }
 
-const socketUrl = 'ws://localhost:8000/ws';
-
 const Game = (props: RouteComponentProps<GameProps>) => {
   const id = props.match.params.gameId;
   const appBar = useAppBar();
+  const auth = useAuthContext();
+
+  const [lastDrawnField, setLastDrawnField] = useState<string>();
 
   const {
     game,
@@ -26,7 +32,7 @@ const Game = (props: RouteComponentProps<GameProps>) => {
   const { sendEvent, state, socket } = useGameSocket({
     onMessage: event => {
       if (event.type === GameEvents.NEW_FIELD_DRAWN) {
-        // 
+        setLastDrawnField(event.data.field.text);
       }
       console.log(event);
     },
@@ -49,13 +55,13 @@ const Game = (props: RouteComponentProps<GameProps>) => {
   const onWin = () => {
     console.log('Win');
     //sendJsonMessage();
-    sendEvent(GameEvents.ON_WIN, {});
+    //s//endEvent(GameEvents.ON_WIN,);
     //TODO: Win Logic
   };
 
   const onTest = () => {
     //sendJsonMessage();
-    sendEvent(GameEvents.ON_WIN, {});
+    sendEvent(GameEvents.DRAW_FIELD, game._id);
     //TODO: Win Logic
   };
 
@@ -66,12 +72,16 @@ const Game = (props: RouteComponentProps<GameProps>) => {
   return (
     <div className="game">
       <span>The WebSocket is currently {connectionStatus}</span>
-      <FlatButton className="bingo-button" onClick={onTest}>
-        Socket Test
-      </FlatButton>
+
       {!loading && (
         <>
+          {hasGame && auth.user?._id === game.authorId && (
+            <FlatButton className="bingo-button" onClick={onTest}>
+              Draw Field
+            </FlatButton>
+          )}
           <AdminControls />
+          {!!lastDrawnField && <div>{lastDrawnField}</div>}
           {hasGame && <BingoCard fields={game.fields} onWin={onWin} />}
           <FlatButton className="bingo-button">BINGO</FlatButton>
         </>

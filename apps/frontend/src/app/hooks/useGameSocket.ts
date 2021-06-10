@@ -1,5 +1,6 @@
 import useWebSocket from 'react-use-websocket';
 import { GameEvents, GameEvent } from '@bingo/models';
+import { useAuthContext } from './useAuth';
 
 const socketUrl = 'ws://localhost:8000/ws';
 
@@ -8,21 +9,26 @@ interface GameSocketProps {
 }
 
 export const useGameSocket = ({ onMessage }: GameSocketProps) => {
+  const auth = useAuthContext();
+
   const { sendJsonMessage, readyState, getWebSocket } = useWebSocket(
     socketUrl,
     {
       onMessage: response => {
-        const event = response.data as GameEvent;
-        console.log(event);
-        onMessage(event);
+        if (typeof response.data === 'string') {
+          const event = JSON.parse(response.data) as GameEvent;
+          onMessage(event);
+        }
       },
       onError: console.log,
     },
   );
 
-  const sendEvent = (type: GameEvents, data: unknown) => {
+  const sendEvent = (type: GameEvents, id: string, data?: unknown) => {
     sendJsonMessage({
       type,
+      accessToken: auth.refreshToken,
+      id,
       data,
     });
   };

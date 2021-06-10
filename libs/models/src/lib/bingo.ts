@@ -61,11 +61,14 @@ export enum MutationType {
 export enum GameEvents {
   JOIN_GAME,
   LEAVE_GAME,
+  DRAW_FIELD,
   NEW_FIELD_DRAWN,
   ON_WIN,
 }
 
 export interface GameEvent<T = any> {
   type: GameEvents;
-  data: T;
+  accessToken: string;
+  id: string;
+  data?: T;
 }
