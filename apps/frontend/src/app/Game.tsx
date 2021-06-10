@@ -1,18 +1,21 @@
-import { useEffect } from 'react';
-import { RouteComponentProps, useHistory } from 'react-router';
+import { useEffect, useMemo, useRef } from 'react';
+import useWebSocket, { ReadyState } from 'react-use-websocket';
+import { RouteComponentProps } from 'react-router';
 import { BingoCard } from './components/bingo';
 import { FlatButton } from './components/common';
-import { useAppBar, useGameInstanceContext } from './hooks';
+import { useAppBar, useGameInstanceContext, useGameSocket } from './hooks';
+import { GameEvents } from '@bingo/models';
 
 interface GameProps {
   gameId: string;
 }
 
+const socketUrl = 'ws://localhost:8000/ws';
+
 const Game = (props: RouteComponentProps<GameProps>) => {
   const id = props.match.params.gameId;
-
-  const history = useHistory();
   const appBar = useAppBar();
+
   const {
     game,
     error,
@@ -20,6 +23,15 @@ const Game = (props: RouteComponentProps<GameProps>) => {
     loading,
     getGameInstance,
   } = useGameInstanceContext();
+  const { sendEvent, state, socket } = useGameSocket();
+
+  const connectionStatus = {
+    [ReadyState.CONNECTING]: 'Connecting',
+    [ReadyState.OPEN]: 'Open',
+    [ReadyState.CLOSING]: 'Closing',
+    [ReadyState.CLOSED]: 'Closed',
+    [ReadyState.UNINSTANTIATED]: 'Uninstantiated',
+  }[state];
 
   useEffect(() => {
     getGameInstance(id);
@@ -29,7 +41,14 @@ const Game = (props: RouteComponentProps<GameProps>) => {
 
   const onWin = () => {
     console.log('Win');
+    //sendJsonMessage();
+    sendEvent(GameEvents.ON_WIN, {});
+    //TODO: Win Logic
+  };
 
+  const onTest = () => {
+    //sendJsonMessage();
+    sendEvent(GameEvents.ON_WIN, {});
     //TODO: Win Logic
   };
 
@@ -39,6 +58,10 @@ const Game = (props: RouteComponentProps<GameProps>) => {
 
   return (
     <div className="game">
+      <span>The WebSocket is currently {connectionStatus}</span>
+      <FlatButton className="bingo-button" onClick={onTest}>
+        Socket Test
+      </FlatButton>
       {!loading && (
         <>
           <AdminControls />

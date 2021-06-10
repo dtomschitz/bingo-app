@@ -57,3 +57,10 @@ export enum MutationType {
   UPDATE = 'UPDATE',
   DELETE = 'DELETE',
 }
+
+export enum GameEvents {
+  JOIN_GAME,
+  LEAVE_GAME,
+  NEW_FIELD_DRAWN,
+  ON_WIN,
+}

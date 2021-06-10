@@ -1,4 +1,3 @@
-import { GameDatabase, UserDatabase } from "../database/index.ts";
 import {
   AuthController,
   GameController,
@@ -13,13 +12,10 @@ import { gameInstanceQueries, gameQueries } from "./queries.ts";
 import { gameSubscriptions } from "./subscriptions.ts";
 
 export const resolvers = (
-  userDatabase: UserDatabase,
-  gameDatabase: GameDatabase,
+  authController: AuthController,
+  gameController: GameController,
+  gameInstanceController : GameInstanceController
 ) => {
-  const authController = new AuthController(userDatabase);
-  const gameController = new GameController(gameDatabase);
-  const gameInstanceController = new GameInstanceController(gameDatabase);
-
   return {
     Query: {
       ...gameQueries(gameController),

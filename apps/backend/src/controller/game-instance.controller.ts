@@ -1,7 +1,6 @@
-import { GQLError } from "../deps.ts";
-import { BingoField, BingoGame, ErrorType, User } from "../models.ts";
+import { GQLError, WebSocket } from "../deps.ts";
+import { BingoField, BingoGame, ErrorType, User, BaseContext } from "../models.ts";
 import { GameDatabase } from "../database/index.ts";
-import { GameInstanceSchema, GameSchema } from "../schema/index.ts";
 
 export class GameInstanceController {
   constructor(private games: GameDatabase) {}
@@ -76,6 +75,13 @@ export class GameInstanceController {
     };
 
     return gameInstance;
+  }
+
+  async handleGameEvents(socket: WebSocket) {
+    for await (const event of socket) {
+      socket.send('Test');
+      console.log(event);
+    }
   }
 
   private getRandomNumber(min: number, max: number) {

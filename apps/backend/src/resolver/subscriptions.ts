@@ -17,7 +17,9 @@ export const gameSubscriptions = () => {
     { context, args },
   ) => {
     console.log("test");
-    context.pubsub.publish();
+    context.pubsub.publish(GAME_STATE, {
+      test: "Test"
+    });
     return "asdf";
   });
 
@@ -25,6 +27,6 @@ export const gameSubscriptions = () => {
     gameState: {
       subscribe: (_:any, __:any, {pubsub}:any) => pubsub.asyncIterator(GAME_STATE)
     },
-    test: gameState
+    //test: gameState
   };
 }
