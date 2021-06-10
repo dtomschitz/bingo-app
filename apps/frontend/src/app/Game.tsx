@@ -77,6 +77,7 @@ const Game = (props: RouteComponentProps<GameProps>) => {
           )}
           {hasGame && <BingoCard fields={game.instanceFields} onWin={onWin} />}
           <FlatButton className="bingo-button">BINGO</FlatButton>
+          <Collapsible trigger="Bingo Felder">Test</Collapsible>
         </>
       )}
     </div>

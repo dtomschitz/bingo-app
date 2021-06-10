@@ -6,12 +6,11 @@
   grid-template-rows: repeat(5, 1fr);
   gap: 0.5rem;
   user-select: none;
-  margin-bottom: 3rem;
+  max-height: 500px;
 
   @media only screen and (min-width: 786px) {
-		gap: 1rem;
+    gap: 1rem;
   }
-  
 }
 
 .bingo-card-header {
