@@ -64,3 +64,8 @@ export enum GameEvents {
   NEW_FIELD_DRAWN,
   ON_WIN,
 }
+
+export interface GameEvent<T = any> {
+  type: GameEvents;
+  data: T;
+}

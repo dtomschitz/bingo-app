@@ -23,7 +23,14 @@ const Game = (props: RouteComponentProps<GameProps>) => {
     loading,
     getGameInstance,
   } = useGameInstanceContext();
-  const { sendEvent, state, socket } = useGameSocket();
+  const { sendEvent, state, socket } = useGameSocket({
+    onMessage: event => {
+      if (event.type === GameEvents.NEW_FIELD_DRAWN) {
+        // 
+      }
+      console.log(event);
+    },
+  });
 
   const connectionStatus = {
     [ReadyState.CONNECTING]: 'Connecting',

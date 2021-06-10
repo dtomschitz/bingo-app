@@ -1,12 +1,23 @@
 import useWebSocket from 'react-use-websocket';
-import { GameEvents } from '@bingo/models';
+import { GameEvents, GameEvent } from '@bingo/models';
 
 const socketUrl = 'ws://localhost:8000/ws';
 
-export const useGameSocket = () => {
+interface GameSocketProps {
+  onMessage: (event: GameEvent) => void;
+}
+
+export const useGameSocket = ({ onMessage }: GameSocketProps) => {
   const { sendJsonMessage, readyState, getWebSocket } = useWebSocket(
     socketUrl,
-    { onMessage: console.log },
+    {
+      onMessage: response => {
+        const event = response.data as GameEvent;
+        console.log(event);
+        onMessage(event);
+      },
+      onError: console.log,
+    },
   );
 
   const sendEvent = (type: GameEvents, data: unknown) => {

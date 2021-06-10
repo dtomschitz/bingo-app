@@ -78,9 +78,12 @@ export class GameInstanceController {
   }
 
   async handleGameEvents(socket: WebSocket) {
-    for await (const event of socket) {
-      socket.send('Test');
-      console.log(event);
+    for await (const e of socket) {
+      if (typeof e === 'string') {
+        const event = JSON.parse(e);
+        console.log(event.type);
+        await socket.send('HALLO TEST');
+      }
     }
   }
 
