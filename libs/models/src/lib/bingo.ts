@@ -77,13 +77,13 @@ export enum MutationType {
 }
 
 export enum GameEventType {
-  JOIN_GAME,
-  LEAVE_GAME,
-  DRAW_FIELD,
-  NEW_FIELD_DRAWN,
-  ON_WIN,
-  GAME_NOT_FOUND,
-  UNAUTHORIZED,
+  JOIN_GAME = 'JOIN_GAME',
+  LEAVE_GAME = 'LEAVE_GAME',
+  DRAW_FIELD = 'DRAW_FIELD',
+  NEW_FIELD_DRAWN = 'NEW_FIELD_DRAWN',
+  ON_WIN = 'ON_WIN',
+  GAME_NOT_FOUND = 'GAME_NOT_FOUND',
+  UNAUTHORIZED = 'UNAUTHORIZED',
 }
 
 export interface GameEvent<T = any> {

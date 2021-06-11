@@ -3,7 +3,7 @@ import { RouteComponentProps } from 'react-router';
 import toast from 'react-hot-toast';
 import { BingoField, GameEvent, GameEventType } from '@bingo/models';
 import { BingoCard } from './components/bingo';
-import { Card, CardTitle, FlatButton } from './components/common';
+import { Card, CardTitle, FlatButton, Collapsible } from './components/common';
 import {
   useAppBar,
   useAuthContext,
@@ -28,9 +28,9 @@ const Game = (props: RouteComponentProps<GameProps>) => {
 
   const handleGameEvent = (event: GameEvent) => {
     if (event.type === GameEventType.UNAUTHORIZED) {
-      toast.error('Unauthorized request');
+      toast.error('Unautorisierter Zugriff');
     } else if (event.type === GameEventType.NEW_FIELD_DRAWN) {
-      toast('A new field has been drawn!', { icon: '🃏' });
+      toast('Es wurde ein neues Feld gezogen!', { icon: '🃏' });
       setCurrentField(event.data.field);
     }
     console.log(event);
@@ -72,7 +72,7 @@ const Game = (props: RouteComponentProps<GameProps>) => {
           )}
           {!!currentField && (
             <Card className="current-field">
-              <CardTitle>Aktuelle Feld: {currentField.text}</CardTitle>
+              <CardTitle>Aufgedecktes Feld: {currentField.text}</CardTitle>
             </Card>
           )}
           {hasGame && <BingoCard fields={game.instanceFields} onWin={onWin} />}
