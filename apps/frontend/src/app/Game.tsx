@@ -36,6 +36,7 @@ const Game = (props: RouteComponentProps<GameProps>) => {
       }
       console.log(event);
     },
+    id
   });
 
   const connectionStatus = {

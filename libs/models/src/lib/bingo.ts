@@ -12,6 +12,7 @@ export interface BingoField {
   text: string;
   isSelected?: boolean;
   isChecked?: boolean;
+  checked?: boolean;
 }
 
 export type BingoFields = { [id: string]: BingoField };

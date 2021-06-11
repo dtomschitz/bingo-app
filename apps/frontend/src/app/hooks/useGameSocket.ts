@@ -6,9 +6,10 @@ const socketUrl = 'ws://localhost:8000/ws';
 
 interface GameSocketProps {
   onMessage: (event: GameEvent) => void;
+  id: string;
 }
 
-export const useGameSocket = ({ onMessage }: GameSocketProps) => {
+export const useGameSocket = ({ onMessage, id }: GameSocketProps) => {
   const auth = useAuthContext();
 
   const { sendJsonMessage, readyState, getWebSocket } = useWebSocket(
@@ -21,6 +22,14 @@ export const useGameSocket = ({ onMessage }: GameSocketProps) => {
         }
       },
       onError: console.log,
+      onOpen: () => {
+        sendJsonMessage({
+          type: GameEvents.JOIN_GAME,
+          accessToken: auth.refreshToken,
+          id: id,
+          data: {},
+        })
+      }
     },
   );
 
