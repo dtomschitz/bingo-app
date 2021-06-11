@@ -1,9 +1,10 @@
 import { useEffect, useReducer } from 'react';
 import { BingoField } from '@bingo/models';
+import { useGamesContext } from '../../hooks';
 
 interface BingoCardProps {
   fields?: BingoField[];
-  onWin?: () => void;
+  onWin?: (fields: BingoField[]) => void;
 }
 
 interface BingoFieldProps {
@@ -76,7 +77,10 @@ export const BingoCard = ({ fields, onWin }: BingoCardProps) => {
 
   useEffect(() => {
     if (findWinningPattern(state.score) !== 0) {
-      onWin();
+      /*const selectedFields = state.fields
+        .filter(field => field.isSelected)
+        .map(field => field._id);*/
+      onWin(state.fields);
     }
   }, [onWin, state]);
 

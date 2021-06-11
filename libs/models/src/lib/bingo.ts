@@ -14,9 +14,12 @@ export interface BingoField {
   isChecked?: boolean;
 }
 
-export type BingoFields = { [id: string]: BingoField };
-
 export type Phase = 'editing' | 'open' | 'playing' | 'finished';
+
+export interface ValidateWin {
+  _id: string;
+  fieldIds: string[]; 
+}
 
 export interface CreateGame {
   title: string;

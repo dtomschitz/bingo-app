@@ -14,6 +14,7 @@ export enum ErrorType {
   GAME_INSTANCE_NOT_FOUND = 'GAME_INSTANCE_NOT_FOUND',
   GAME_INSTANCE_ALREADY_CREATED = 'GAME_INSTANCE_ALREADY_CREATED',
   GAME_CONTAINS_TOO_FEW_FIELDS = 'GAME_CONTAINS_TOO_FEW_FIELDS',
+  GAME_FIELD_NOT_CHECKED = 'GAME_FIELD_NOT_CHECKED'
 }
 
 export const errorMessages: { [key in ErrorType]: string } = {
@@ -35,6 +36,8 @@ export const errorMessages: { [key in ErrorType]: string } = {
   GAME_INSTANCE_ALREADY_CREATED: 'There is only one instance allowed per user',
   GAME_CONTAINS_TOO_FEW_FIELDS:
     'Your request contains either too many or to few bingo fields',
+  GAME_FIELD_NOT_CHECKED:
+    'Your field is not checked'
 };
 
 export const getErrorMessage = (type: ErrorType | keyof typeof ErrorType) => {
