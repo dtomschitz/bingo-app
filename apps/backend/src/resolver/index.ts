@@ -9,7 +9,6 @@ import {
   gameMutations,
 } from "./mutations.ts";
 import { gameInstanceQueries, gameQueries } from "./queries.ts";
-import { gameSubscriptions } from "./subscriptions.ts";
 
 export const resolvers = (
   authController: AuthController,
@@ -25,9 +24,6 @@ export const resolvers = (
       ...authMutations(authController),
       ...gameMutations(gameController),
       ...gameInstanceMutations(gameInstanceController),
-    },
-    Subscription: {
-      ...gameSubscriptions()
     }
   };
 };

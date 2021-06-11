@@ -1,8 +1,7 @@
 import { createContext, ReactNode, useContext, useState } from 'react';
 import { ApolloClient, NormalizedCacheObject } from '@apollo/client';
 import { GET_GAME_INSTANCE, CREATE_GAME_INSTANCE } from '@bingo/gql';
-import { BingoGame, ErrorType, GameEvents } from '@bingo/models';
-import { WebSocketLike } from 'react-use-websocket/dist/lib/types';
+import { BingoGame, ErrorType } from '@bingo/models';
 
 interface GameProviderProps {
   children: ReactNode;

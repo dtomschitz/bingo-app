@@ -3,16 +3,33 @@ export interface BingoGame {
   authorId: string;
   title: string;
   phase: Phase;
+  podium?: Podium[];
   fields: BingoField[];
+  instanceFields?: BingoInstanceField[];
   hasInstance: boolean;
 }
 
 export interface BingoField {
   _id: string;
   text: string;
-  isSelected?: boolean;
-  isChecked?: boolean;
-  checked?: boolean;
+  checked: boolean;
+}
+
+export interface BingoInstanceField {
+  _id: string;
+  text: string;
+  selected?: boolean;
+}
+
+export interface Podium {
+  userId: string;
+  placement: Placement;
+}
+
+enum Placement {
+  first,
+  second,
+  third,
 }
 
 export type BingoFields = { [id: string]: BingoField };
@@ -59,16 +76,18 @@ export enum MutationType {
   DELETE = 'DELETE',
 }
 
-export enum GameEvents {
+export enum GameEventType {
   JOIN_GAME,
   LEAVE_GAME,
   DRAW_FIELD,
   NEW_FIELD_DRAWN,
   ON_WIN,
+  GAME_NOT_FOUND,
+  UNAUTHORIZED,
 }
 
 export interface GameEvent<T = any> {
-  type: GameEvents;
+  type: GameEventType;
   accessToken: string;
   id: string;
   data?: T;

@@ -55,8 +55,6 @@ const errorLink = onError(
           return new Observable(observer => {
             refreshAccessToken(refreshToken)
               .then(accessToken => {
-                console.log(accessToken);
-
                 operation.setContext(({ headers = {} }: any) => ({
                   headers: {
                     ...headers,

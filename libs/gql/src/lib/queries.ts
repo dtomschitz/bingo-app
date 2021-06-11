@@ -6,6 +6,11 @@ export const GET_GAMES = gql`
       _id
       authorId
       title
+      fields {
+        _id
+        text
+        checked
+      }
       phase
       hasInstance
     }
@@ -14,12 +19,13 @@ export const GET_GAMES = gql`
 
 export const GET_GAME = gql`
   query GetGame($id: ID!) {
-    game(_id: $id){
+    game(_id: $id) {
       _id
       title
       fields {
         _id
         text
+        checked
       }
     }
   }
@@ -34,6 +40,12 @@ export const GET_GAME_INSTANCE = gql`
       fields {
         _id
         text
+        checked
+      }
+      instanceFields {
+        _id
+        text
+        selected
       }
       hasInstance
     }

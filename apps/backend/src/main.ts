@@ -25,6 +25,7 @@ const gameDatabase = new GameDatabase(database);
 const authController = new AuthController(userDatabase);
 const gameController = new GameController(gameDatabase);
 const gameInstanceController = new GameInstanceController(gameDatabase);
+
 const socketService = new SocketService(authController, gameDatabase);
 
 const GraphQLService: any = await applyGraphQL<Router>({

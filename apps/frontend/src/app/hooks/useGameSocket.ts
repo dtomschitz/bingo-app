@@ -1,20 +1,21 @@
 import useWebSocket from 'react-use-websocket';
-import { GameEvents, GameEvent } from '@bingo/models';
+import { GameEventType, GameEvent, ConnectionState } from '@bingo/models';
 import { useAuthContext } from './useAuth';
 
 const socketUrl = 'ws://localhost:8000/ws';
 
 interface GameSocketProps {
-  onMessage: (event: GameEvent) => void;
   id: string;
+  onMessage: (event: GameEvent) => void;
 }
 
-export const useGameSocket = ({ onMessage, id }: GameSocketProps) => {
+export const useGameSocket = ({ id, onMessage }: GameSocketProps) => {
   const auth = useAuthContext();
 
   const { sendJsonMessage, readyState, getWebSocket } = useWebSocket(
     socketUrl,
     {
+      onOpen: () => sendEvent(GameEventType.JOIN_GAME),
       onMessage: response => {
         if (typeof response.data === 'string') {
           const event = JSON.parse(response.data) as GameEvent;
@@ -22,18 +23,10 @@ export const useGameSocket = ({ onMessage, id }: GameSocketProps) => {
         }
       },
       onError: console.log,
-      onOpen: () => {
-        sendJsonMessage({
-          type: GameEvents.JOIN_GAME,
-          accessToken: auth.refreshToken,
-          id: id,
-          data: {},
-        })
-      }
     },
   );
 
-  const sendEvent = (type: GameEvents, id: string, data?: unknown) => {
+  const sendEvent = <T = unknown>(type: GameEventType, data?: T) => {
     sendJsonMessage({
       type,
       accessToken: auth.refreshToken,
@@ -44,7 +37,7 @@ export const useGameSocket = ({ onMessage, id }: GameSocketProps) => {
 
   return {
     sendEvent,
-    state: readyState,
+    state: ConnectionState[Object.values(ConnectionState)[readyState]],
     socket: getWebSocket(),
   };
 };

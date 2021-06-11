@@ -23,16 +23,16 @@ export class GameDatabase {
     return this.getGame(_id);
   }
 
-  async updateGame({ _id, changes }: UpdateGame) {
-    await this.collection.updateOne({ _id: new Bson.ObjectId(_id) }, {
+  async updateGame(_id: Bson.ObjectId, changes: Partial<GameSchema>) {    
+    await this.collection.updateOne({ _id }, {
       $set: changes,
-    });
+    });    
 
     return this.getGame(_id);
   }
 
-  async deleteGame(id: string) {
-    return await this.collection.deleteOne({ _id: new Bson.ObjectId(id) });
+  async deleteGame(_id: Bson.ObjectId) {
+    return await this.collection.deleteOne({ _id });
   }
 
   createGameInstance(_id: string, instance: GameInstanceSchema) {
@@ -40,9 +40,7 @@ export class GameDatabase {
       { _id: new Bson.ObjectId(_id) },
       {
         $set: {
-          "instances": {
-            [instance.userId]: instance,
-          },
+          [`instances.${instance.userId}`]: instance,
         },
       },
     );

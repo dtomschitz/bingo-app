@@ -1,18 +1,22 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
-import useWebSocket, { ReadyState } from 'react-use-websocket';
+import { useEffect, useState } from 'react';
 import { RouteComponentProps } from 'react-router';
+import toast from 'react-hot-toast';
+import { BingoField, GameEvent, GameEventType } from '@bingo/models';
 import { BingoCard } from './components/bingo';
-import { FlatButton } from './components/common';
+import { Card, CardTitle, FlatButton } from './components/common';
 import {
   useAppBar,
   useAuthContext,
   useGameInstanceContext,
   useGameSocket,
 } from './hooks';
-import { GameEvents } from '@bingo/models';
 
 interface GameProps {
   gameId: string;
+}
+
+interface AdminControlProps {
+  onDrawNewField: () => void;
 }
 
 const Game = (props: RouteComponentProps<GameProps>) => {
@@ -20,7 +24,17 @@ const Game = (props: RouteComponentProps<GameProps>) => {
   const appBar = useAppBar();
   const auth = useAuthContext();
 
-  const [lastDrawnField, setLastDrawnField] = useState<string>();
+  const [currentField, setCurrentField] = useState<BingoField>();
+
+  const handleGameEvent = (event: GameEvent) => {
+    if (event.type === GameEventType.UNAUTHORIZED) {
+      toast.error('Unauthorized request');
+    } else if (event.type === GameEventType.NEW_FIELD_DRAWN) {
+      toast('A new field has been drawn!', { icon: '🃏' });
+      setCurrentField(event.data.field);
+    }
+    console.log(event);
+  };
 
   const {
     game,
@@ -29,23 +43,10 @@ const Game = (props: RouteComponentProps<GameProps>) => {
     loading,
     getGameInstance,
   } = useGameInstanceContext();
-  const { sendEvent, state, socket } = useGameSocket({
-    onMessage: event => {
-      if (event.type === GameEvents.NEW_FIELD_DRAWN) {
-        setLastDrawnField(event.data.field.text);
-      }
-      console.log(event);
-    },
-    id
+  const { sendEvent, state } = useGameSocket({
+    id,
+    onMessage: handleGameEvent,
   });
-
-  const connectionStatus = {
-    [ReadyState.CONNECTING]: 'Connecting',
-    [ReadyState.OPEN]: 'Open',
-    [ReadyState.CLOSING]: 'Closing',
-    [ReadyState.CLOSED]: 'Closed',
-    [ReadyState.UNINSTANTIATED]: 'Uninstantiated',
-  }[state];
 
   useEffect(() => {
     getGameInstance(id);
@@ -53,18 +54,8 @@ const Game = (props: RouteComponentProps<GameProps>) => {
 
   useEffect(() => appBar.showLoadingBar(loading), [appBar, loading]);
 
-  const onWin = () => {
-    console.log('Win');
-    //sendJsonMessage();
-    //s//endEvent(GameEvents.ON_WIN,);
-    //TODO: Win Logic
-  };
-
-  const onTest = () => {
-    //sendJsonMessage();
-    sendEvent(GameEvents.DRAW_FIELD, game._id);
-    //TODO: Win Logic
-  };
+  const onDrawNewField = () => sendEvent(GameEventType.DRAW_FIELD);
+  const onWin = () => sendEvent(GameEventType.ON_WIN);
 
   if (error) {
     return <div className="game"></div>;
@@ -72,18 +63,19 @@ const Game = (props: RouteComponentProps<GameProps>) => {
 
   return (
     <div className="game">
-      <span>The WebSocket is currently {connectionStatus}</span>
+      <span>The WebSocket is currently {state}</span>
 
       {!loading && (
         <>
           {hasGame && auth.user?._id === game.authorId && (
-            <FlatButton className="bingo-button" onClick={onTest}>
-              Draw Field
-            </FlatButton>
+            <AdminControls onDrawNewField={onDrawNewField} />
           )}
-          <AdminControls />
-          {!!lastDrawnField && <div>{lastDrawnField}</div>}
-          {hasGame && <BingoCard fields={game.fields} onWin={onWin} />}
+          {!!currentField && (
+            <Card className="current-field">
+              <CardTitle>Aktuelle Feld: {currentField.text}</CardTitle>
+            </Card>
+          )}
+          {hasGame && <BingoCard fields={game.instanceFields} onWin={onWin} />}
           <FlatButton className="bingo-button">BINGO</FlatButton>
         </>
       )}
@@ -91,10 +83,13 @@ const Game = (props: RouteComponentProps<GameProps>) => {
   );
 };
 
-const AdminControls = () => {
+const AdminControls = ({ onDrawNewField }: AdminControlProps) => {
   return (
-    <div>
+    <div className="admin-controls">
       <h1>Admin Panel</h1>
+      <FlatButton className="bingo-button" onClick={onDrawNewField}>
+        Draw Field
+      </FlatButton>
     </div>
   );
 };

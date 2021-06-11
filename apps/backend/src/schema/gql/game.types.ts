@@ -54,23 +54,26 @@ export const GameTypes = gql`
     mutateField(props: MutateGameField!): Boolean!
   }
 
-  extend type Subscription {
-    gameState(_id: ID!): BingoField!
-    test: String
-  }
-
   type BingoGame {
     _id: ID
     authorId: String!
     title: String!
     phase: String!
     fields: [BingoField!]!
+    instanceFields: [BingoInstanceField!]!
     hasInstance: Boolean
   }
 
   type BingoField {
     _id: ID
     text: String
+    checked: Boolean
+  }
+  
+  type BingoInstanceField {
+    _id: ID
+    text: String
+    selected: Boolean
   }
 
   enum MutationType {

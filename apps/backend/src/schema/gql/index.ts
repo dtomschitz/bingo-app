@@ -9,9 +9,6 @@ export const GraphQLSchema = gql`
   type Mutation {
     _empty: String
   }
-  type Subscription {
-    _empty: String
-  }
   ${GameTypes}
   ${UserTypes}
 `;

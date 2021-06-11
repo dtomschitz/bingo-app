@@ -1,4 +1,7 @@
-export interface SocketEvent<T> {
-  type: any;
-  data: T;
+export enum ConnectionState {
+  CONNECTING = 'CONNECTING',
+  OPEN = 'OPEN',
+  CLOSING = 'CLOSING',
+  CLOSED = 'CLOSED',
+  UNINSTANTIATED = 'UNINSTANTIATED',
 }

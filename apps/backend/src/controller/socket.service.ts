@@ -1,104 +1,90 @@
 import { WebSocket } from "../deps.ts";
 import { Utils } from "../utils/utils.ts";
-import { GameEvent, GameEvents, User, BingoField } from "../models.ts";
+import { GameEvent, GameEventType } from "../models.ts";
 import { GameDatabase } from "../database/index.ts";
+import { GameSchema } from "../schema/index.ts";
 import { AuthController } from "../controller/index.ts";
-import { GameField, GameSchema } from "../schema/mongo/index.ts";
 
 export class SocketService {
+  private gameSessions: Map<string, Set<WebSocket>> = new Map();
+
   constructor(
     private controller: AuthController,
     private games: GameDatabase,
   ) {}
 
-  private gameSessions: Map<string, Set<WebSocket>> = new Map();
-
   async handleGameEvents(socket: WebSocket) {
-
     for await (const e of socket) {
-
       if (typeof e === "string") {
         const event = JSON.parse(e) as GameEvent;
+        const game = await this.games.getGame(event.id);
 
-        if(event.type === GameEvents.JOIN_GAME){
-          const user = await this.controller.verifyUser(event.accessToken);
-          this.handleJoin(socket, event, user);
+        if (!game) {
+          await this.sendEvent(socket, GameEventType.GAME_NOT_FOUND);
+          continue;
         }
 
-        if (event.type === GameEvents.DRAW_FIELD) {
+        if (event.type === GameEventType.JOIN_GAME) {
+          this.handleJoinEvent(socket, event);
+        } else if (event.type === GameEventType.DRAW_FIELD) {
           const user = await this.controller.verifyUser(event.accessToken);
 
-          this.handleDrawFieldEvent(socket, event);
+          if (user._id.toString() !== game.authorId.toString()) {
+            await this.sendEvent(socket, GameEventType.UNAUTHORIZED);
+            continue;
+          }
+
+          this.handleDrawFieldEvent(event, game);
         }
       }
     }
   }
 
-  private async handleJoin(socket: WebSocket, event: GameEvent, user: User){
-
-    const game = await this.games.getGame(event.id);
-    if (!game) {
-      return;
-    }
-
-    if(this.gameSessions.has(event.id)){
+  private handleJoinEvent(socket: WebSocket, event: GameEvent) {    
+    if (this.gameSessions.has(event.id)) {
       const connectionsOfGame = this.gameSessions.get(event.id);
       connectionsOfGame?.add(socket);
       console.log(`Added socket to session for game ${event.id}`);
-      return;
-    }
-    else{
-      this.gameSessions.set(event.id, new Set([socket]))
+    } else {
+      this.gameSessions.set(event.id, new Set([socket]));
       console.log(`New session created for game ${event.id}`);
-      return;
     }
-
   }
 
-  private async handleDrawFieldEvent(socket: WebSocket, event: GameEvent) {
-    const game: GameSchema | undefined = await this.games.getGame(event.id);
-    if (!game) {
-      return;
-    }
-
-    const fields: GameField[] = game.fields.filter((field: GameField) => !field.checked);
-
-    if(fields.length <= 0){
-      return
-    }
-
-    const checkedFields = game.fields.filter((field: GameField) => field.checked);
-    const random = Utils.getRandomNumber(0, fields.length - 1);
-    const drawnField = fields[random];
+  private async handleDrawFieldEvent(event: GameEvent, game: GameSchema) {
+    const fields = game.fields;
+    const uncheckedFields = game.fields.filter((field) => !field.checked);
+    const random = Utils.getRandomNumber(0, uncheckedFields.length - 1);
 
     fields[random] = {
       ...fields[random],
       checked: true,
     };
 
-    await this.games.updateGame({ _id: game._id, changes: { fields: [...fields, ...checkedFields] as BingoField[] } });
+    await this.games.updateGame(game._id, { fields });
 
     const sessionsOfgame = this.gameSessions.get(event.id);
-
-    if(!sessionsOfgame){
+    if (!sessionsOfgame) {
       return;
     }
-
-    await sessionsOfgame.forEach(async function(sessionSocket:WebSocket) {
-      if(!sessionSocket.isClosed){
+    
+    sessionsOfgame.forEach(async (sessionSocket: WebSocket) => {
+      if (!sessionSocket.isClosed) {
         console.log("send field drawn to socket");
-        await sessionSocket.send(JSON.stringify({
-          type: GameEvents.NEW_FIELD_DRAWN,
-          data: {
-            field: drawnField,
-          },
-        }));
-      }
-      else{
+        await this.sendEvent(sessionSocket,  GameEventType.NEW_FIELD_DRAWN, {
+          field: fields[random]
+        })
+      } else {
         sessionsOfgame.delete(sessionSocket);
         console.log("closed socket");
       }
     });
+  }
 
+  private async sendEvent<T>(socket: WebSocket, type: GameEventType, data?: T) {
+    await socket.send(JSON.stringify({
+      type,
+      data,
+    }));
   }
 }

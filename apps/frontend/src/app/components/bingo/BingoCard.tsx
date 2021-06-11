@@ -1,20 +1,20 @@
 import { useEffect, useReducer } from 'react';
-import { BingoField } from '@bingo/models';
+import { BingoInstanceField } from '@bingo/models';
 
 interface BingoCardProps {
-  fields?: BingoField[];
+  fields?: BingoInstanceField[];
   onWin?: () => void;
 }
 
 interface BingoFieldProps {
-  field: BingoField;
+  field: BingoInstanceField;
   tile: number;
   winningPattern: number;
   onClick: () => void;
 }
 
 interface State {
-  fields: BingoField[];
+  fields: BingoInstanceField[];
   score: number;
   hasWon: boolean;
 }
@@ -22,7 +22,11 @@ interface State {
 type Action =
   | {
       type: 'updateBingoField';
-      update: { id: string; tile: number; changes: Partial<BingoField> };
+      update: {
+        id: string;
+        tile: number;
+        changes: Partial<BingoInstanceField>;
+      };
     }
   | { type: 'updateState'; update: Partial<State> };
 
@@ -80,14 +84,14 @@ export const BingoCard = ({ fields, onWin }: BingoCardProps) => {
     }
   }, [onWin, state]);
 
-  const onBingoTileClick = (tile: number, field: BingoField) => {
+  const onBingoTileClick = (tile: number, field: BingoInstanceField) => {
     dispatch({
       type: 'updateBingoField',
       update: {
         id: field._id,
         tile,
         changes: {
-          isSelected: !field.isSelected,
+          selected: !field.selected,
         },
       },
     });
@@ -131,7 +135,7 @@ const BingoTile = ({
 }: BingoFieldProps) => {
   const isWin = !!(winningPattern & (1 << tile));
   const classes = `bingo-field
-    ${field.isSelected ? 'selected' : ''}
+    ${field.selected ? 'selected' : ''}
     ${isWin ? 'win' : ''}`;
 
   return (
