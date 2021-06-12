@@ -1,9 +1,14 @@
 import { useEffect, useState } from 'react';
-import { RouteComponentProps, useHistory } from 'react-router';
+import { RouteComponentProps } from 'react-router';
+import { BingoField } from '@bingo/models';
 import { BingoCard } from './components/bingo';
 import { FlatButton } from './components/common';
-import { useAppBar, useGamesContext, useGameInstanceContext } from './hooks';
-import { BingoField, BingoGame } from '@bingo/models'
+import {
+  useAppBar,
+  useGamesContext,
+  useBingoCard,
+  useGameInstanceContext,
+} from './hooks';
 
 interface GameProps {
   gameId: string;
@@ -12,7 +17,6 @@ interface GameProps {
 const Game = (props: RouteComponentProps<GameProps>) => {
   const id = props.match.params.gameId;
 
-  const history = useHistory();
   const appBar = useAppBar();
   const {
     game,
@@ -22,32 +26,34 @@ const Game = (props: RouteComponentProps<GameProps>) => {
     getGameInstance,
   } = useGameInstanceContext();
 
+  const card = useBingoCard();
   const games = useGamesContext();
-
-  const[fields, setFields] = useState<string[]>([])
+  const [fields, setFields] = useState<string[]>([]);
 
   const onValidateWin = () => {
-    
-    
     games.validateWin(game._id, fields);
 
     console.log(game._id);
-    
-  }
+  };
 
   useEffect(() => {
-    getGameInstance(id);
+    getGameInstance(id).then();
   }, []);
+
+  useEffect(() => {
+    if (game) {
+      card.setInitialFields(game.fields);
+    }
+  }, [game]);
 
   useEffect(() => appBar.showLoadingBar(loading), [appBar, loading]);
 
   const onWin = (fields: BingoField[]) => {
     console.log('Win');
     const selectedFields = fields
-        .filter(field => field.isSelected)
-        .map(field => field._id);
+      .filter(field => field.isSelected)
+      .map(field => field._id);
     setFields(selectedFields);
-
   };
 
   if (error) {
@@ -59,8 +65,10 @@ const Game = (props: RouteComponentProps<GameProps>) => {
       {!loading && (
         <>
           <AdminControls />
-          {hasGame && <BingoCard fields={game.fields} onWin={onWin} />}
-          <FlatButton className="bingo-button" onClick={() => onValidateWin()} >BINGO</FlatButton>
+          {hasGame && <BingoCard {...card} />}
+          <FlatButton className="bingo-button" onClick={() => onValidateWin()}>
+            BINGO
+          </FlatButton>
         </>
       )}
     </div>

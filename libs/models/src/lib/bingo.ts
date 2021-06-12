@@ -14,11 +14,17 @@ export interface BingoField {
   isChecked?: boolean;
 }
 
+export interface BingoCardState {
+  fields: BingoField[];
+  score: number;
+  hasWon: boolean;
+}
+
 export type Phase = 'editing' | 'open' | 'playing' | 'finished';
 
 export interface ValidateWin {
   _id: string;
-  fieldIds: string[]; 
+  fieldIds: string[];
 }
 
 export interface CreateGame {
