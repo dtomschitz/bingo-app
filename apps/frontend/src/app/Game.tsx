@@ -33,7 +33,6 @@ const Game = (props: RouteComponentProps<GameProps>) => {
       toast('Es wurde ein neues Feld gezogen!', { icon: '🃏' });
       setCurrentField(event.data.field);
     }
-    console.log(event);
   };
 
   const {
