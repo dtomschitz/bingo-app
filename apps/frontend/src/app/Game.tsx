@@ -28,12 +28,13 @@ const Game = (props: RouteComponentProps<GameProps>) => {
 
   const card = useBingoCard();
   const games = useGamesContext();
-  const [fields, setFields] = useState<string[]>([]);
 
   const onValidateWin = () => {
-    games.validateWin(game._id, fields);
+    const selectedFields = card.fields
+      .filter(field => field.isSelected)
+      .map(field => field._id);
 
-    console.log(game._id);
+    games.validateWin(game._id, selectedFields);
   };
 
   useEffect(() => {
@@ -48,12 +49,8 @@ const Game = (props: RouteComponentProps<GameProps>) => {
 
   useEffect(() => appBar.showLoadingBar(loading), [appBar, loading]);
 
-  const onWin = (fields: BingoField[]) => {
+  const onWin = () => {
     console.log('Win');
-    const selectedFields = fields
-      .filter(field => field.isSelected)
-      .map(field => field._id);
-    setFields(selectedFields);
   };
 
   if (error) {
@@ -65,7 +62,7 @@ const Game = (props: RouteComponentProps<GameProps>) => {
       {!loading && (
         <>
           <AdminControls />
-          {hasGame && <BingoCard {...card} />}
+          {hasGame && <BingoCard {...card} onWin={onWin} />}
           <FlatButton className="bingo-button" onClick={() => onValidateWin()}>
             BINGO
           </FlatButton>
