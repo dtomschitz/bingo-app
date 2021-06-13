@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Switch, Route, Link } from 'react-router-dom';
+import { Switch, Route, RouteProps, Link, Redirect } from 'react-router-dom';
 import { useMediaQuery } from 'react-responsive';
 import { faCartPlus, faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
 import {
@@ -21,11 +21,8 @@ interface AppBarProps {
   onCreateGame: () => void;
 }
 
-export interface InstanceDialogState {
-  show: boolean;
-  setShow: React.Dispatch<React.SetStateAction<boolean>>;
-  title: string;
-  _id: string;
+interface ProtectedRouteProps extends RouteProps {
+  authenticated: boolean;
 }
 
 const App = () => {
@@ -59,7 +56,11 @@ const App = () => {
         onScroll={e => handleScroll(e.currentTarget.scrollTop)}
       >
         <Switch>
-          <Route path="/game/:gameId" component={Game} />
+          <ProtectedRoute
+            path="/game/:gameId"
+            authenticated={auth.isLoggedIn}
+            component={Game}
+          />
           <Route path="/">
             <Tabs>
               <Tab label="closed games">
@@ -90,7 +91,7 @@ const AppBar = ({ onCreateGame, elevated }: AppBarProps) => {
 
   useEffect(() => {
     appBar.showLoadingBar(auth.isPending);
-  }, [auth.isPending]);
+  }, [appBar, auth.isPending]);
 
   const onLogin = () => {
     auth.dialog.open();
@@ -139,6 +140,34 @@ const AppBar = ({ onCreateGame, elevated }: AppBarProps) => {
       </div>
       {!elevated && <Divider />}
     </div>
+  );
+};
+
+const ProtectedRoute = ({
+  component: Component,
+  authenticated,
+  ...rest
+}: ProtectedRouteProps) => {
+  return (
+    <Route
+      {...rest}
+      render={props => {
+        if (authenticated) {
+          return <Component {...rest} {...props} />;
+        } else {
+          return (
+            <Redirect
+              to={{
+                pathname: '/',
+                state: {
+                  from: props.location,
+                },
+              }}
+            />
+          );
+        }
+      }}
+    />
   );
 };
 

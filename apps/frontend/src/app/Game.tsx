@@ -6,6 +6,7 @@ import {
   BingoGame,
   ConnectionState,
   errorMessages,
+  ErrorType,
   GameEvent,
   GameEventType,
   getConnectionStateMessage,
@@ -26,6 +27,7 @@ import {
   useGameInstanceContext,
   useGameSocket,
 } from './hooks';
+import { useHistory } from 'react-router-dom';
 
 interface GameProps {
   gameId: string;
@@ -42,6 +44,7 @@ interface AdminControlProps {
 
 const Game = (props: RouteComponentProps<GameProps>) => {
   const id = props.match.params.gameId;
+  const history = useHistory();
   const appBar = useAppBar();
   const auth = useAuthContext();
 
@@ -76,6 +79,12 @@ const Game = (props: RouteComponentProps<GameProps>) => {
     getGameInstance(id);
   }, []);
 
+  useEffect(() => {
+    if (error === ErrorType.GAME_NOT_FOUND) {
+      history.push('/');
+    }
+  }, [history, error]);
+
   useEffect(() => appBar.showLoadingBar(loading), [appBar, loading]);
 
   const onDrawNewField = () => sendEvent(GameEventType.DRAW_FIELD);
@@ -103,24 +112,8 @@ const Game = (props: RouteComponentProps<GameProps>) => {
 };
 
 const CurrentField = ({ field }: CurrentFieldProps) => {
-  const [show, setShow] = useState(false);
-  const updateTimer = useRef(null);
-
-  useEffect(() => {
-    setShow(false);
-
-    updateTimer.current = setTimeout(() => {
-      setShow(true);
-    }, 150);
-  }, [field]);
-
-  const style: CSSProperties = {
-    opacity: show ? 1 : 0,
-    transition: 'all 150ms ease-in',
-  };
-
   return (
-    <Card className="current-field" style={style}>
+    <Card className="current-field">
       <CardTitle>
         {field
           ? `Aufgedecktes Feld: ${field?.text}`

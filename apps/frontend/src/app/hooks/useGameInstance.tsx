@@ -38,6 +38,7 @@ export const GameInstanceProvider = ({
 
   const getGameInstance = (id: string) => {
     setLoading(true);
+    setGame(undefined);
 
     return client
       .query<{ instance: BingoGame }>({
