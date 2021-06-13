@@ -26,6 +26,7 @@ export const AddBingoFieldInput = (props: AddBingoFieldInputProps) => {
     props.onSubmit({
       _id: uuidv4(),
       text: value,
+      checked: false,
     });
 
     setValue('');

@@ -1,9 +1,25 @@
-import { useEffect, useState } from 'react';
+import { CSSProperties, useEffect, useRef, useState } from 'react';
 import { RouteComponentProps } from 'react-router';
 import toast from 'react-hot-toast';
-import { BingoField, GameEvent, GameEventType } from '@bingo/models';
+import {
+  BingoField,
+  BingoGame,
+  ConnectionState,
+  errorMessages,
+  GameEvent,
+  GameEventType,
+  getConnectionStateMessage,
+} from '@bingo/models';
 import { BingoCard } from './components/bingo';
-import { Card, CardTitle, FlatButton, Collapsible } from './components/common';
+import {
+  Badge,
+  Card,
+  CardTitle,
+  FlatButton,
+  Collapsible,
+  CardActions,
+  CardHeader,
+} from './components/common';
 import {
   useAppBar,
   useAuthContext,
@@ -15,7 +31,12 @@ interface GameProps {
   gameId: string;
 }
 
+interface CurrentFieldProps {
+  field?: BingoField;
+}
+
 interface AdminControlProps {
+  state: ConnectionState;
   onDrawNewField: () => void;
 }
 
@@ -29,6 +50,10 @@ const Game = (props: RouteComponentProps<GameProps>) => {
   const handleGameEvent = (event: GameEvent) => {
     if (event.type === GameEventType.UNAUTHORIZED) {
       toast.error('Unautorisierter Zugriff');
+    } else if (event.type === GameEventType.PLAYER_LEFT) {
+      toast('Ein Spieler hat das Spiel verlassen', { icon: '🚶' });
+    } else if (event.type === GameEventType.PLAYER_JOINED) {
+      toast('Ein Spieler ist dem Spiel beigetreten', { icon: '👋' });
     } else if (event.type === GameEventType.NEW_FIELD_DRAWN) {
       toast('Es wurde ein neues Feld gezogen!', { icon: '🃏' });
       setCurrentField(event.data.field);
@@ -62,35 +87,77 @@ const Game = (props: RouteComponentProps<GameProps>) => {
 
   return (
     <div className="game">
-      <span>The WebSocket is currently {state}</span>
-
-      {!loading && (
+      {!loading && hasGame && (
         <>
-          {hasGame && auth.user?._id === game.authorId && (
-            <AdminControls onDrawNewField={onDrawNewField} />
+          {auth.user?._id === game.authorId && (
+            <AdminControls state={state} onDrawNewField={onDrawNewField} />
           )}
-          {!!currentField && (
-            <Card className="current-field">
-              <CardTitle>Aufgedecktes Feld: {currentField.text}</CardTitle>
-            </Card>
-          )}
-          {hasGame && <BingoCard fields={game.instanceFields} onWin={onWin} />}
+          <CurrentField field={currentField} />
+          {<BingoCard fields={game.instanceFields} onWin={onWin} />}
           <FlatButton className="bingo-button">BINGO</FlatButton>
-          <Collapsible trigger="Bingo Felder">Test</Collapsible>
+          <BingoFieldsCollapsible {...game} />
         </>
       )}
     </div>
   );
 };
 
-const AdminControls = ({ onDrawNewField }: AdminControlProps) => {
+const CurrentField = ({ field }: CurrentFieldProps) => {
+  const [show, setShow] = useState(false);
+  const updateTimer = useRef(null);
+
+  useEffect(() => {
+    setShow(false);
+
+    updateTimer.current = setTimeout(() => {
+      setShow(true);
+    }, 150);
+  }, [field]);
+
+  const style: CSSProperties = {
+    opacity: show ? 1 : 0,
+    transition: 'all 150ms ease-in',
+  };
+
   return (
-    <div className="admin-controls">
-      <h1>Admin Panel</h1>
-      <FlatButton className="bingo-button" onClick={onDrawNewField}>
-        Draw Field
-      </FlatButton>
-    </div>
+    <Card className="current-field" style={style}>
+      <CardTitle>
+        {field
+          ? `Aufgedecktes Feld: ${field?.text}`
+          : 'Es wurde noch kein Feld aufgedeckt'}
+      </CardTitle>
+    </Card>
+  );
+};
+
+const BingoFieldsCollapsible = (game: BingoGame) => {
+  return (
+    <Collapsible trigger="Bingo Felder" className="bingo-fields">
+      {game.instanceFields.map(field => (
+        <div key={field._id} className="bingo-field-item">
+          <span>{field.text}</span>
+        </div>
+      ))}
+    </Collapsible>
+  );
+};
+
+const AdminControls = ({ state, onDrawNewField }: AdminControlProps) => {
+  return (
+    <Card className="admin-controls">
+      <CardHeader>
+        <CardTitle>Admin Controls</CardTitle>
+        <Badge
+          text={getConnectionStateMessage(state)}
+          className={state.toLowerCase()}
+        />
+      </CardHeader>
+      <CardActions>
+        <FlatButton className="draw-field" onClick={onDrawNewField}>
+          Feld aufdecken
+        </FlatButton>
+      </CardActions>
+    </Card>
   );
 };
 

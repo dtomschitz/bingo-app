@@ -1,12 +1,12 @@
-import { isWebSocketCloseEvent, WebSocket } from "../deps.ts";
-import { Utils } from "../utils/utils.ts";
-import { GameEvent, GameEventType } from "../models.ts";
-import { GameDatabase } from "../database/index.ts";
-import { GameSchema } from "../schema/index.ts";
-import { AuthController } from "../controller/index.ts";
+import { isWebSocketCloseEvent, WebSocket } from '../deps.ts';
+import { Utils } from '../utils/utils.ts';
+import { GameEvent, GameEventType } from '../models.ts';
+import { GameDatabase } from '../database/index.ts';
+import { GameSchema } from '../schema/index.ts';
+import { AuthController } from '../controller/index.ts';
 
 export class SocketService {
-  private gameSessions: Map<string, Set<WebSocket>> = new Map();
+  private sessions: Map<string, Set<WebSocket>> = new Map();
 
   constructor(
     private controller: AuthController,
@@ -16,21 +16,25 @@ export class SocketService {
   async handleGameEvents(socket: WebSocket) {
     for await (const e of socket) {
       if (isWebSocketCloseEvent(e)) {
-        this.gameSessions.forEach((sockets, key) => {
+        this.sessions.forEach((sockets, key) => {
           for (const socket of sockets) {
             if (socket.isClosed) {
-              this.gameSessions.get(key)?.delete(socket);
+              const sockets = this.sessions.get(key);
+              
+              if (!sockets) {
+                continue;
+              }
+
+              sockets.delete(socket);
+              this.brodcast(sockets, GameEventType.PLAYER_LEFT);
             }
           }
         });
 
-        console.log(this.gameSessions);
-        
-
         continue;
       }
 
-      if (typeof e === "string") {
+      if (typeof e === 'string') {
         const event = JSON.parse(e) as GameEvent;
         const game = await this.games.getGame(event.id);
 
@@ -56,19 +60,27 @@ export class SocketService {
   }
 
   private handleJoinEvent(socket: WebSocket, event: GameEvent) {
-    if (this.gameSessions.has(event.id)) {
-      const connectionsOfGame = this.gameSessions.get(event.id);
-      connectionsOfGame?.add(socket);
+    if (this.sessions.has(event.id)) {
+      const sockets = this.sessions.get(event.id);
+      if (!sockets) {
+        return;
+      }
+
+      this.brodcast(sockets, GameEventType.PLAYER_JOINED);
+
+      sockets.add(socket);
       console.log(`Added socket to session for game ${event.id}`);
-    } else {
-      this.gameSessions.set(event.id, new Set([socket]));
-      console.log(`New session created for game ${event.id}`);
-    }
+
+      return;
+    } 
+
+    this.sessions.set(event.id, new Set([socket]));
+    console.log(`New session created for game ${event.id}`);
   }
 
   private async handleDrawFieldEvent(event: GameEvent, game: GameSchema) {
     const fields = game.fields;
-    const uncheckedFields = game.fields.filter((field) => !field.checked);
+    const uncheckedFields = game.fields.filter(field => !field.checked);
     const random = Utils.getRandomNumber(0, uncheckedFields.length - 1);
 
     fields[random] = {
@@ -78,28 +90,32 @@ export class SocketService {
 
     await this.games.updateGame(game._id, { fields });
 
-    const sessionsOfgame = this.gameSessions.get(event.id);
-    if (!sessionsOfgame) {
+    const sockets = this.sessions.get(event.id);
+    if (!sockets) {
       return;
     }
 
-    sessionsOfgame.forEach(async (sessionSocket: WebSocket) => {
-      if (!sessionSocket.isClosed) {
-        console.log("send field drawn to socket");
-        await this.sendEvent(sessionSocket, GameEventType.NEW_FIELD_DRAWN, {
-          field: fields[random],
-        });
-      } else {
-        sessionsOfgame.delete(sessionSocket);
-        console.log("closed socket");
-      }
+    this.brodcast(sockets, GameEventType.NEW_FIELD_DRAWN, {
+      field: fields[random],
     });
   }
 
-  private async sendEvent<T>(socket: WebSocket, type: GameEventType, data?: T) {
-    await socket.send(JSON.stringify({
-      type,
-      data,
-    }));
+  private sendEvent<T>(socket: WebSocket, type: GameEventType, data?: T) {
+    return socket.send(
+      JSON.stringify({
+        type,
+        data,
+      }),
+    );
+  }
+
+  private brodcast<T>(sockets: Set<WebSocket>, type: GameEventType, data?: T) {
+    for (const socket of sockets.values()) {
+      if (socket.isClosed) {
+        continue;
+      }
+
+      this.sendEvent(socket, type, data);
+    }
   }
 }

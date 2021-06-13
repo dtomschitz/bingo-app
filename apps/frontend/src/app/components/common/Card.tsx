@@ -1,8 +1,10 @@
+import { CSSProperties, ReactNode } from 'react';
 import classNames from 'classnames';
 
 interface CardProps {
-  className?: any;
-  children?: any;
+  className?: string;
+  style?: CSSProperties;
+  children?: ReactNode;
   onClick?: () => void;
 }
 
@@ -22,7 +24,11 @@ export const Card = (props: CardProps) => {
 
 export const CardHeader = (props: CardProps) => {
   const className = classNames('card-header', props?.className);
-  return <div className={className}>{props.children}</div>;
+  return (
+    <div className={className} style={props?.style}>
+      {props.children}
+    </div>
+  );
 };
 
 export const CardTitle = (props: CardProps) => {
