@@ -98,31 +98,16 @@ export const BingoCard = ({ fields, onWin }: BingoCardProps) => {
   };
 
   return (
-    <>
-      <BingoCardHeader />
-      <div className="bingo-card">
-        {state.fields?.map((field, index) => (
-          <BingoTile
-            key={field._id}
-            field={field}
-            tile={25 - index}
-            winningPattern={findWinningPattern(state.score)}
-            onClick={() => onBingoTileClick(25 - index, field)}
-          />
-        ))}
-      </div>
-    </>
-  );
-};
-
-const BingoCardHeader = () => {
-  return (
-    <div className="bingo-card-header">
-      <div className="letter">B</div>
-      <div className="letter">I</div>
-      <div className="letter">N</div>
-      <div className="letter">G</div>
-      <div className="letter">O</div>
+    <div className="bingo-card">
+      {state.fields?.map((field, index) => (
+        <BingoTile
+          key={field._id}
+          field={field}
+          tile={25 - index}
+          winningPattern={findWinningPattern(state.score)}
+          onClick={() => onBingoTileClick(25 - index, field)}
+        />
+      ))}
     </div>
   );
 };

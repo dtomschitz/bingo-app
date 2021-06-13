@@ -101,12 +101,25 @@ const Game = (props: RouteComponentProps<GameProps>) => {
           {auth.user?._id === game.authorId && (
             <AdminControls state={state} onDrawNewField={onDrawNewField} />
           )}
+          <BingoCardHeader />
           <CurrentField field={currentField} />
           {<BingoCard fields={game.instanceFields} onWin={onWin} />}
           <FlatButton className="bingo-button">BINGO</FlatButton>
           <BingoFieldsCollapsible {...game} />
         </>
       )}
+    </div>
+  );
+};
+
+const BingoCardHeader = () => {
+  return (
+    <div className="bingo-card-header">
+      <div className="letter">B</div>
+      <div className="letter">I</div>
+      <div className="letter">N</div>
+      <div className="letter">G</div>
+      <div className="letter">O</div>
     </div>
   );
 };

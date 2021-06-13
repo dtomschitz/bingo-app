@@ -1,12 +1,9 @@
 .bingo-card {
   display: grid;
-  height: 100%;
-  width: 100%;
   grid-template-columns: repeat(5, 1fr);
   grid-template-rows: repeat(5, 1fr);
   gap: 0.5rem;
   user-select: none;
-  max-height: 500px;
 
   @media only screen and (min-width: 786px) {
     gap: 1rem;
@@ -27,5 +24,6 @@
     font-size: 46pt;
     font-weight: 600;
     color: $primary;
+    aspect-ratio: 1;
   }
 }

@@ -6,14 +6,15 @@
   color: #fff;
   background-color: lighten($background, $amount: 5%);
   transition: background-color 0.1s cubic-bezier(0.4, 0, 0.2, 1);
-  font-size:3vw;
+  font-size: 3vw;
+  aspect-ratio: 1;
 
   @media only screen and (min-width: 786px) {
-		font-size:2vw;
+    font-size: 2vw;
   }
 
   @media only screen and (min-width: 1700px) {
-		font-size:1vw;
+    font-size: 1vw;
   }
 
   &:hover:not(.win, .disable-hover) {
