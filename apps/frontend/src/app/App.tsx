@@ -62,14 +62,11 @@ const App = () => {
           <Route path="/game/:gameId" component={Game} />
           <Route path="/">
             <Tabs>
-              <Tab label="closed games">
-                <Games phase="editing" />
+              <Tab label="Eigene Spiele">
+                <Games myGames={true} />
               </Tab>
-              <Tab label="open for registration">
-                <Games phase="open" />
-              </Tab>
-              <Tab label="currently playing">
-                <Games phase="playing" />
+              <Tab label="Spiele von anderen">
+                <Games myGames={false} />
               </Tab>
             </Tabs>
           </Route>

@@ -7,12 +7,14 @@ interface BingoGameContextMenuProps {
   onModifyTitle: () => void;
   onModifyFields: () => void;
   onDeleteGame: () => void;
+  onStartGame: () => void;
 }
 
 export const BingoGameContextMenu = ({
   onModifyTitle,
   onModifyFields,
   onDeleteGame,
+  onStartGame,
 }: BingoGameContextMenuProps) => {
   const stopPropagation = (event: MouseEvent) => {
     event.stopPropagation();
@@ -26,6 +28,7 @@ export const BingoGameContextMenu = ({
         <MenuItem onClick={onModifyTitle}>Titel bearbeiten</MenuItem>
         <MenuItem onClick={onModifyFields}>Felder bearbeiten</MenuItem>
         <MenuDivider />
+        <MenuItem onClick={onStartGame}>Spiel starten</MenuItem>
         <MenuItem onClick={onDeleteGame}>Spiel beenden</MenuItem>
       </Menu>
     </div>

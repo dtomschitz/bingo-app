@@ -11,11 +11,13 @@ import {
   ModifyGameFieldsDialogData,
   ModifyGameTitleDialog,
   ModifyGameTitleDialogData,
+  StartGameDialogData,
 } from './dialogs';
+import { StartGameDialog } from './dialogs/StartGameDialog';
 import { useAuthContext, useDialog, useGamesContext } from './hooks';
 
 interface GamesListProps {
-  phase: Phase;
+  myGames: boolean;
 }
 
 const Games = (props: GamesListProps) => {
@@ -27,6 +29,7 @@ const Games = (props: GamesListProps) => {
   const modifyGameTitleDialog = useDialog<ModifyGameTitleDialogData>();
   const modifyGameFieldsDialog = useDialog<ModifyGameFieldsDialogData>();
   const deleteGameDialog = useDialog<DeleteGameDialogData>();
+  const startGameDialog = useDialog<StartGameDialogData>();
 
   useEffect(() => {
     if (auth.isLoggedIn) {
@@ -50,7 +53,11 @@ const Games = (props: GamesListProps) => {
     <div className="home">
       <div className="games">
         {games
-          .filter(game => game.phase === props.phase)
+          .filter(game =>
+            props.myGames
+              ? game.authorId === auth.user._id
+              : game.authorId !== auth.user._id,
+          )
           .map((game, i) => (
             <BingoPreviewCard
               key={`game-${i}`}
@@ -61,6 +68,7 @@ const Games = (props: GamesListProps) => {
                     onModifyTitle={() => modifyGameTitleDialog.open({ game })}
                     onModifyFields={() => modifyGameFieldsDialog.open({ game })}
                     onDeleteGame={() => deleteGameDialog.open({ game })}
+                    onStartGame={() => startGameDialog.open({ game })}
                   />
                 )
               }
@@ -73,6 +81,7 @@ const Games = (props: GamesListProps) => {
       <ModifyGameTitleDialog {...modifyGameTitleDialog} />
       <ModifyGameFieldsDialog {...modifyGameFieldsDialog} />
       <DeleteGameDialog {...deleteGameDialog} />
+      <StartGameDialog {...startGameDialog} />
     </div>
   );
 };

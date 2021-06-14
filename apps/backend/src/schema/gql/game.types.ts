@@ -15,6 +15,7 @@ export const GameTypes = gql`
   input GameChanges {
     title: String
     fields: [UpdateBingoField]
+    phase: String
   }
 
   input UpdateBingoField {
