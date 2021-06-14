@@ -114,8 +114,7 @@ export class GameController {
   }
 
   async validateWin(props: ValidateWin){
-    console.log("here");
-    
+
     if (!props._id || !props.fieldIds) {
       throw new GQLError(ErrorType.INCORRECT_REQUEST);
     }
@@ -124,8 +123,8 @@ export class GameController {
     if (!dbGame) {
       throw new GQLError(ErrorType.GAME_NOT_FOUND);
     }
-    
-    for(const id in props.fieldIds){
+
+    for(const id of props.fieldIds){
       const test = dbGame.fields.find(field => field._id === id);
       if(test != undefined){
         if(!test.checked){
