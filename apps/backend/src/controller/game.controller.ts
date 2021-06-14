@@ -7,7 +7,6 @@ import {
   MutationType,
   UpdateGame,
   User,
-  BingoField,
   ValidateWin
 } from "../models.ts";
 import { GameDatabase } from "../database/index.ts";
@@ -72,8 +71,6 @@ export class GameController {
   }
 
   async mutateGameField(_id: string, mutation: FieldMutations) {
-    console.log(mutation);
-
     const game = await this.games.getGame(_id);
     if (!game) {
       throw new GQLError(ErrorType.GAME_NOT_FOUND);

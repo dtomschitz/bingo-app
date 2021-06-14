@@ -108,7 +108,7 @@ const Game = (props: RouteComponentProps<GameProps>) => {
 
   useEffect(() => {
     if (game) {
-      card.setInitialFields(game.fields);
+      card.setInitialFields(game.instanceFields);
     }
   }, [game]);
 
@@ -151,7 +151,7 @@ const Game = (props: RouteComponentProps<GameProps>) => {
               />
             )}
             <BingoCardHeader />
-            {<BingoCard fields={game.instanceFields} onWin={onWin} />}
+            <BingoCard {...card} onWin={onWin} />
           </div>
           <BottomInfoBar
             field={currentField}

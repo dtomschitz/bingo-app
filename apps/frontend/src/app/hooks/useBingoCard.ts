@@ -1,10 +1,14 @@
-import { BingoCardState, BingoField } from '@bingo/models';
+import { BingoCardState, BingoField, BingoInstanceField } from '@bingo/models';
 import { useReducer } from 'react';
 
 type Action =
   | {
       type: 'updateBingoField';
-      update: { id: string; tile: number; changes: Partial<BingoField> };
+      update: {
+        id: string;
+        tile: number;
+        changes: Partial<BingoInstanceField>;
+      };
     }
   | { type: 'updateState'; update: Partial<BingoCardState> };
 
@@ -51,7 +55,7 @@ export const useBingoCard = () => {
     hasWon: false,
   });
 
-  const setInitialFields = (fields: BingoField[]) => {
+  const setInitialFields = (fields: BingoInstanceField[]) => {
     dispatch({
       type: 'updateState',
       update: {
@@ -60,14 +64,14 @@ export const useBingoCard = () => {
     });
   };
 
-  const onBingoFieldSelected = (tile: number, field: BingoField) => {
+  const onBingoFieldSelected = (tile: number, field: BingoInstanceField) => {
     dispatch({
       type: 'updateBingoField',
       update: {
         id: field._id,
         tile,
         changes: {
-          isSelected: !field.isSelected,
+          selected: !field.selected,
         },
       },
     });

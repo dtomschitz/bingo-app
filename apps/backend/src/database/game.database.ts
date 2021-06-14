@@ -24,11 +24,9 @@ export class GameDatabase {
   }
 
   async updateGame(_id: Bson.ObjectId, changes: Partial<GameSchema>) {    
-    const a = await this.collection.updateOne({ _id }, {
+    await this.collection.updateOne({ _id }, {
       $set: changes,
     });    
-    console.log(a);
-    
 
     return this.getGame(_id);
   }

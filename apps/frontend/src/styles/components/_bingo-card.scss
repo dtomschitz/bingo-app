@@ -38,6 +38,7 @@
   transition: background-color 0.1s cubic-bezier(0.4, 0, 0.2, 1);
   font-size: 3vw;
   aspect-ratio: 1;
+  overflow: hidden;
 
   @media only screen and (min-width: 786px) {
     font-size: 2vw;

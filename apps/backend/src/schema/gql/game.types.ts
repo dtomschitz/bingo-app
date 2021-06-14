@@ -33,6 +33,7 @@ export const GameTypes = gql`
     _id: ID!
     text: String
     changes: FieldChanges
+    checked: Boolean
   }
 
   input FieldChanges {
