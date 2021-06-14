@@ -25,6 +25,7 @@ export const gameQueries = (controller: GameController) => {
   return {
     games: getGames,
     game: getGame,
+    validateWin: validateWin
   };
 };
 
