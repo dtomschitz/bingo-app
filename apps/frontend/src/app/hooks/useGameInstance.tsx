@@ -1,7 +1,7 @@
 import { createContext, ReactNode, useContext, useState } from 'react';
 import { ApolloClient, NormalizedCacheObject } from '@apollo/client';
 import { GET_GAME_INSTANCE, CREATE_GAME_INSTANCE } from '@bingo/gql';
-import { BingoGame, ErrorType } from '@bingo/models';
+import { BingoField, BingoGame, ErrorType } from '@bingo/models';
 
 interface GameProviderProps {
   children: ReactNode;
@@ -15,6 +15,8 @@ interface GameInstanceContext {
   hasGame: boolean;
   getGameInstance: (id: string) => Promise<void>;
   createGameInstance: (id: string) => Promise<boolean>;
+  updateGameInstance: (fn: (game: BingoGame) => Partial<BingoGame>) => void;
+  updateGameField: (id: string, changes: Partial<BingoField>) => void;
 }
 
 const context = createContext<GameInstanceContext>({
@@ -24,6 +26,8 @@ const context = createContext<GameInstanceContext>({
   hasGame: false,
   getGameInstance: undefined,
   createGameInstance: undefined,
+  updateGameInstance: undefined,
+  updateGameField: undefined,
 });
 
 export const GameInstanceProvider = ({
@@ -69,6 +73,18 @@ export const GameInstanceProvider = ({
       .finally(() => setLoading(false));
   };
 
+  const updateGameInstance = (fn: (game: BingoGame) => Partial<BingoGame>) => {
+    setGame(game => ({ ...game, ...fn(game) }));
+  };
+
+  const updateGameField = (id: string, changes: Partial<BingoField>) => {
+    updateGameInstance(game => ({
+      fields: game.fields.map(field => {
+        return field._id === id ? { ...field, ...changes } : field;
+      }),
+    }));
+  };
+
   return (
     <context.Provider
       value={{
@@ -78,6 +94,8 @@ export const GameInstanceProvider = ({
         loading,
         getGameInstance,
         createGameInstance,
+        updateGameInstance,
+        updateGameField,
       }}
     >
       {children}

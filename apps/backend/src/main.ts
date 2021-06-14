@@ -1,4 +1,12 @@
-import { Application, applyGraphQL, Context, oakCors, Router } from "./deps.ts";
+import {
+  Application,
+  applyGraphQL,
+  Context,
+  GQLError,
+  oakCors,
+  Router,
+} from "./deps.ts";
+import { ErrorType } from "./models.ts";
 import { Database, GameDatabase, UserDatabase } from "./database/index.ts";
 import {
   AuthController,
@@ -25,8 +33,7 @@ const gameDatabase = new GameDatabase(database);
 const authController = new AuthController(userDatabase);
 const gameController = new GameController(gameDatabase);
 const gameInstanceController = new GameInstanceController(gameDatabase);
-
-const socketService = new SocketService(authController, gameDatabase);
+const socketService = new SocketService(gameDatabase);
 
 const GraphQLService: any = await applyGraphQL<Router>({
   Router,
@@ -44,9 +51,15 @@ router.get("/ws", async (context) => {
   }
 
   const socket = await context.upgrade();
+  const accessToken = context.request.url.searchParams.get("accessToken");
+  if (!accessToken) {
+    throw new GQLError(ErrorType.INCORRECT_REQUEST);
+  }
+
+  const user = await authController.verifyUser(accessToken);
 
   try {
-    await socketService.handleGameEvents(socket);
+    await socketService.handleGameEvents(socket, user);
   } catch (error) {
     console.error(`Failed to receive frame: ${error}`);
 

@@ -58,7 +58,7 @@ const App = () => {
         <Switch>
           <ProtectedRoute
             path="/game/:gameId"
-            authenticated={auth.isLoggedIn}
+            authenticated={auth.isVerifying ? true : auth.isLoggedIn}
             component={Game}
           />
           <Route path="/">

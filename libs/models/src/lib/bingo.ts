@@ -78,6 +78,7 @@ export enum MutationType {
 
 export enum GameEventType {
   JOIN_GAME = 'JOIN_GAME',
+  GAME_JOINED = 'GAME_JOINED',
   PLAYER_JOINED = 'PLAYER_JOINED',
   LEAVE_GAME = 'LEAVE_GAME',
   PLAYER_LEFT = 'PLAYER_LEFT',

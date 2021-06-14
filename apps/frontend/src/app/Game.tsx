@@ -1,15 +1,17 @@
-import { CSSProperties, useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { RouteComponentProps } from 'react-router';
 import toast from 'react-hot-toast';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCheck, faInfo } from '@fortawesome/free-solid-svg-icons';
 import {
   BingoField,
   BingoGame,
   ConnectionState,
-  errorMessages,
   ErrorType,
   GameEvent,
   GameEventType,
   getConnectionStateMessage,
+  Player,
 } from '@bingo/models';
 import { BingoCard } from './components/bingo';
 import {
@@ -20,6 +22,8 @@ import {
   Collapsible,
   CardActions,
   CardHeader,
+  CardContent,
+  Divider,
 } from './components/common';
 import {
   useAppBar,
@@ -33,11 +37,14 @@ interface GameProps {
   gameId: string;
 }
 
-interface CurrentFieldProps {
+interface BottomInfoBarProps {
   field?: BingoField;
+  game: BingoGame;
 }
 
 interface AdminControlProps {
+  game: BingoGame;
+  players: Player[];
   state: ConnectionState;
   onDrawNewField: () => void;
 }
@@ -45,23 +52,9 @@ interface AdminControlProps {
 const Game = (props: RouteComponentProps<GameProps>) => {
   const id = props.match.params.gameId;
   const history = useHistory();
+
   const appBar = useAppBar();
   const auth = useAuthContext();
-
-  const [currentField, setCurrentField] = useState<BingoField>();
-
-  const handleGameEvent = (event: GameEvent) => {
-    if (event.type === GameEventType.UNAUTHORIZED) {
-      toast.error('Unautorisierter Zugriff');
-    } else if (event.type === GameEventType.PLAYER_LEFT) {
-      toast('Ein Spieler hat das Spiel verlassen', { icon: '🚶' });
-    } else if (event.type === GameEventType.PLAYER_JOINED) {
-      toast('Ein Spieler ist dem Spiel beigetreten', { icon: '👋' });
-    } else if (event.type === GameEventType.NEW_FIELD_DRAWN) {
-      toast('Es wurde ein neues Feld gezogen!', { icon: '🃏' });
-      setCurrentField(event.data.field);
-    }
-  };
 
   const {
     game,
@@ -69,7 +62,33 @@ const Game = (props: RouteComponentProps<GameProps>) => {
     hasGame,
     loading,
     getGameInstance,
+    updateGameField,
   } = useGameInstanceContext();
+
+  const [currentField, setCurrentField] = useState<BingoField>(undefined);
+  const [currentPlayers, setCurrentPlayers] = useState<Player[]>([]);
+
+  const handleGameEvent = (event: GameEvent) => {
+    if (event.type === GameEventType.UNAUTHORIZED) {
+      toast.error('Unautorisierter Zugriff');
+    } else if (event.type === GameEventType.PLAYER_LEFT) {
+      toast('Ein Spieler hat das Spiel verlassen', { icon: '🚶' });
+      setCurrentPlayers(event.data?.players ?? []);
+    } else if (event.type === GameEventType.PLAYER_JOINED) {
+      toast('Ein Spieler ist dem Spiel beigetreten', { icon: '👋' });
+      setCurrentPlayers(event.data?.players ?? []);
+    } else if (event.type === GameEventType.GAME_JOINED) {
+      toast('Du bist dem Spiel beigetreten', { icon: '👋' });
+      setCurrentPlayers(event.data?.players ?? []);
+    } else if (event.type === GameEventType.NEW_FIELD_DRAWN) {
+      const field = event.data.field as BingoField;
+
+      toast('Es wurde ein neues Feld gezogen!', { icon: '🃏' });
+      setCurrentField(field);
+      updateGameField(field._id, { checked: true });
+    }
+  };
+
   const { sendEvent, state } = useGameSocket({
     id,
     onMessage: handleGameEvent,
@@ -98,14 +117,19 @@ const Game = (props: RouteComponentProps<GameProps>) => {
     <div className="game">
       {!loading && hasGame && (
         <>
-          {auth.user?._id === game.authorId && (
-            <AdminControls state={state} onDrawNewField={onDrawNewField} />
-          )}
-          <BingoCardHeader />
-          <CurrentField field={currentField} />
-          {<BingoCard fields={game.instanceFields} onWin={onWin} />}
-          <FlatButton className="bingo-button">BINGO</FlatButton>
-          <BingoFieldsCollapsible {...game} />
+          <div className="game-container">
+            {auth.user?._id === game.authorId && (
+              <AdminControls
+                game={game}
+                players={currentPlayers}
+                state={state}
+                onDrawNewField={onDrawNewField}
+              />
+            )}
+            <BingoCardHeader />
+            {<BingoCard fields={game.instanceFields} onWin={onWin} />}
+          </div>
+          <BottomInfoBar field={currentField} game={game} />
         </>
       )}
     </div>
@@ -124,31 +148,32 @@ const BingoCardHeader = () => {
   );
 };
 
-const CurrentField = ({ field }: CurrentFieldProps) => {
+const BottomInfoBar = ({ game, field }: BottomInfoBarProps) => {
   return (
-    <Card className="current-field">
-      <CardTitle>
-        {field
-          ? `Aufgedecktes Feld: ${field?.text}`
-          : 'Es wurde noch kein Feld aufgedeckt'}
-      </CardTitle>
-    </Card>
+    <div className="bottom-info-bar elevation-z8">
+      <Card className="current-field">
+        <CardTitle>
+          {field
+            ? `Aufgedecktes Feld: ${field?.text}`
+            : 'Es wurde noch kein Feld aufgedeckt'}
+        </CardTitle>
+      </Card>
+      <FlatButton className="bingo-button">BINGO</FlatButton>
+    </div>
   );
 };
 
-const BingoFieldsCollapsible = (game: BingoGame) => {
-  return (
-    <Collapsible trigger="Bingo Felder" className="bingo-fields">
-      {game.instanceFields.map(field => (
-        <div key={field._id} className="bingo-field-item">
-          <span>{field.text}</span>
-        </div>
-      ))}
-    </Collapsible>
-  );
-};
+const AdminControls = ({
+  game,
+  players,
+  state,
+  onDrawNewField,
+}: AdminControlProps) => {
+  const auth = useAuthContext();
 
-const AdminControls = ({ state, onDrawNewField }: AdminControlProps) => {
+  const uncheckedFields = game.fields.filter(field => !field.checked);
+  const checkedFields = game.fields.filter(field => field.checked);
+
   return (
     <Card className="admin-controls">
       <CardHeader>
@@ -158,7 +183,48 @@ const AdminControls = ({ state, onDrawNewField }: AdminControlProps) => {
           className={state.toLowerCase()}
         />
       </CardHeader>
+      <CardContent>
+        <Collapsible trigger="Bingo Felder" className="bingo-fields">
+          <h2 className="label">
+            Nicht aufgedeckte Felder
+            <span className="count">({uncheckedFields.length})</span>
+          </h2>
+          <Divider />
+          {uncheckedFields.map(field => (
+            <div key={field._id} className="list-item">
+              <span>{field.text}</span>
+            </div>
+          ))}
+          <h2 className="label">
+            Aufgedeckte Felder
+            <span className="count">({checkedFields.length})</span>
+          </h2>
+          <Divider />
+          {checkedFields.map(field => (
+            <div key={field._id} className="list-item">
+              <FontAwesomeIcon className="check-icon" icon={faCheck} />
+              <span>{field.text}</span>
+            </div>
+          ))}
+        </Collapsible>
+        <Collapsible trigger={`Spieler (${players.length})`}>
+          {players.map(player => (
+            <div key={player._id} className="list-item">
+              <span>
+                {player.name}
+                {auth.user?._id === player._id && <span> (Du)</span>}
+              </span>
+            </div>
+          ))}
+        </Collapsible>
+      </CardContent>
       <CardActions>
+        {uncheckedFields.length === 0 && (
+          <div className="info">
+            <FontAwesomeIcon className="check-icon" icon={faInfo} />
+            <span></span>
+          </div>
+        )}
         <FlatButton className="draw-field" onClick={onDrawNewField}>
           Feld aufdecken
         </FlatButton>

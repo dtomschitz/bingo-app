@@ -1,40 +1,23 @@
-import { isWebSocketCloseEvent, WebSocket } from '../deps.ts';
-import { Utils } from '../utils/utils.ts';
-import { GameEvent, GameEventType } from '../models.ts';
-import { GameDatabase } from '../database/index.ts';
-import { GameSchema } from '../schema/index.ts';
-import { AuthController } from '../controller/index.ts';
+import { isWebSocketCloseEvent, WebSocket } from "../deps.ts";
+import { GameEvent, GameEventType, Player, User } from "../models.ts";
+import { Utils } from "../utils/utils.ts";
+import { GameDatabase } from "../database/index.ts";
+import { GameSchema } from "../schema/index.ts";
 
 export class SocketService {
   private sessions: Map<string, Set<WebSocket>> = new Map();
+  private players: Map<string, Set<Player>> = new Map();
 
-  constructor(
-    private controller: AuthController,
-    private games: GameDatabase,
-  ) {}
+  constructor(private games: GameDatabase) {}
 
-  async handleGameEvents(socket: WebSocket) {
+  async handleGameEvents(socket: WebSocket, user: User) {
     for await (const e of socket) {
       if (isWebSocketCloseEvent(e)) {
-        this.sessions.forEach((sockets, key) => {
-          for (const socket of sockets) {
-            if (socket.isClosed) {
-              const sockets = this.sessions.get(key);
-              
-              if (!sockets) {
-                continue;
-              }
-
-              sockets.delete(socket);
-              this.brodcast(sockets, GameEventType.PLAYER_LEFT);
-            }
-          }
-        });
-
+        this.handleLeftEvent(user);
         continue;
       }
 
-      if (typeof e === 'string') {
+      if (typeof e === "string") {
         const event = JSON.parse(e) as GameEvent;
         const game = await this.games.getGame(event.id);
 
@@ -44,10 +27,8 @@ export class SocketService {
         }
 
         if (event.type === GameEventType.JOIN_GAME) {
-          this.handleJoinEvent(socket, event);
+          this.handleJoinEvent(socket, event, user);
         } else if (event.type === GameEventType.DRAW_FIELD) {
-          const user = await this.controller.verifyUser(event.accessToken);
-
           if (user._id.toString() !== game.authorId.toString()) {
             await this.sendEvent(socket, GameEventType.UNAUTHORIZED);
             continue;
@@ -59,29 +40,67 @@ export class SocketService {
     }
   }
 
-  private handleJoinEvent(socket: WebSocket, event: GameEvent) {
-    if (this.sessions.has(event.id)) {
-      const sockets = this.sessions.get(event.id);
+  private handleJoinEvent(socket: WebSocket, event: GameEvent, user: User) {
+    const gameId = event.id;
+    const player: Player = { _id: user._id, name: user.name }
+
+    if (this.sessions.has(gameId)) {
+      const sockets = this.sessions.get(gameId);
       if (!sockets) {
         return;
       }
-
-      this.brodcast(sockets, GameEventType.PLAYER_JOINED);
+      
+      this.players.get(event.id)?.add(player);
+      
+      const players = Array.from(this.players.get(event.id) ?? []);
+      this.brodcast(sockets, GameEventType.PLAYER_JOINED, { players });
+      this.sendEvent(socket, GameEventType.GAME_JOINED, { players });
 
       sockets.add(socket);
       console.log(`Added socket to session for game ${event.id}`);
+    } else {
+      this.sessions.set(event.id, new Set([socket]));
+      this.players.set(event.id, new Set([player]));
+      
+      const players = Array.from(this.players.get(event.id) ?? []);
+      this.sendEvent(socket, GameEventType.GAME_JOINED, { players });
 
-      return;
-    } 
+      console.log(`New session created for game ${event.id}`);
+    }
+  }
 
-    this.sessions.set(event.id, new Set([socket]));
-    console.log(`New session created for game ${event.id}`);
+  private handleLeftEvent(user: User) {
+    this.players.forEach((players, gameId) => {
+      for (const player of players) {
+        if (player._id === user._id) {
+          this.players.get(gameId)?.delete(player);
+        }
+      }
+    })
+
+    this.sessions.forEach((sockets, gameId) => {
+      for (const socket of sockets) {
+        if (socket.isClosed) {
+          const sockets = this.sessions.get(gameId);
+          if (!sockets) {
+            continue;
+          }
+
+          sockets?.delete(socket);
+
+          const players = Array.from(this.players.get(gameId) ?? []);
+          this.brodcast(sockets, GameEventType.PLAYER_LEFT, { players });
+        }
+      }
+    });
   }
 
   private async handleDrawFieldEvent(event: GameEvent, game: GameSchema) {
     const fields = game.fields;
-    const uncheckedFields = game.fields.filter(field => !field.checked);
+    const uncheckedFields = game.fields.filter((field) => !field.checked);
     const random = Utils.getRandomNumber(0, uncheckedFields.length - 1);
+
+    console.log(random);
 
     fields[random] = {
       ...fields[random],

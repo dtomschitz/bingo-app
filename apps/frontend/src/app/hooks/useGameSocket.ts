@@ -15,6 +15,9 @@ export const useGameSocket = ({ id, onMessage }: GameSocketProps) => {
   const { sendJsonMessage, readyState, getWebSocket } = useWebSocket(
     socketUrl,
     {
+      queryParams: {
+        accessToken: auth.refreshToken,
+      },
       onOpen: () => sendEvent(GameEventType.JOIN_GAME),
       onMessage: response => {
         if (typeof response.data === 'string') {
