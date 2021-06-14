@@ -1,6 +1,6 @@
 import { UserDatabase } from "../database/index.ts";
 import { JwtUtils } from "../utils/index.ts";
-import { Context, GQLError } from "../deps.ts";
+import { Context, GQLError, PubSub } from "../deps.ts";
 import {
   AuthenticationContext,
   BaseContext,
@@ -56,6 +56,8 @@ export const requiresAuthentication = <T, R = any>(
   };
 };
 
+const pubsub = new PubSub();
+
 export const createContext = async (
   { request }: Context,
   users: UserDatabase,
@@ -63,6 +65,7 @@ export const createContext = async (
   const context: BaseContext = {
     authenticated: false,
     user: undefined,
+    pubsub: pubsub
   };
 
   const requestToken = request.headers.get("Authorization");
@@ -84,7 +87,7 @@ export const createContext = async (
     return {
       ...context,
       authenticated: true,
-      user,
+      user
     };
   } catch {
     return context;

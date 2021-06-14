@@ -1,7 +1,7 @@
 import { GQLError } from "../deps.ts";
-import { BingoField, BingoGame, ErrorType, User } from "../models.ts";
+import { BingoField, BingoInstanceField, BingoGame, ErrorType, User } from "../models.ts";
+import { Utils } from "../utils/utils.ts";
 import { GameDatabase } from "../database/index.ts";
-import { GameInstanceSchema, GameSchema } from "../schema/index.ts";
 
 export class GameInstanceController {
   constructor(private games: GameDatabase) {}
@@ -17,28 +17,29 @@ export class GameInstanceController {
       throw new GQLError(ErrorType.GAME_INSTANCE_NOT_FOUND);
     }
 
-    const fields = instance.fields.reduce<BingoField[]>((results, id) => {
+    const instanceFields = instance.fields.reduce<BingoInstanceField[]>((results, id) => {
       const field = game.fields.find((field) => field._id === id);
       if (field) {
-        results.push(field);
+        results.push({...field, selected: false });
       }
 
       return results;
     }, []);
 
     const gameInstance: BingoGame = {
-      _id: game._id,
+      _id: game._id.toHexString(),
       authorId: game.authorId,
       title: game.title,
       phase: game.phase,
-      fields,
+      fields: game.fields,
+      instanceFields,
       hasInstance: true,
     };
 
     return gameInstance;
   }
 
-  async createGameInstance(id: string, user: User) {    
+  async createGameInstance(id: string, user: User) {
     const game = await this.games.getGame(id);
     if (!game) {
       throw new GQLError(ErrorType.GAME_NOT_FOUND);
@@ -50,10 +51,13 @@ export class GameInstanceController {
     }
 
     const fields = game.fields;
-    const randomFields: BingoField[] = [];
+    if (fields.length < 25) {
+      throw new GQLError(ErrorType.INVALID_GAME);
+    }
 
+    const randomFields: BingoField[] = [];
     while (randomFields.length < 25) {
-      const index = this.getRandomNumber(0, (game.fields.length - 1));
+      const index = Utils.getRandomNumber(0, (game.fields.length - 1));
       const field = fields[index];
 
       if (!randomFields.includes(field)) {
@@ -67,18 +71,19 @@ export class GameInstanceController {
     });
 
     const gameInstance: BingoGame = {
-      _id: game._id,
+      _id: id,
       authorId: game.authorId,
       title: game.title,
       phase: game.phase,
-      fields: randomFields.map(({ _id, text }) => ({ _id, text })),
+      fields,
+      instanceFields: randomFields.map(({ _id, text }) => ({
+        _id,
+        text,
+        selected: true,
+      })),
       hasInstance: true,
     };
 
     return gameInstance;
-  }
-
-  private getRandomNumber(min: number, max: number) {
-    return Math.floor(Math.random() * (max - min + 1) + min);
   }
 }

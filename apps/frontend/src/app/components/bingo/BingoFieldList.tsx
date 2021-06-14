@@ -1,6 +1,5 @@
 import { BingoField } from '@bingo/models';
 import { useState } from 'react';
-import { v4 as uuidv4 } from 'uuid';
 import { AddBingoFieldInput, BingoFieldInput } from './BingoFieldInput';
 
 interface BingoFieldListProps extends BingoFieldListState {
@@ -19,13 +18,7 @@ interface BingoFieldListState {
 export const useBingoFieldListState = (
   initialFields?: BingoField[],
 ): BingoFieldListState => {
-  const [fields, setFields] = useState<BingoField[]>(
-    Array.from({ length: 31 }, (_, i) => i + 1).map(i => ({
-      _id: uuidv4(),
-      text: `TEST ${i}`,
-      checked: false,
-    })),
-  );
+  const [fields, setFields] = useState<BingoField[]>(initialFields ?? []);
 
   const addField = (field: BingoField) => {
     setFields(currentFields => [field, ...currentFields]);

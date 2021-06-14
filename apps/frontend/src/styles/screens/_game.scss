@@ -1,14 +1,103 @@
 .game {
-  max-width: 750px;
   width: 100%;
+  display: flex;
+  justify-content: center;
 
-  @media only screen and (min-width: 1280px) {
-		max-width: 1000px;
+  .game-container {
+    max-width: 750px;
+    width: 100%;
+
+    @media only screen and (min-width: 1280px) {
+      max-width: 1000px;
+    }
   }
 
-  .bingo-button {
-    width: 100%;
-    height: 60px;
-    margin-top: 64px;
+  .admin-controls,
+  .bingo-card {
+    margin-bottom: 32px;
+  }
+
+  .bottom-info-bar {
+    display: flex;
+    position: fixed;
+    justify-content: space-between;
+    padding: 16px;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: $background;
+
+    .current-field {
+      box-shadow: none;
+      margin-right: 16px;
+
+      .card-title {
+        font-size: 16px;
+        font-weight: 600;
+        margin-bottom: 0;
+      }
+    }
+
+    .bingo-button {
+      width: 200px;
+      font-weight: bold;
+      font-size: 24px;
+
+      @media screen and (max-width: 570px) {
+        width: 120px;
+        font-size: 18px;
+      }
+    }
+  }
+
+  .admin-controls {
+    box-shadow: none;
+
+    h2 {
+      margin-top: 8px;
+      margin-bottom: 4px;
+    }
+
+    .divider {
+      margin-bottom: 8px;
+    }
+
+    .count {
+      margin-left: 8px;
+      font-weight: 400;
+    }
+
+    .collapsible {
+      margin-bottom: 8px;
+    }
+
+    .card-actions {
+      flex-direction: column;
+
+      .info {
+        color: #fff;
+        margin-bottom: 16px;
+      }
+
+      .button {
+        width: 100%;
+        margin: 0;
+      }
+    }
+
+    .card-content {
+      margin: 32px 0;
+    }
+
+    .list-item {
+      min-height: 32px;
+      font-size: 16px;
+      display: flex;
+      align-items: center;
+
+      .check-icon {
+        margin-right: 8px;
+      }
+    }
   }
 }

@@ -9,7 +9,6 @@ import {
   InMemoryCache,
   Observable,
   from,
-  gql,
 } from '@apollo/client';
 import { setContext } from '@apollo/client/link/context';
 import { onError } from '@apollo/client/link/error';
@@ -55,8 +54,6 @@ const errorLink = onError(
           return new Observable(observer => {
             refreshAccessToken(refreshToken)
               .then(accessToken => {
-                console.log(accessToken);
-
                 operation.setContext(({ headers = {} }: any) => ({
                   headers: {
                     ...headers,

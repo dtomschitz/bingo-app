@@ -1,16 +1,16 @@
 import { GQLError, v4 } from "../deps.ts";
 import {
+  BingoField,
   CreateGame,
   ErrorType,
   FieldMutations,
   MutationType,
   UpdateGame,
   User,
-  BingoField,
   ValidateWin
 } from "../models.ts";
 import { GameDatabase } from "../database/index.ts";
-import { GameField, GameSchema } from "../schema/index.ts";
+import { GameSchema } from "../schema/index.ts";
 
 export class GameController {
   constructor(private games: GameDatabase) {}
@@ -18,7 +18,7 @@ export class GameController {
   async getGames(user: User) {
     const games = await this.games.getGames();
 
-    return games.map((game: GameSchema) => {
+    return games.map((game: GameSchema) => {      
       const hasInstance = !!game.instances[user._id];
       return { ...game, hasInstance };
     });
@@ -28,7 +28,7 @@ export class GameController {
     const game = await this.games.getGame(id);
     if (!game) {
       throw new GQLError(ErrorType.GAME_NOT_FOUND);
-    }
+    }    
 
     return game;
   }
@@ -42,7 +42,7 @@ export class GameController {
       throw new GQLError(ErrorType.GAME_CONTAINS_TOO_FEW_FIELDS);
     }
 
-    const fields = props.fields.map<GameField>((field) => ({
+    const fields = props.fields.map<BingoField>((field) => ({
       text: field,
       _id: v4.generate(),
       checked: false,
@@ -53,7 +53,7 @@ export class GameController {
       authorId: user._id,
       fields,
       instances: {},
-      phase: "editing"
+      phase: "editing",
     });
   }
 
@@ -62,49 +62,41 @@ export class GameController {
       throw new GQLError(ErrorType.INCORRECT_REQUEST);
     }
 
-    if (!await this.games.getGame(props._id)) {
+    const game = await this.games.getGame(props._id);
+    if (!game) {
       throw new GQLError(ErrorType.GAME_NOT_FOUND);
     }
 
-    return await this.games.updateGame(props);
+    return await this.games.updateGame(game._id, props.changes);
   }
 
   async mutateGameField(_id: string, mutation: FieldMutations) {
-    console.log(mutation);
-
     const game = await this.games.getGame(_id);
     if (!game) {
       throw new GQLError(ErrorType.GAME_NOT_FOUND);
     }
 
     if (mutation.type === MutationType.CREATE) {
-      await this.games.updateGame({
-        _id,
-        changes: {
-          fields: [...game.fields, {
-            _id: mutation._id,
-            text: mutation.text,
-          }],
-        },
+      await this.games.updateGame(game._id, {
+        fields: [...game.fields, {
+          _id: mutation._id,
+          text: mutation.text,
+          checked: false,
+        }],
       });
     } else if (mutation.type === MutationType.UPDATE) {
-      await this.games.updateGame({
-        _id,
-        changes: {
-          fields: game.fields.map((
-            field,
-          ) => (field._id === mutation._id
-            ? { ...field, ...mutation.changes }
-            : field)
-          ),
-        },
+      await this.games.updateGame(game._id, {
+        fields: game.fields.map((field) => {
+          if (field._id === mutation._id) {            
+            return { ...field, ...mutation.changes };
+          }
+
+          return field;
+        }),
       });
     } else {
-      await this.games.updateGame({
-        _id,
-        changes: {
-          fields: game.fields.filter((field) => field._id !== mutation._id),
-        },
+      await this.games.updateGame(game._id, {
+        fields: game.fields.filter((field) => field._id !== mutation._id),
       });
     }
 
@@ -117,7 +109,7 @@ export class GameController {
       throw new GQLError(ErrorType.GAME_NOT_FOUND);
     }
 
-    await this.games.deleteGame(id);    
+    await this.games.deleteGame(game._id);
     return true;
   }
 
