@@ -47,6 +47,7 @@ interface AdminControlProps {
   players: Player[];
   state: ConnectionState;
   onDrawNewField: () => void;
+  onCloseGame: () => void;
 }
 
 const Game = (props: RouteComponentProps<GameProps>) => {
@@ -67,31 +68,33 @@ const Game = (props: RouteComponentProps<GameProps>) => {
 
   const [currentField, setCurrentField] = useState<BingoField>(undefined);
   const [currentPlayers, setCurrentPlayers] = useState<Player[]>([]);
-
-  const handleGameEvent = (event: GameEvent) => {
-    if (event.type === GameEventType.UNAUTHORIZED) {
-      toast.error('Unautorisierter Zugriff');
-    } else if (event.type === GameEventType.PLAYER_LEFT) {
-      toast('Ein Spieler hat das Spiel verlassen', { icon: '🚶' });
-      setCurrentPlayers(event.data?.players ?? []);
-    } else if (event.type === GameEventType.PLAYER_JOINED) {
-      toast('Ein Spieler ist dem Spiel beigetreten', { icon: '👋' });
-      setCurrentPlayers(event.data?.players ?? []);
-    } else if (event.type === GameEventType.GAME_JOINED) {
-      toast('Du bist dem Spiel beigetreten', { icon: '👋' });
-      setCurrentPlayers(event.data?.players ?? []);
-    } else if (event.type === GameEventType.NEW_FIELD_DRAWN) {
-      const field = event.data.field as BingoField;
-
-      toast('Es wurde ein neues Feld gezogen!', { icon: '🃏' });
-      setCurrentField(field);
-      updateGameField(field._id, { checked: true });
-    }
-  };
-
   const { sendEvent, state } = useGameSocket({
     id,
-    onMessage: handleGameEvent,
+    onMessage: (event: GameEvent) => {
+      if (event.type === GameEventType.UNAUTHORIZED) {
+        toast.error('Unautorisierter Zugriff');
+      } else if (event.type === GameEventType.PLAYER_LEFT) {
+        toast('Ein Spieler hat das Spiel verlassen', { icon: '🚶' });
+        setCurrentPlayers(event.data?.players ?? []);
+      } else if (event.type === GameEventType.PLAYER_JOINED) {
+        toast('Ein Spieler ist dem Spiel beigetreten', { icon: '👋' });
+        setCurrentPlayers(event.data?.players ?? []);
+      } else if (event.type === GameEventType.GAME_JOINED) {
+        toast('Du bist dem Spiel beigetreten', { icon: '👋' });
+        setCurrentPlayers(event.data?.players ?? []);
+      } else if (event.type === GameEventType.NEW_FIELD_DRAWN) {
+        const field = event.data.field as BingoField;
+
+        toast('Es wurde ein neues Feld gezogen!', { icon: '🃏' });
+        setCurrentField(field);
+        updateGameField(field._id, { checked: true });
+      } else if (event.type === GameEventType.NO_MORE_FIELDS) {
+        toast.error('Es können keine weiteren Felder gezogen werden!');
+      } else if (event.type === GameEventType.GAME_CLOSED) {
+        toast('Das Spiel wurde vom Admin beendet!', { icon: '❌' });
+        history.replace('/');
+      }
+    },
   });
 
   useEffect(() => {
@@ -107,6 +110,7 @@ const Game = (props: RouteComponentProps<GameProps>) => {
   useEffect(() => appBar.showLoadingBar(loading), [appBar, loading]);
 
   const onDrawNewField = () => sendEvent(GameEventType.DRAW_FIELD);
+  const onCloseGame = () => sendEvent(GameEventType.CLOSE_GAME);
   const onWin = () => sendEvent(GameEventType.ON_WIN);
 
   if (error) {
@@ -123,6 +127,7 @@ const Game = (props: RouteComponentProps<GameProps>) => {
                 game={game}
                 players={currentPlayers}
                 state={state}
+                onCloseGame={onCloseGame}
                 onDrawNewField={onDrawNewField}
               />
             )}
@@ -167,6 +172,7 @@ const AdminControls = ({
   game,
   players,
   state,
+  onCloseGame,
   onDrawNewField,
 }: AdminControlProps) => {
   const auth = useAuthContext();
@@ -184,7 +190,10 @@ const AdminControls = ({
         />
       </CardHeader>
       <CardContent>
-        <Collapsible trigger="Bingo Felder" className="bingo-fields">
+        <Collapsible
+          trigger={`Bingo Felder (${uncheckedFields.length}/${checkedFields.length})`}
+          className="bingo-fields"
+        >
           <h2 className="label">
             Nicht aufgedeckte Felder
             <span className="count">({uncheckedFields.length})</span>
@@ -221,13 +230,17 @@ const AdminControls = ({
       <CardActions>
         {uncheckedFields.length === 0 && (
           <div className="info">
-            <FontAwesomeIcon className="check-icon" icon={faInfo} />
-            <span></span>
+            <span>Es wurden alle Felder aufgedeckt!</span>
           </div>
         )}
-        <FlatButton className="draw-field" onClick={onDrawNewField}>
-          Feld aufdecken
-        </FlatButton>
+
+        {uncheckedFields.length === 0 ? (
+          <FlatButton className="warning" onClick={onCloseGame}>
+            Spiel beenden
+          </FlatButton>
+        ) : (
+          <FlatButton onClick={onDrawNewField}>Feld aufdecken</FlatButton>
+        )}
       </CardActions>
     </Card>
   );

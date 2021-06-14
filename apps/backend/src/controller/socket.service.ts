@@ -34,7 +34,14 @@ export class SocketService {
             continue;
           }
 
-          this.handleDrawFieldEvent(event, game);
+          this.handleDrawFieldEvent(socket, event, game);
+        } else if (event.type === GameEventType.CLOSE_GAME) {
+          if (user._id.toString() !== game.authorId.toString()) {
+            await this.sendEvent(socket, GameEventType.UNAUTHORIZED);
+            continue;
+          }
+
+          this.handleCloseGameEvent(event, game);
         }
       }
     }
@@ -42,16 +49,16 @@ export class SocketService {
 
   private handleJoinEvent(socket: WebSocket, event: GameEvent, user: User) {
     const gameId = event.id;
-    const player: Player = { _id: user._id, name: user.name }
+    const player: Player = { _id: user._id, name: user.name };
 
     if (this.sessions.has(gameId)) {
       const sockets = this.sessions.get(gameId);
       if (!sockets) {
         return;
       }
-      
+
       this.players.get(event.id)?.add(player);
-      
+
       const players = Array.from(this.players.get(event.id) ?? []);
       this.brodcast(sockets, GameEventType.PLAYER_JOINED, { players });
       this.sendEvent(socket, GameEventType.GAME_JOINED, { players });
@@ -61,7 +68,7 @@ export class SocketService {
     } else {
       this.sessions.set(event.id, new Set([socket]));
       this.players.set(event.id, new Set([player]));
-      
+
       const players = Array.from(this.players.get(event.id) ?? []);
       this.sendEvent(socket, GameEventType.GAME_JOINED, { players });
 
@@ -76,7 +83,7 @@ export class SocketService {
           this.players.get(gameId)?.delete(player);
         }
       }
-    })
+    });
 
     this.sessions.forEach((sockets, gameId) => {
       for (const socket of sockets) {
@@ -95,19 +102,23 @@ export class SocketService {
     });
   }
 
-  private async handleDrawFieldEvent(event: GameEvent, game: GameSchema) {
-    const fields = game.fields;
+  private async handleDrawFieldEvent(socket: WebSocket, event: GameEvent, game: GameSchema) {
     const uncheckedFields = game.fields.filter((field) => !field.checked);
+    if (uncheckedFields.length === 0) {
+      this.sendEvent(socket, GameEventType.NO_MORE_FIELDS);
+      return;
+    }    
+
     const random = Utils.getRandomNumber(0, uncheckedFields.length - 1);
-
-    console.log(random);
-
-    fields[random] = {
-      ...fields[random],
-      checked: true,
-    };
-
-    await this.games.updateGame(game._id, { fields });
+    const randomField = uncheckedFields[random];
+    
+    await this.games.updateGame(game._id, {
+      fields: game.fields.map((field) => {
+        return field._id === randomField._id
+          ? { ...field, checked: true }
+          : field;
+      }),
+    });
 
     const sockets = this.sessions.get(event.id);
     if (!sockets) {
@@ -115,8 +126,18 @@ export class SocketService {
     }
 
     this.brodcast(sockets, GameEventType.NEW_FIELD_DRAWN, {
-      field: fields[random],
+      field: randomField,
     });
+  }
+
+  private async handleCloseGameEvent(event: GameEvent, game: GameSchema) {
+    const sockets = this.sessions.get(event.id);
+    if (!sockets) {
+      return;
+    }
+
+    await this.games.deleteGame(game._id);
+    this.brodcast(sockets, GameEventType.GAME_CLOSED);
   }
 
   private sendEvent<T>(socket: WebSocket, type: GameEventType, data?: T) {

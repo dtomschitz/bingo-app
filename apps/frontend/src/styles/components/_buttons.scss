@@ -19,13 +19,26 @@
     outline: none;
   }
 
+  &.warning {
+    color: $warning;
+    border-color: $warning;
+  }
+
   &.bordered,
   &.flat {
     border: 2px solid $primary;
+
+    &.warning {
+      border-color: $warning;
+    }
   }
 
   &.flat {
-    background-color: rgba($primary, $alpha: 0.25);
+    background-color: rgba($primary, 0.25);
+
+    &.warning {
+      background-color: rgba($warning, 0.25);
+    }
   }
 
   &.disabled {
