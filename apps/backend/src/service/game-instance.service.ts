@@ -3,7 +3,7 @@ import { BingoField, BingoInstanceField, BingoGame, ErrorType, User } from "../m
 import { Utils } from "../utils/utils.ts";
 import { GameDatabase } from "../database/index.ts";
 
-export class GameInstanceController {
+export class GameInstanceService {
   constructor(private games: GameDatabase) {}
 
   async getGameInstance(id: string, user: User) {

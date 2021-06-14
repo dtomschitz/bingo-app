@@ -14,8 +14,6 @@ services:
       - 'mongodata:/data/db'
     ports:
       - '27017:27017'
-    networks:
-      - saturn
 
   backend:
     container_name: backend
@@ -36,8 +34,6 @@ services:
       - './libs:/app/libs:ro'
     ports:
       - '8000:8000'
-    networks:
-      - saturn
 
   frontend:
     container_name: frontend
@@ -51,12 +47,6 @@ services:
       - './libs:/app/libs:ro'
     ports:
       - '3000:3000'
-    networks:
-      - saturn
-
-networks:
-  saturn:
-    driver: bridge
 
 volumes:
   mongodata:

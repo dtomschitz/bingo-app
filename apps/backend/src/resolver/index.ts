@@ -1,8 +1,8 @@
 import {
-  AuthController,
-  GameController,
-  GameInstanceController,
-} from "../controller/index.ts";
+  AuthService,
+  GameInstanceService,
+  GameService,
+} from "../service/index.ts";
 import {
   authMutations,
   gameInstanceMutations,
@@ -11,19 +11,19 @@ import {
 import { gameInstanceQueries, gameQueries } from "./queries.ts";
 
 export const resolvers = (
-  authController: AuthController,
-  gameController: GameController,
-  gameInstanceController : GameInstanceController
+  authService: AuthService,
+  gameService: GameService,
+  gameInstanceService: GameInstanceService,
 ) => {
   return {
     Query: {
-      ...gameQueries(gameController),
-      ...gameInstanceQueries(gameInstanceController),
+      ...gameQueries(gameService),
+      ...gameInstanceQueries(gameInstanceService),
     },
     Mutation: {
-      ...authMutations(authController),
-      ...gameMutations(gameController),
-      ...gameInstanceMutations(gameInstanceController),
-    }
+      ...authMutations(authService),
+      ...gameMutations(gameService),
+      ...gameInstanceMutations(gameInstanceService),
+    },
   };
 };

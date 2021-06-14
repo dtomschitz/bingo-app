@@ -12,7 +12,7 @@ import {
 import { GameDatabase } from "../database/index.ts";
 import { GameSchema } from "../schema/index.ts";
 
-export class GameController {
+export class GameService {
   constructor(private games: GameDatabase) {}
 
   async getGames(user: User) {

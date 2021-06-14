@@ -3,6 +3,10 @@
   display: flex;
   justify-content: center;
 
+  #router-container {
+    margin-bottom: 83px;
+  }
+
   .game-container {
     max-width: 750px;
     width: 100%;
@@ -12,9 +16,12 @@
     }
   }
 
-  .admin-controls,
-  .bingo-card {
+  .admin-controls {
     margin-bottom: 32px;
+  }
+
+  .bingo-card {
+    margin-bottom: 16px;
   }
 
   .bottom-info-bar {

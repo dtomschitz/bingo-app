@@ -1,8 +1,8 @@
 import {
-  AuthController,
-  GameController,
-  GameInstanceController,
-} from "../controller/index.ts";
+  AuthService,
+  GameService,
+  GameInstanceService,
+} from "../service/index.ts";
 import { gqlRequestWrapper, requiresAuthentication } from "../utils/index.ts";
 import {
   ArgProps,
@@ -15,26 +15,26 @@ import {
   MutateGameField
 } from "../models.ts";
 
-export const authMutations = (controller: AuthController) => {
+export const authMutations = (service: AuthService) => {
   const registerUser = gqlRequestWrapper<ArgProps<CreateUserProps>>((
     { args },
-  ) => controller.registerUser(args.props));
+  ) => service.registerUser(args.props));
 
   const loginUser = gqlRequestWrapper<LoginProps>((
     { args },
-  ) => controller.loginUser(args.email, args.password));
+  ) => service.loginUser(args.email, args.password));
 
   const logoutUser = gqlRequestWrapper<LogoutProps>((
     { args },
-  ) => controller.logoutUser(args.email));
+  ) => service.logoutUser(args.email));
 
   const verifyUser = gqlRequestWrapper<RefreshAccessTokenProps>((
     { args },
-  ) => controller.verifyUser(args.refreshToken));
+  ) => service.verifyUser(args.refreshToken));
 
   const refreshAccessToken = gqlRequestWrapper<RefreshAccessTokenProps>((
     { args },
-  ) => controller.refreshAccessToken(args.refreshToken));
+  ) => service.refreshAccessToken(args.refreshToken));
 
   return {
     registerUser,
@@ -45,38 +45,38 @@ export const authMutations = (controller: AuthController) => {
   };
 };
 
-export const gameMutations = (controller: GameController) => {
+export const gameMutations = (service: GameService) => {
   const createGame = gqlRequestWrapper<ArgProps<CreateGame>>(
     requiresAuthentication(({ context, args }) =>
-      controller.createGame(args.props, context.user)
+      service.createGame(args.props, context.user)
     ),
   );
 
   const updateGame = gqlRequestWrapper<ArgProps<UpdateGame>>(
     requiresAuthentication(({ args }) =>
-      controller.updateGame(args.props)
+      service.updateGame(args.props)
     ),
   );
 
   const deleteGame = gqlRequestWrapper<{ _id: string }>(
     requiresAuthentication(({ args }) =>
-      controller.deleteGame(args._id)
+      service.deleteGame(args._id)
     ),
   );
 
   const mutateField = gqlRequestWrapper<ArgProps<MutateGameField>>(
     requiresAuthentication(({ args }) =>
-      controller.mutateGameField(args.props._id, args.props.mutation)
+      service.mutateGameField(args.props._id, args.props.mutation)
     ),
   );
 
   return { createGame, updateGame, deleteGame, mutateField};
 };
 
-export const gameInstanceMutations = (controller: GameInstanceController) => {
+export const gameInstanceMutations = (service: GameInstanceService) => {
   const createGameInstance = gqlRequestWrapper<{ _id: string }>(
     requiresAuthentication(({ context, args }) => {
-      return controller.createGameInstance(args._id, context.user);
+      return service.createGameInstance(args._id, context.user);
     }),
   );
 

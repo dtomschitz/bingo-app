@@ -9,11 +9,11 @@ import {
 import { ErrorType } from "./models.ts";
 import { Database, GameDatabase, UserDatabase } from "./database/index.ts";
 import {
-  AuthController,
-  GameController,
-  GameInstanceController,
+  AuthService,
+  GameService,
+  GameInstanceService,
   SocketService,
-} from "./controller/index.ts";
+} from "./service/index.ts";
 import { resolvers } from "./resolver/index.ts";
 import { GraphQLSchema } from "./schema/index.ts";
 import { createContext } from "./utils/index.ts";
@@ -30,15 +30,15 @@ await database.connect();
 const userDatabase = new UserDatabase(database);
 const gameDatabase = new GameDatabase(database);
 
-const authController = new AuthController(userDatabase);
-const gameController = new GameController(gameDatabase);
-const gameInstanceController = new GameInstanceController(gameDatabase);
+const authService = new AuthService(userDatabase);
+const gameService = new GameService(gameDatabase);
+const gameInstanceService = new GameInstanceService(gameDatabase);
 const socketService = new SocketService(gameDatabase);
 
 const GraphQLService: any = await applyGraphQL<Router>({
   Router,
   typeDefs: GraphQLSchema,
-  resolvers: resolvers(authController, gameController, gameInstanceController),
+  resolvers: resolvers(authService, gameService, gameInstanceService),
   context: async (context: Context) => {
     return await createContext(context, userDatabase);
   },
@@ -56,7 +56,7 @@ router.get("/ws", async (context) => {
     throw new GQLError(ErrorType.INCORRECT_REQUEST);
   }
 
-  const user = await authController.verifyUser(accessToken);
+  const user = await authService.verifyUser(accessToken);
 
   try {
     await socketService.handleGameEvents(socket, user);
