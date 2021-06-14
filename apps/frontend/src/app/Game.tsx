@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
-import { RouteComponentProps } from 'react-router';
+import { useHistory, RouteComponentProps } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCheck, faInfo } from '@fortawesome/free-solid-svg-icons';
+import { faCheck } from '@fortawesome/free-solid-svg-icons';
 import {
   BingoField,
   BingoGame,
@@ -13,7 +13,6 @@ import {
   getConnectionStateMessage,
   Player,
 } from '@bingo/models';
-import { BingoCard } from './components/bingo';
 import {
   Badge,
   Card,
@@ -25,13 +24,15 @@ import {
   CardContent,
   Divider,
 } from './components/common';
+import { BingoCard } from './components/bingo';
 import {
   useAppBar,
   useAuthContext,
+  useBingoCard,
   useGameInstanceContext,
+  useGamesContext,
   useGameSocket,
 } from './hooks';
-import { useHistory } from 'react-router-dom';
 
 interface GameProps {
   gameId: string;
@@ -40,6 +41,7 @@ interface GameProps {
 interface BottomInfoBarProps {
   field?: BingoField;
   game: BingoGame;
+  onValidateWin: () => void;
 }
 
 interface AdminControlProps {
@@ -52,8 +54,8 @@ interface AdminControlProps {
 
 const Game = (props: RouteComponentProps<GameProps>) => {
   const id = props.match.params.gameId;
-  const history = useHistory();
 
+  const history = useHistory();
   const appBar = useAppBar();
   const auth = useAuthContext();
 
@@ -65,6 +67,9 @@ const Game = (props: RouteComponentProps<GameProps>) => {
     getGameInstance,
     updateGameField,
   } = useGameInstanceContext();
+
+  const card = useBingoCard();
+  const games = useGamesContext();
 
   const [currentField, setCurrentField] = useState<BingoField>(undefined);
   const [currentPlayers, setCurrentPlayers] = useState<Player[]>([]);
@@ -98,8 +103,14 @@ const Game = (props: RouteComponentProps<GameProps>) => {
   });
 
   useEffect(() => {
-    getGameInstance(id);
+    getGameInstance(id).then();
   }, []);
+
+  useEffect(() => {
+    if (game) {
+      card.setInitialFields(game.fields);
+    }
+  }, [game]);
 
   useEffect(() => {
     if (error === ErrorType.GAME_NOT_FOUND) {
@@ -112,6 +123,14 @@ const Game = (props: RouteComponentProps<GameProps>) => {
   const onDrawNewField = () => sendEvent(GameEventType.DRAW_FIELD);
   const onCloseGame = () => sendEvent(GameEventType.CLOSE_GAME);
   const onWin = () => sendEvent(GameEventType.ON_WIN);
+
+  const onValidateWin = () => {
+    const selectedFields = card.fields
+      .filter(field => field.selected)
+      .map(field => field._id);
+
+    games.validateWin(game._id, selectedFields);
+  };
 
   if (error) {
     return <div className="game"></div>;
@@ -134,7 +153,11 @@ const Game = (props: RouteComponentProps<GameProps>) => {
             <BingoCardHeader />
             {<BingoCard fields={game.instanceFields} onWin={onWin} />}
           </div>
-          <BottomInfoBar field={currentField} game={game} />
+          <BottomInfoBar
+            field={currentField}
+            game={game}
+            onValidateWin={onValidateWin}
+          />
         </>
       )}
     </div>
@@ -153,7 +176,7 @@ const BingoCardHeader = () => {
   );
 };
 
-const BottomInfoBar = ({ game, field }: BottomInfoBarProps) => {
+const BottomInfoBar = ({ field, onValidateWin }: BottomInfoBarProps) => {
   return (
     <div className="bottom-info-bar elevation-z8">
       <Card className="current-field">
@@ -163,7 +186,9 @@ const BottomInfoBar = ({ game, field }: BottomInfoBarProps) => {
             : 'Es wurde noch kein Feld aufgedeckt'}
         </CardTitle>
       </Card>
-      <FlatButton className="bingo-button">BINGO</FlatButton>
+      <FlatButton className="bingo-button" onClick={onValidateWin}>
+        BINGO
+      </FlatButton>
     </div>
   );
 };

@@ -40,10 +40,16 @@ export const GameTypes = gql`
     checked: Boolean
   }
 
+  input ValidateWin {
+    _id: ID!
+    fieldIds: [String!]!
+  }
+
   extend type Query {
     games: [BingoGame!]!
     game(_id: ID!): BingoGame!
     instance(_id: ID!): BingoGame!
+    validateWin(props: ValidateWin!): Boolean!
   }
 
   extend type Mutation {

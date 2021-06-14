@@ -1,9 +1,10 @@
-import { useEffect, useReducer } from 'react';
-import { BingoInstanceField } from '@bingo/models';
+import { useEffect } from 'react';
+import { BingoCardState, BingoInstanceField } from '@bingo/models';
 
-interface BingoCardProps {
-  fields?: BingoInstanceField[];
-  onWin?: () => void;
+interface BingoCardProps extends BingoCardState {
+  onWin: () => void;
+  findWinningPattern: (score: number) => number;
+  onBingoFieldSelected: (tile: number, field: BingoInstanceField) => void;
 }
 
 interface BingoFieldProps {
@@ -13,101 +14,46 @@ interface BingoFieldProps {
   onClick: () => void;
 }
 
-interface State {
-  fields: BingoInstanceField[];
-  score: number;
-  hasWon: boolean;
-}
-
-type Action =
-  | {
-      type: 'updateBingoField';
-      update: {
-        id: string;
-        tile: number;
-        changes: Partial<BingoInstanceField>;
-      };
-    }
-  | { type: 'updateState'; update: Partial<State> };
-
-const reducer = (state: State, action: Action): State => {
-  switch (action.type) {
-    case 'updateBingoField':
-      return {
-        ...state,
-        fields: state.fields.map(field => {
-          return field._id === action.update.id
-            ? { ...field, ...action.update.changes }
-            : field;
-        }),
-        score: state.score ^ (1 << action.update.tile),
-      };
-
-    case 'updateState':
-      return {
-        ...state,
-        ...action.update,
-      };
-  }
-};
-
-const winPatterns = [
-  65011712,
-  2031616,
-  63488,
-  1984,
-  62,
-  34636832,
-  17318416,
-  8659208,
-  4329604,
-  2164802,
-  34087042,
-  2236960,
-];
-
-const findWinningPattern = (score: number) => {
-  return winPatterns.find(pattern => (pattern & score) === pattern) || 0;
-};
-
-export const BingoCard = ({ fields, onWin }: BingoCardProps) => {
-  const initialState: State = {
-    fields,
-    score: 0,
-    hasWon: false,
-  };
-  const [state, dispatch] = useReducer(reducer, initialState);
-
+export const BingoCard = ({
+  fields,
+  score,
+  onWin,
+  findWinningPattern,
+  onBingoFieldSelected,
+}: BingoCardProps) => {
   useEffect(() => {
-    if (findWinningPattern(state.score) !== 0) {
-      onWin();
+    if (findWinningPattern(score) !== 0) {
+      onWin.call(this);
+      console.log('dadwad');
     }
-  }, [onWin, state]);
-
-  const onBingoTileClick = (tile: number, field: BingoInstanceField) => {
-    dispatch({
-      type: 'updateBingoField',
-      update: {
-        id: field._id,
-        tile,
-        changes: {
-          selected: !field.selected,
-        },
-      },
-    });
-  };
+  }, [score]);
 
   return (
-    <div className="bingo-card">
-      {state.fields?.map((field, index) => (
-        <BingoTile
-          key={field._id}
-          field={field}
-          tile={25 - index}
-          winningPattern={findWinningPattern(state.score)}
-          onClick={() => onBingoTileClick(25 - index, field)}
-        />
-      ))}
+    <>
+      <BingoCardHeader />
+      <div className="bingo-card">
+        {fields?.map((field, index) => (
+          <BingoTile
+            key={field._id}
+            field={field}
+            tile={25 - index}
+            winningPattern={findWinningPattern(score)}
+            onClick={() => onBingoFieldSelected(25 - index, field)}
+          />
+        ))}
+      </div>
+    </>
+  );
+};
+
+const BingoCardHeader = () => {
+  return (
+    <div className="bingo-card-header">
+      <div className="letter">B</div>
+      <div className="letter">I</div>
+      <div className="letter">N</div>
+      <div className="letter">G</div>
+      <div className="letter">O</div>
     </div>
   );
 };

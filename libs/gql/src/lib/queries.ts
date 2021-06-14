@@ -31,6 +31,12 @@ export const GET_GAME = gql`
   }
 `;
 
+export const VALIDATE_WIN = gql`
+  query ValidateWin($id: ID!, $fieldIds: [String!]!) {
+    validateWin(props: {_id: $id, fieldIds: $fieldIds})
+  }
+`;
+
 export const GET_GAME_INSTANCE = gql`
   query GetGameInstance($id: ID!) {
     instance(_id: $id) {

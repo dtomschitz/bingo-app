@@ -1,5 +1,9 @@
 import { GameController, GameInstanceController } from "../controller/index.ts";
 import { gqlRequestWrapper, requiresAuthentication } from "../utils/index.ts";
+import {
+  ArgProps,
+  ValidateWin
+} from "../models.ts";
 
 export const gameQueries = (controller: GameController) => {
   const getGames = gqlRequestWrapper(
@@ -9,6 +13,12 @@ export const gameQueries = (controller: GameController) => {
   const getGame = gqlRequestWrapper<{ _id: string }>(
     requiresAuthentication(({ args }) =>
       controller.getGame(args._id)
+    ),
+  );
+
+  const validateWin = gqlRequestWrapper<ArgProps<ValidateWin>>(
+    requiresAuthentication(({ args }) =>
+      controller.validateWin(args.props)
     ),
   );
 
@@ -29,3 +39,4 @@ export const gameInstanceQueries = (controller: GameInstanceController) => {
     instance: getGameInstance,
   };
 };
+

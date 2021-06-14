@@ -15,6 +15,7 @@ export enum ErrorType {
   GAME_INSTANCE_NOT_FOUND = 'GAME_INSTANCE_NOT_FOUND',
   GAME_INSTANCE_ALREADY_CREATED = 'GAME_INSTANCE_ALREADY_CREATED',
   GAME_CONTAINS_TOO_FEW_FIELDS = 'GAME_CONTAINS_TOO_FEW_FIELDS',
+  GAME_FIELD_NOT_CHECKED = 'GAME_FIELD_NOT_CHECKED',
 }
 
 export const errorMessages: { [key in ErrorType]: string } = {
@@ -36,6 +37,8 @@ export const errorMessages: { [key in ErrorType]: string } = {
   GAME_INSTANCE_ALREADY_CREATED:
     'Es kann nur eine Spielinstanz pro Spieler geben!',
   GAME_CONTAINS_TOO_FEW_FIELDS: 'Das erstellte Spiel hat zu wenig Felder!',
+  GAME_FIELD_NOT_CHECKED:
+    'Das von dir ausgewählte Feld wurde noch nicht gezogen!',
 };
 
 export const getErrorMessage = (type: ErrorType | keyof typeof ErrorType) => {

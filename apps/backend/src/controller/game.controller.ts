@@ -7,6 +7,8 @@ import {
   MutationType,
   UpdateGame,
   User,
+  BingoField,
+  ValidateWin
 } from "../models.ts";
 import { GameDatabase } from "../database/index.ts";
 import { GameSchema } from "../schema/index.ts";
@@ -113,4 +115,30 @@ export class GameController {
     await this.games.deleteGame(game._id);
     return true;
   }
+
+  async validateWin(props: ValidateWin){
+    console.log("here");
+    
+    if (!props._id || !props.fieldIds) {
+      throw new GQLError(ErrorType.INCORRECT_REQUEST);
+    }
+    
+    const dbGame = await this.games.getGame(props._id);
+    if (!dbGame) {
+      throw new GQLError(ErrorType.GAME_NOT_FOUND);
+    }
+    
+    for(const id in props.fieldIds){
+      const test = dbGame.fields.find(field => field._id === id);
+      if(test != undefined){
+        if(!test.checked){
+          console.log("false");
+          throw new GQLError(ErrorType.GAME_FIELD_NOT_CHECKED);
+        }
+      }
+    }
+    console.log("true");
+    return true;
+  }
+
 }

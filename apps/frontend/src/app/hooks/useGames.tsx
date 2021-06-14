@@ -5,6 +5,7 @@ import {
   CreateGame,
   UpdateGame,
   FieldMutations,
+  BingoField,
 } from '@bingo/models';
 import {
   GET_GAMES,
@@ -12,6 +13,7 @@ import {
   UPDATE_GAME,
   DELETE_GAME,
   MUTATE_FIELD,
+  VALIDATE_WIN,
 } from '@bingo/gql';
 
 interface GamesProviderProps {
@@ -27,6 +29,7 @@ interface GamesContext {
   updateGame: (update: UpdateGame) => Promise<boolean>;
   deleteGame: (id: string) => Promise<boolean>;
   mutateField: (id: string, mutation: FieldMutations) => Promise<boolean>;
+  validateWin: (id: string, fieldIds: string[]) => Promise<boolean>;
 }
 
 const context = createContext<GamesContext>({
@@ -37,6 +40,7 @@ const context = createContext<GamesContext>({
   updateGame: undefined,
   deleteGame: undefined,
   mutateField: undefined,
+  validateWin: undefined,
 });
 
 export const GamesProvider = ({ children, client }: GamesProviderProps) => {
@@ -64,7 +68,7 @@ export const GamesProvider = ({ children, client }: GamesProviderProps) => {
         variables: {
           title,
           fields,
-          phase: "editing"
+          phase: 'editing',
         },
       })
       .then(() => {
@@ -103,6 +107,25 @@ export const GamesProvider = ({ children, client }: GamesProviderProps) => {
       .catch(() => false);
   };
 
+  const validateWin = (id: string, fieldIds: string[]) => {
+    console.log('validateGame in useGames');
+    console.log(fieldIds);
+
+    return client
+      .query<{ validateGame: boolean }>({
+        query: VALIDATE_WIN,
+        variables: {
+          id,
+          fieldIds
+        },
+      })
+      .then(() => {
+        loadGames();
+        return true;
+      })
+      .catch(() => false);
+  };
+
   const mutateField = (id: string, mutation: FieldMutations) => {
     return client
       .mutate<{ mutateField: boolean }>({
@@ -129,6 +152,7 @@ export const GamesProvider = ({ children, client }: GamesProviderProps) => {
         updateGame,
         deleteGame,
         mutateField,
+        validateWin,
       }}
     >
       {children}
