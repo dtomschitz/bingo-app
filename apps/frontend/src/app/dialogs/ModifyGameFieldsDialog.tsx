@@ -18,7 +18,7 @@ export const ModifyGameFieldsDialog = (
   dialog: DialogProps<ModifyGameFieldsDialogData>,
 ) => {
   const { mutateField } = useGamesContext();
-  const state = useBingoFieldListState();
+  const state = useBingoFieldListState(dialog.data?.game.fields);
 
   const onCreate = (field: BingoField) => {
     return mutateField(dialog?.data.game._id, {

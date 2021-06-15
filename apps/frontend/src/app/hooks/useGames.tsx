@@ -48,17 +48,14 @@ export const GamesProvider = ({ children, client }: GamesProviderProps) => {
   const [loading, setLoading] = useState<boolean>(false);
 
   const loadGames = () => {
-    setLoading(true);
     return client
-      .query<{ games: BingoGame[] }>({
+      .watchQuery<{ games: BingoGame[] }>({
         query: GET_GAMES,
-        fetchPolicy: 'no-cache',
+        pollInterval: 1500,
       })
-      .then(result => {
+      .subscribe(result => {
         setGames(result.data.games);
-        return true;
-      })
-      .finally(() => setLoading(false));
+      });
   };
 
   const createGame = ({ title, fields }: CreateGame) => {
@@ -90,8 +87,6 @@ export const GamesProvider = ({ children, client }: GamesProviderProps) => {
         return true;
       })
       .catch(e => {
-        console.log(e);
-
         return false;
       });
   };
@@ -118,7 +113,7 @@ export const GamesProvider = ({ children, client }: GamesProviderProps) => {
         query: VALIDATE_WIN,
         variables: {
           id,
-          fieldIds
+          fieldIds,
         },
       })
       .then(() => {

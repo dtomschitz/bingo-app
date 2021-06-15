@@ -61,6 +61,7 @@ export const CREATE_GAME = gql`
       fields {
         _id
         text
+        checked
       }
     }
   }
@@ -75,6 +76,12 @@ export const CREATE_GAME_INSTANCE = gql`
       fields {
         _id
         text
+        checked
+      }
+      instanceFields {
+        _id
+        text
+        selected
       }
       hasInstance
     }

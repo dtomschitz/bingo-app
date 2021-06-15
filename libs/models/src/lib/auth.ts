@@ -5,6 +5,8 @@ export interface User {
   password: string;
 }
 
+export type Player = Pick<User, '_id' | 'name'>;
+
 export interface JwtPayload {
   _id: string;
   email: string;

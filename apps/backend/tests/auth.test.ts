@@ -9,14 +9,11 @@ import {
   it,
 } from "./test.deps.ts";
 import { defaultInvalidRequestTest, getDatabase } from "./common.ts";
-import { AuthController } from "../src/controller/index.ts";
+import { AuthService } from "../src/service/index.ts";
 import { Database, UserDatabase } from "../src/database/index.ts";
 import {
   CreateUserProps,
   ErrorType,
-  LoginProps,
-  LogoutProps,
-  RefreshAccessTokenProps,
   RegisterProps,
 } from "../src/models.ts";
 
@@ -25,7 +22,7 @@ import "https://deno.land/x/dotenv/load.ts";
 describe("Authentication", () => {
   let database: Database;
   let users: UserDatabase;
-  let controller: AuthController;
+  let service: AuthService;
 
   const openConnection = () =>
     beforeAll(async () => {
@@ -33,7 +30,7 @@ describe("Authentication", () => {
       users = new UserDatabase(database);
       await users.clear();
 
-      controller = new AuthController(users);
+      service = new AuthService(users);
     });
 
   const closeConnection = () =>
@@ -48,7 +45,7 @@ describe("Authentication", () => {
       password: "SuperSicheresPasswort#1337#%",
     };
 
-    const result = await controller.registerUser(props ?? defaultProps);
+    const result = await service.registerUser(props ?? defaultProps);
 
     return { props: props ?? defaultProps, result };
   };
@@ -60,7 +57,7 @@ describe("Authentication", () => {
     defaultInvalidRequestTest(
       "should fail because request is incorrect",
       () =>
-        controller.registerUser({
+        service.registerUser({
           email: "",
           name: "",
           password: "",
@@ -75,7 +72,7 @@ describe("Authentication", () => {
       };
 
       await assertThrowsAsync(
-        async () => await controller.registerUser(props),
+        async () => await service.registerUser(props),
         GQLError,
         ErrorType.INVALID_PASSWORD_FORMAT,
       );
@@ -89,7 +86,7 @@ describe("Authentication", () => {
       };
 
       await assertThrowsAsync(
-        async () => await controller.registerUser(props),
+        async () => await service.registerUser(props),
         GQLError,
         ErrorType.INVALID_EMAIL_FORMAT,
       );
@@ -109,7 +106,7 @@ describe("Authentication", () => {
       };
 
       await assertThrowsAsync(
-        async () => await controller.registerUser(props),
+        async () => await service.registerUser(props),
         GQLError,
         ErrorType.USER_ALREADY_EXISTS,
       );
@@ -133,12 +130,12 @@ describe("Authentication", () => {
 
     defaultInvalidRequestTest(
       "should fail because login request is incorrect",
-      () => controller.loginUser("", ""),
+      () => service.loginUser("", ""),
     );
 
     it("should fail because the given login password is invalid", async () => {
       await assertThrowsAsync(
-        async () => await controller.loginUser("test@test.de", "dwadadawd"),
+        async () => await service.loginUser("test@test.de", "dwadadawd"),
         GQLError,
         ErrorType.INVALID_PASSWORD_FORMAT,
       );
@@ -146,7 +143,7 @@ describe("Authentication", () => {
 
     it("should fail because the given email is invalid", async () => {
       await assertThrowsAsync(
-        async () => await controller.loginUser("test@test.", "SuperSicheresPasswort#1337#%"),
+        async () => await service.loginUser("test@test.", "SuperSicheresPasswort#1337#%"),
         GQLError,
         ErrorType.INVALID_EMAIL_FORMAT,
       );
@@ -154,7 +151,7 @@ describe("Authentication", () => {
 
     it("should login the user and return the jwt tokens", async () => {
       const { props } = await registerDefaultUser();
-      const result = await controller.loginUser(props.email, props.password);
+      const result = await service.loginUser(props.email, props.password);
 
       assertExists(result.user._id);
       assertExists(result.accessToken);
@@ -170,12 +167,12 @@ describe("Authentication", () => {
 
     defaultInvalidRequestTest(
       "should fail because logout request is incorrect",
-      () => controller.logoutUser(""),
+      () => service.logoutUser(""),
     );
 
     it("should fail because no use is associated with the given email", async () => {    
       await assertThrowsAsync(
-        async () => await controller.logoutUser("logouttest@test.de"),
+        async () => await service.logoutUser("logouttest@test.de"),
         GQLError,
         ErrorType.USER_DOES_NOT_EXIST,
       );
@@ -183,7 +180,7 @@ describe("Authentication", () => {
 
     it("should logout the user with the given email", async () => {
       const { props: { email } } = await registerDefaultUser();
-      const result = await controller.logoutUser(email);
+      const result = await service.logoutUser(email);
 
       assertEquals(result, true);
     });
@@ -195,12 +192,12 @@ describe("Authentication", () => {
 
     defaultInvalidRequestTest(
       "should fail because request is incorrect",
-      () => controller.verifyUser(""),
+      () => service.verifyUser(""),
     );
 
     it("should fail because the refresh token is serialized wrong", async () => {
       await assertThrowsAsync(
-        async () => await controller.verifyUser("invalid_refresh_token"),
+        async () => await service.verifyUser("invalid_refresh_token"),
         GQLError,
         ErrorType.INVALID_SERIALIZED_JWT_TOKEN,
       );
@@ -208,7 +205,7 @@ describe("Authentication", () => {
 
     it("should verify the user based on the given refresh token", async () => {
       const { result } = await registerDefaultUser();
-      const user = await controller.verifyUser(result.refreshToken);
+      const user = await service.verifyUser(result.refreshToken);
 
       assertEquals(user._id, result.user._id);
       assertEquals(user.name, result.user.name);
@@ -223,12 +220,12 @@ describe("Authentication", () => {
 
     defaultInvalidRequestTest(
       "should fail because request is incorrect",
-      () => controller.refreshAccessToken(""),
+      () => service.refreshAccessToken(""),
     );
 
     it("should fail because the refresh token is serialized wrong", async () => {
       await assertThrowsAsync(
-        async () => await controller.refreshAccessToken("invalid_refresh_token"),
+        async () => await service.refreshAccessToken("invalid_refresh_token"),
         GQLError,
         ErrorType.INVALID_SERIALIZED_JWT_TOKEN,
       );
@@ -236,7 +233,7 @@ describe("Authentication", () => {
 
     it("should refresh the access token with the given refresh token", async () => {
       const { result: { refreshToken } } = await registerDefaultUser();
-      const result = await controller.refreshAccessToken(refreshToken);
+      const result = await service.refreshAccessToken(refreshToken);
 
       assertExists(result);
     });
@@ -251,7 +248,7 @@ describe("Authentication", () => {
       const password = "SuperSicheresPasswort#1337#%";
 
       await assertThrowsAsync(
-        async () => await controller.validateUser(email, password),
+        async () => await service.validateUser(email, password),
         GQLError,
         ErrorType.USER_DOES_NOT_EXIST,
       );
@@ -264,14 +261,14 @@ describe("Authentication", () => {
       const password = "SuperSicheresFalschesPasswort#1337#%";
 
       await assertThrowsAsync(
-        async () => await controller.validateUser(email, password),
+        async () => await service.validateUser(email, password),
         GQLError,
         ErrorType.INCORRECT_PASSWORD,
       );
     });
 
     it("should validate the user with the given email and password", async () => {
-      const result = await controller.registerUser({
+      const result = await service.registerUser({
         email: "test.test@test.de",
         name: "Max Mustermann",
         password: "SuperSicheresPasswort#1337#%",
@@ -279,7 +276,7 @@ describe("Authentication", () => {
 
       const email = "test.test@test.de";
       const password = "SuperSicheresPasswort#1337#%";
-      const user = await controller.validateUser(email, password);
+      const user = await service.validateUser(email, password);
 
       assertEquals(user._id, result.user._id);
       assertEquals(user.email, result.user.email);

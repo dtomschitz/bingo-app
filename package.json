@@ -31,6 +31,7 @@
     "react-overlays": "^5.0.1",
     "react-responsive": "^8.2.0",
     "react-router-dom": "^5.2.0",
+    "react-use-websocket": "^2.7.1",
     "regenerator-runtime": "0.13.7",
     "tslib": "^2.0.0",
     "uuid": "^8.3.2"

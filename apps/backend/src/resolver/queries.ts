@@ -1,37 +1,38 @@
-import { GameController, GameInstanceController } from "../controller/index.ts";
+import { GameService, GameInstanceService } from "../service/index.ts";
 import { gqlRequestWrapper, requiresAuthentication } from "../utils/index.ts";
 import {
   ArgProps,
   ValidateWin
 } from "../models.ts";
 
-export const gameQueries = (controller: GameController) => {
+export const gameQueries = (service: GameService) => {
   const getGames = gqlRequestWrapper(
-    requiresAuthentication(({ context }) => controller.getGames(context.user)),
+    requiresAuthentication(({ context }) => service.getGames(context.user)),
   );
 
   const getGame = gqlRequestWrapper<{ _id: string }>(
     requiresAuthentication(({ args }) =>
-      controller.getGame(args._id)
+      service.getGame(args._id)
     ),
   );
 
   const validateWin = gqlRequestWrapper<ArgProps<ValidateWin>>(
     requiresAuthentication(({ args }) =>
-      controller.validateWin(args.props)
+      service.validateWin(args.props)
     ),
   );
 
   return {
     games: getGames,
     game: getGame,
+    validateWin: validateWin
   };
 };
 
-export const gameInstanceQueries = (controller: GameInstanceController) => {
+export const gameInstanceQueries = (service: GameInstanceService) => {
   const getGameInstance = gqlRequestWrapper<{ _id: string }>(
     requiresAuthentication(({ context, args }) =>
-      controller.getGameInstance(args._id, context.user)
+      service.getGameInstance(args._id, context.user)
     ),
   );
 

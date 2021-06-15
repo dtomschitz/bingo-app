@@ -1,9 +1,8 @@
-import { GameDatabase, UserDatabase } from "../database/index.ts";
 import {
-  AuthController,
-  GameController,
-  GameInstanceController,
-} from "../controller/index.ts";
+  AuthService,
+  GameInstanceService,
+  GameService,
+} from "../service/index.ts";
 import {
   authMutations,
   gameInstanceMutations,
@@ -12,22 +11,19 @@ import {
 import { gameInstanceQueries, gameQueries } from "./queries.ts";
 
 export const resolvers = (
-  userDatabase: UserDatabase,
-  gameDatabase: GameDatabase,
+  authService: AuthService,
+  gameService: GameService,
+  gameInstanceService: GameInstanceService,
 ) => {
-  const authController = new AuthController(userDatabase);
-  const gameController = new GameController(gameDatabase);
-  const gameInstanceController = new GameInstanceController(gameDatabase);
-
   return {
     Query: {
-      ...gameQueries(gameController),
-      ...gameInstanceQueries(gameInstanceController),
+      ...gameQueries(gameService),
+      ...gameInstanceQueries(gameInstanceService),
     },
     Mutation: {
-      ...authMutations(authController),
-      ...gameMutations(gameController),
-      ...gameInstanceMutations(gameInstanceController),
+      ...authMutations(authService),
+      ...gameMutations(gameService),
+      ...gameInstanceMutations(gameInstanceService),
     },
   };
 };

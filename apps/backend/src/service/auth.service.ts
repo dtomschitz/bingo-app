@@ -3,7 +3,7 @@ import { JwtUtils, ValidationUtils } from "../utils/index.ts";
 import { bcrypt, GQLError } from "../deps.ts";
 import { AuthResult, CreateUserProps, ErrorType } from "../models.ts";
 
-export class AuthController {
+export class AuthService {
   constructor(private users: UserDatabase) {}
 
   async registerUser(props: CreateUserProps): Promise<AuthResult> {

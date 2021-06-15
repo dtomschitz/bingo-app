@@ -49,39 +49,60 @@ const Games = (props: GamesListProps) => {
     });
   };
 
+  const onModifyTitle = (game: BingoGame) => {
+    modifyGameTitleDialog.open({ game });
+  };
+
+  const onModifyFields = (game: BingoGame) => {
+    modifyGameFieldsDialog.open({ game });
+  };
+
+  const onDeleteGame = (game: BingoGame) => {
+    deleteGameDialog.open({ game });
+  };
+
+  const onStartGame = (game: BingoGame) => {
+    startGameDialog.open({ game });
+  };
+
   return (
     <div className="home">
-      <div className="games">
-        {games
-          .filter(game =>
-            props.myGames
-              ? game.authorId === auth.user._id
-              : game.authorId !== auth.user._id,
-          )
-          .map((game, i) => (
-            <BingoPreviewCard
-              key={`game-${i}`}
-              menu={
-                game.authorId === auth.user._id && (
-                  <BingoGameContextMenu
-                    {...game}
-                    onModifyTitle={() => modifyGameTitleDialog.open({ game })}
-                    onModifyFields={() => modifyGameFieldsDialog.open({ game })}
-                    onDeleteGame={() => deleteGameDialog.open({ game })}
-                    onStartGame={() => startGameDialog.open({ game })}
-                  />
-                )
-              }
-              game={game}
-              onClick={() => openGame(game)}
-            />
-          ))}
-      </div>
-      <CreateGameInstanceDialog {...gameInstanceDialog} />
-      <ModifyGameTitleDialog {...modifyGameTitleDialog} />
-      <ModifyGameFieldsDialog {...modifyGameFieldsDialog} />
-      <DeleteGameDialog {...deleteGameDialog} />
-      <StartGameDialog {...startGameDialog} />
+      {games.length !== 0 && (
+        <div className="games">
+          {games
+            .filter(game =>
+              props.myGames
+                ? game.authorId === auth.user._id
+                : game.authorId !== auth.user._id,
+            )
+            .map((game, i) => (
+              <BingoPreviewCard
+                key={`game-${i}`}
+                menu={
+                  game.authorId === auth.user?._id && (
+                    <BingoGameContextMenu
+                      {...game}
+                      onModifyTitle={() => onModifyTitle(game)}
+                      onModifyFields={() => onModifyFields(game)}
+                      onDeleteGame={() => onDeleteGame(game)}
+                      onStartGame={() => onStartGame(game)}
+                    />
+                  )
+                }
+                game={game}
+                onClick={() => openGame(game)}
+              />
+            ))}
+
+          <CreateGameInstanceDialog {...gameInstanceDialog} />
+          <ModifyGameTitleDialog {...modifyGameTitleDialog} />
+          {modifyGameFieldsDialog.show && (
+            <ModifyGameFieldsDialog {...modifyGameFieldsDialog} />
+          )}
+          <DeleteGameDialog {...deleteGameDialog} />
+          <StartGameDialog {...startGameDialog} />
+        </div>
+      )}
     </div>
   );
 };

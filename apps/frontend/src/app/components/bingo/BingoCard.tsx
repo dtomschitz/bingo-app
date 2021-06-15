@@ -1,14 +1,14 @@
-import { BingoCardState, BingoField } from '@bingo/models';
 import { useEffect } from 'react';
+import { BingoCardState, BingoInstanceField } from '@bingo/models';
 
 interface BingoCardProps extends BingoCardState {
   onWin: () => void;
   findWinningPattern: (score: number) => number;
-  onBingoFieldSelected: (tile: number, field: BingoField) => void;
+  onBingoFieldSelected: (tile: number, field: BingoInstanceField) => void;
 }
 
 interface BingoFieldProps {
-  field: BingoField;
+  field: BingoInstanceField;
   tile: number;
   winningPattern: number;
   onClick: () => void;
@@ -24,36 +24,20 @@ export const BingoCard = ({
   useEffect(() => {
     if (findWinningPattern(score) !== 0) {
       onWin.call(this);
-      console.log('dadwad');
     }
   }, [score]);
 
   return (
-    <>
-      <BingoCardHeader />
-      <div className="bingo-card">
-        {fields?.map((field, index) => (
-          <BingoTile
-            key={field._id}
-            field={field}
-            tile={25 - index}
-            winningPattern={findWinningPattern(score)}
-            onClick={() => onBingoFieldSelected(25 - index, field)}
-          />
-        ))}
-      </div>
-    </>
-  );
-};
-
-const BingoCardHeader = () => {
-  return (
-    <div className="bingo-card-header">
-      <div className="letter">B</div>
-      <div className="letter">I</div>
-      <div className="letter">N</div>
-      <div className="letter">G</div>
-      <div className="letter">O</div>
+    <div className="bingo-card">
+      {fields?.map((field, index) => (
+        <BingoTile
+          key={field._id}
+          field={field}
+          tile={25 - index}
+          winningPattern={findWinningPattern(score)}
+          onClick={() => onBingoFieldSelected(25 - index, field)}
+        />
+      ))}
     </div>
   );
 };
@@ -66,7 +50,7 @@ const BingoTile = ({
 }: BingoFieldProps) => {
   const isWin = !!(winningPattern & (1 << tile));
   const classes = `bingo-field
-    ${field.isSelected ? 'selected' : ''}
+    ${field.selected ? 'selected' : ''}
     ${isWin ? 'win' : ''}`;
 
   return (

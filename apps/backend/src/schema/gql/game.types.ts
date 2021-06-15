@@ -34,8 +34,9 @@ export const GameTypes = gql`
     _id: ID!
     text: String
     changes: FieldChanges
+    checked: Boolean
   }
- 
+
   input FieldChanges {
     text: String
     checked: Boolean
@@ -67,12 +68,20 @@ export const GameTypes = gql`
     title: String!
     phase: String!
     fields: [BingoField!]!
+    instanceFields: [BingoInstanceField!]!
     hasInstance: Boolean
   }
 
   type BingoField {
     _id: ID
     text: String
+    checked: Boolean
+  }
+  
+  type BingoInstanceField {
+    _id: ID
+    text: String
+    selected: Boolean
   }
 
   enum MutationType {

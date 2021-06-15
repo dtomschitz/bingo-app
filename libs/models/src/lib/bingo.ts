@@ -3,19 +3,37 @@ export interface BingoGame {
   authorId: string;
   title: string;
   phase: Phase;
+  podium?: Podium[];
   fields: BingoField[];
+  instanceFields?: BingoInstanceField[];
   hasInstance: boolean;
 }
 
 export interface BingoField {
   _id: string;
   text: string;
-  isSelected?: boolean;
-  isChecked?: boolean;
+  checked: boolean;
+}
+
+export interface BingoInstanceField {
+  _id: string;
+  text: string;
+  selected?: boolean;
+}
+
+export interface Podium {
+  userId: string;
+  placement: Placement;
+}
+
+enum Placement {
+  first,
+  second,
+  third,
 }
 
 export interface BingoCardState {
-  fields: BingoField[];
+  fields: BingoInstanceField[];
   score: number;
   hasWon: boolean;
 }
@@ -65,4 +83,27 @@ export enum MutationType {
   CREATE = 'CREATE',
   UPDATE = 'UPDATE',
   DELETE = 'DELETE',
+}
+
+export enum GameEventType {
+  JOIN_GAME = 'JOIN_GAME',
+  GAME_JOINED = 'GAME_JOINED',
+  PLAYER_JOINED = 'PLAYER_JOINED',
+  LEAVE_GAME = 'LEAVE_GAME',
+  PLAYER_LEFT = 'PLAYER_LEFT',
+  NO_MORE_FIELDS = 'NO_MORE_FIELDS',
+  DRAW_FIELD = 'DRAW_FIELD',
+  NEW_FIELD_DRAWN = 'NEW_FIELD_DRAWN',
+  ON_WIN = 'ON_WIN',
+  GAME_NOT_FOUND = 'GAME_NOT_FOUND',
+  CLOSE_GAME = 'CLOSE_GAME',
+  GAME_CLOSED = 'GAME_CLOSED',
+  UNAUTHORIZED = 'UNAUTHORIZED',
+}
+
+export interface GameEvent<T = any> {
+  type: GameEventType;
+  accessToken: string;
+  id: string;
+  data?: T;
 }
