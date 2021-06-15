@@ -8,12 +8,7 @@ import {
 } from "./deps.ts";
 import { ErrorType } from "./models.ts";
 import { Database, GameDatabase, UserDatabase } from "./database/index.ts";
-import {
-  AuthService,
-  GameService,
-  GameInstanceService,
-  SocketService,
-} from "./service/index.ts";
+import { AuthService, GameService, SocketService } from "./service/index.ts";
 import { resolvers } from "./resolver/index.ts";
 import { GraphQLSchema } from "./schema/index.ts";
 import { createContext } from "./utils/index.ts";
@@ -32,13 +27,12 @@ const gameDatabase = new GameDatabase(database);
 
 const authService = new AuthService(userDatabase);
 const gameService = new GameService(gameDatabase);
-const gameInstanceService = new GameInstanceService(gameDatabase);
 const socketService = new SocketService(gameDatabase);
 
 const GraphQLService: any = await applyGraphQL<Router>({
   Router,
   typeDefs: GraphQLSchema,
-  resolvers: resolvers(authService, gameService, gameInstanceService),
+  resolvers: resolvers(authService, gameService),
   context: async (context: Context) => {
     return await createContext(context, userDatabase);
   },

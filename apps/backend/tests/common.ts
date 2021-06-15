@@ -1,6 +1,13 @@
-import { assertThrowsAsync, GQLError, it } from "./test.deps.ts";
-import { ErrorType } from "../src/models.ts";
+import { assertThrowsAsync, GQLError, it, v4 } from "./test.deps.ts";
+import { BingoField, CreateGame, ErrorType, User } from "../src/models.ts";
 import { Database } from "../src/database/index.ts";
+
+export const defaultUser: User = {
+  _id: "60c336ddc68379bceaf6b3c5",
+  email: "test@test.de",
+  name: "Max Mustermann",
+  password: "",
+};
 
 export const getDatabase = async (options?: {
   name?: string;
@@ -22,7 +29,10 @@ export const getDatabase = async (options?: {
   return database;
 };
 
-export const defaultInvalidRequestTest = <T>(name: string, fn: () => Promise<T>) => {
+export const defaultInvalidRequestTest = <T>(
+  name: string,
+  fn: () => Promise<T>,
+) => {
   return it(name, async () => {
     await assertThrowsAsync(
       async () => await fn(),
@@ -30,4 +40,12 @@ export const defaultInvalidRequestTest = <T>(name: string, fn: () => Promise<T>)
       ErrorType.INCORRECT_REQUEST,
     );
   });
+};
+
+export const generateBingoFields = (length?: number) => {
+  return Array.from({ length: length ?? 40 }).map<BingoField>((_, index) => ({
+    _id: v4.generate(),
+    text: `Field ${index}`,
+    checked: false,
+  }));
 };
