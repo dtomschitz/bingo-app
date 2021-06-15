@@ -1,4 +1,4 @@
-import { BingoGame, Phase } from '@bingo/models';
+import { BingoGame, GamePhase } from '@bingo/models';
 import { useEffect } from 'react';
 import { useHistory } from 'react-router';
 import { BingoGameContextMenu, BingoPreviewCard } from './components/bingo';
@@ -15,7 +15,7 @@ import {
 import { useAuthContext, useDialog, useGamesContext } from './hooks';
 
 interface GamesListProps {
-  phase: Phase;
+  phase: GamePhase;
 }
 
 const Games = (props: GamesListProps) => {

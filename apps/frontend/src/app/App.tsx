@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Switch, Route, RouteProps, Link, Redirect } from 'react-router-dom';
 import { useMediaQuery } from 'react-responsive';
 import { faCartPlus, faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
+import { GamePhase } from '@bingo/models';
 import {
   FlatButton,
   IconButton,
@@ -64,13 +65,13 @@ const App = () => {
           <Route path="/">
             <Tabs>
               <Tab label="closed games">
-                <Games phase="editing" />
+                <Games phase={GamePhase.EDITING} />
               </Tab>
               <Tab label="open for registration">
-                <Games phase="open" />
+                <Games phase={GamePhase.OPEN} />
               </Tab>
               <Tab label="currently playing">
-                <Games phase="playing" />
+                <Games phase={GamePhase.PLAYING} />
               </Tab>
             </Tabs>
           </Route>
