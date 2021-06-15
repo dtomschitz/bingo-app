@@ -136,7 +136,7 @@ export class SocketService {
       return;
     }
 
-    await this.games.deleteGame(game._id);
+    await this.games.updateGame(game._id, { phase: 'finished' },);
     this.brodcast(sockets, GameEventType.GAME_CLOSED);
   }
 

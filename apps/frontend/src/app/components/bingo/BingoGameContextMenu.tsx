@@ -1,20 +1,25 @@
+import { Phase } from '@bingo/models';
 import { faEllipsisV } from '@fortawesome/free-solid-svg-icons';
 import { Menu, MenuDivider, MenuItem } from '@szhsin/react-menu';
 import { MouseEvent } from 'react';
 import { IconButton } from '../common';
 
 interface BingoGameContextMenuProps {
+  gamePhase: Phase;
   onModifyTitle: () => void;
   onModifyFields: () => void;
   onDeleteGame: () => void;
-  onStartGame: () => void;
+  onOpenGame: () => void;
+  onCloseGame: () => void;
 }
 
 export const BingoGameContextMenu = ({
+  gamePhase,
   onModifyTitle,
   onModifyFields,
   onDeleteGame,
-  onStartGame,
+  onOpenGame,
+  onCloseGame,
 }: BingoGameContextMenuProps) => {
   const stopPropagation = (event: MouseEvent) => {
     event.stopPropagation();
@@ -28,8 +33,14 @@ export const BingoGameContextMenu = ({
         <MenuItem onClick={onModifyTitle}>Titel bearbeiten</MenuItem>
         <MenuItem onClick={onModifyFields}>Felder bearbeiten</MenuItem>
         <MenuDivider />
-        <MenuItem onClick={onStartGame}>Spiel starten</MenuItem>
-        <MenuItem onClick={onDeleteGame}>Spiel beenden</MenuItem>
+        {gamePhase === 'editing' && (
+          <MenuItem onClick={onOpenGame}>Spiel eröffnen</MenuItem>
+        )}
+
+        {gamePhase !== 'finished' && gamePhase !== 'editing' && (
+          <MenuItem onClick={onCloseGame}>Spiel Abschließen</MenuItem>
+        )}
+        <MenuItem onClick={onDeleteGame}>Spiel Löschen</MenuItem>
       </Menu>
     </div>
   );

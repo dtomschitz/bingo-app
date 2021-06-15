@@ -3,6 +3,8 @@ import { useEffect } from 'react';
 import { useHistory } from 'react-router';
 import { BingoGameContextMenu, BingoPreviewCard } from './components/bingo';
 import {
+  CloseGameDialog,
+  CloseGameDialogData,
   CreateGameInstanceDialog,
   CreateGameInstanceDialogData,
   DeleteGameDialog,
@@ -11,9 +13,9 @@ import {
   ModifyGameFieldsDialogData,
   ModifyGameTitleDialog,
   ModifyGameTitleDialogData,
-  StartGameDialogData,
+  OpenGameDialogData,
 } from './dialogs';
-import { StartGameDialog } from './dialogs/StartGameDialog';
+import { OpenGameDialog } from './dialogs/OpenGameDialog';
 import { useAuthContext, useDialog, useGamesContext } from './hooks';
 
 interface GamesListProps {
@@ -29,7 +31,8 @@ const Games = (props: GamesListProps) => {
   const modifyGameTitleDialog = useDialog<ModifyGameTitleDialogData>();
   const modifyGameFieldsDialog = useDialog<ModifyGameFieldsDialogData>();
   const deleteGameDialog = useDialog<DeleteGameDialogData>();
-  const startGameDialog = useDialog<StartGameDialogData>();
+  const openGameDialog = useDialog<OpenGameDialogData>();
+  const closeGameDialog = useDialog<CloseGameDialogData>();
 
   useEffect(() => {
     if (auth.isLoggedIn) {
@@ -61,8 +64,12 @@ const Games = (props: GamesListProps) => {
     deleteGameDialog.open({ game });
   };
 
-  const onStartGame = (game: BingoGame) => {
-    startGameDialog.open({ game });
+  const onOpenGame = (game: BingoGame) => {
+    openGameDialog.open({ game });
+  };
+
+  const onCloseGame = (game: BingoGame) => {
+    closeGameDialog.open({ game });
   };
 
   return (
@@ -72,8 +79,8 @@ const Games = (props: GamesListProps) => {
           {games
             .filter(game =>
               props.myGames
-                ? game.authorId === auth.user._id
-                : game.authorId !== auth.user._id,
+                ? game.authorId === auth.user?._id
+                : game.authorId !== auth.user?._id && game.phase !== 'editing',
             )
             .map((game, i) => (
               <BingoPreviewCard
@@ -82,10 +89,12 @@ const Games = (props: GamesListProps) => {
                   game.authorId === auth.user?._id && (
                     <BingoGameContextMenu
                       {...game}
+                      gamePhase={game.phase}
                       onModifyTitle={() => onModifyTitle(game)}
                       onModifyFields={() => onModifyFields(game)}
                       onDeleteGame={() => onDeleteGame(game)}
-                      onStartGame={() => onStartGame(game)}
+                      onOpenGame={() => onOpenGame(game)}
+                      onCloseGame={() => onCloseGame(game)}
                     />
                   )
                 }
@@ -100,7 +109,8 @@ const Games = (props: GamesListProps) => {
             <ModifyGameFieldsDialog {...modifyGameFieldsDialog} />
           )}
           <DeleteGameDialog {...deleteGameDialog} />
-          <StartGameDialog {...startGameDialog} />
+          <CloseGameDialog {...closeGameDialog} />
+          <OpenGameDialog {...openGameDialog} />
         </div>
       )}
     </div>

@@ -14,7 +14,7 @@ function parseGamePhase(phase: Phase) {
     case 'editing':
       return 'Spiel wird bearbeitet';
     case 'open':
-      return 'Spiel ist offen zum Mitmachen';
+      return 'Spiel ist offen für Anmeldung';
     case 'playing':
       return 'Spiel hat gestartet';
     case 'finished':
