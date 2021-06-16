@@ -3,7 +3,7 @@ import { GameEvent, GameEventType, Player, User } from "../models.ts";
 import { Utils } from "../utils/utils.ts";
 import { GameDatabase } from "../database/index.ts";
 import { GameSchema } from "../schema/index.ts";
-
+import { GamePhase } from "../../../../libs/models/src/lib/bingo.ts"
 export class SocketService {
   private sessions: Map<string, Set<WebSocket>> = new Map();
   private players: Map<string, Set<Player>> = new Map();
@@ -42,6 +42,13 @@ export class SocketService {
           }
 
           this.handleCloseGameEvent(event, game);
+        } else if (event.type === GameEventType.START_GAME) {
+          if (user._id.toString() !== game.authorId.toString()) {
+            await this.sendEvent(socket, GameEventType.UNAUTHORIZED);
+            continue;
+          }
+
+          this.handleStartGameEvent(event, game);
         }
       }
     }
@@ -136,8 +143,18 @@ export class SocketService {
       return;
     }
 
-    await this.games.deleteGame(game._id);
+    await this.games.updateGame(game._id, { phase: GamePhase.FINISHED },);
     this.brodcast(sockets, GameEventType.GAME_CLOSED);
+  }
+
+  private async handleStartGameEvent(event: GameEvent, game: GameSchema) {
+    const sockets = this.sessions.get(event.id);
+    if (!sockets) {
+      return;
+    }
+
+    await this.games.updateGame(game._id, { phase: GamePhase.PLAYING },);
+    this.brodcast(sockets, GameEventType.GAME_STARTED);
   }
 
   private sendEvent<T>(socket: WebSocket, type: GameEventType, data?: T) {

@@ -15,6 +15,7 @@ export const GameTypes = gql`
   input GameChanges {
     title: String
     fields: [UpdateBingoField]
+    phase: GamePhase!
   }
 
   input UpdateBingoField {
@@ -65,7 +66,7 @@ export const GameTypes = gql`
     _id: ID
     authorId: String!
     title: String!
-    phase: String!
+    phase: GamePhase!
     fields: [BingoField!]!
     instanceFields: [BingoInstanceField!]!
     hasInstance: Boolean
@@ -81,6 +82,13 @@ export const GameTypes = gql`
     _id: ID
     text: String
     selected: Boolean
+  }
+
+  enum GamePhase {
+    EDITING,
+    OPEN,
+    PLAYING,
+    FINISHED
   }
 
   enum MutationType {
