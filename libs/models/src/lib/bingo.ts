@@ -2,7 +2,7 @@ export interface BingoGame {
   _id: string;
   authorId: string;
   title: string;
-  phase: Phase;
+  phase: GamePhase;
   podium?: Podium[];
   fields: BingoField[];
   instanceFields?: BingoInstanceField[];
@@ -38,7 +38,12 @@ export interface BingoCardState {
   hasWon: boolean;
 }
 
-export type Phase = 'editing' | 'open' | 'playing' | 'finished';
+export enum GamePhase {
+  EDITING = 'EDITING',
+  OPEN = 'OPEN',
+  PLAYING = 'PLAYING',
+  FINISHED = 'FINISHED',
+}
 
 export interface ValidateWin {
   _id: string;
@@ -97,7 +102,9 @@ export enum GameEventType {
   ON_WIN = 'ON_WIN',
   GAME_NOT_FOUND = 'GAME_NOT_FOUND',
   CLOSE_GAME = 'CLOSE_GAME',
+  START_GAME = 'START_GAME',
   GAME_CLOSED = 'GAME_CLOSED',
+  GAME_STARTED = 'GAME_STARTED',
   UNAUTHORIZED = 'UNAUTHORIZED',
 }
 

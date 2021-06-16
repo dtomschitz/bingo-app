@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Switch, Route, RouteProps, Link, Redirect } from 'react-router-dom';
 import { useMediaQuery } from 'react-responsive';
 import { faCartPlus, faSignOutAlt } from '@fortawesome/free-solid-svg-icons';

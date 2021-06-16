@@ -1,7 +1,6 @@
 import { Database } from "../database/index.ts";
 import { GameInstanceSchema, GameSchema } from "../schema/index.ts";
 import { Bson, Document } from "../deps.ts";
-import { UpdateGame } from "../models.ts";
 
 export class GameDatabase {
   public readonly collection;
@@ -45,4 +44,12 @@ export class GameDatabase {
       },
     );
   }
+
+  clear = () => {
+    return this.collection.deleteMany({});
+  };
+
+  drop = () => {
+    return this.collection.drop();
+  };
 }

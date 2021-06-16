@@ -94,6 +94,7 @@ export const UPDATE_GAME = gql`
       _id
       authorId
       title
+      phase
       fields {
         _id
         text

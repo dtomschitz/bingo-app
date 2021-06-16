@@ -1,4 +1,4 @@
-import { BingoGame, Phase } from '@bingo/models';
+import { BingoGame, GamePhase } from '@bingo/models';
 import { useEffect } from 'react';
 import { useHistory } from 'react-router';
 import { BingoGameContextMenu, BingoPreviewCard } from './components/bingo';
@@ -41,15 +41,17 @@ const Games = (props: GamesListProps) => {
   }, [auth.isLoggedIn]);
 
   const openGame = (game: BingoGame) => {
-    if (game.hasInstance) {
-      history.push(`/game/${game._id}`);
-      return;
-    }
+    if (game.phase !== GamePhase.EDITING) {
+      if (game.hasInstance) {
+        history.push(`/game/${game._id}`);
+        return;
+      }
 
-    gameInstanceDialog.open({
-      _id: game._id,
-      title: game.title,
-    });
+      gameInstanceDialog.open({
+        _id: game._id,
+        title: game.title,
+      });
+    }
   };
 
   const onModifyTitle = (game: BingoGame) => {
@@ -80,7 +82,9 @@ const Games = (props: GamesListProps) => {
             .filter(game =>
               props.myGames
                 ? game.authorId === auth.user?._id
-                : game.authorId !== auth.user?._id && game.phase !== 'editing',
+                : game.authorId !== auth.user?._id &&
+                  game.phase === GamePhase.OPEN ||
+                  game.hasInstance,
             )
             .map((game, i) => (
               <BingoPreviewCard

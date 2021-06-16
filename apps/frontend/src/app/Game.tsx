@@ -10,6 +10,7 @@ import {
   ErrorType,
   GameEvent,
   GameEventType,
+  GamePhase,
   getConnectionStateMessage,
   Player,
 } from '@bingo/models';
@@ -50,6 +51,7 @@ interface AdminControlProps {
   state: ConnectionState;
   onDrawNewField: () => void;
   onCloseGame: () => void;
+  onStartGame: () => void;
 }
 
 const Game = (props: RouteComponentProps<GameProps>) => {
@@ -98,6 +100,9 @@ const Game = (props: RouteComponentProps<GameProps>) => {
       } else if (event.type === GameEventType.GAME_CLOSED) {
         toast('Das Spiel wurde vom Admin beendet!', { icon: '❌' });
         history.replace('/');
+      } else if (event.type === GameEventType.GAME_STARTED) {
+        toast('Das Spiel wurde gestartet!', { icon: '✅' });
+        game.phase = GamePhase.PLAYING;
       }
     },
   });
@@ -122,6 +127,7 @@ const Game = (props: RouteComponentProps<GameProps>) => {
 
   const onDrawNewField = () => sendEvent(GameEventType.DRAW_FIELD);
   const onCloseGame = () => sendEvent(GameEventType.CLOSE_GAME);
+  const onStartGame = () => sendEvent(GameEventType.START_GAME);
   const onWin = () => sendEvent(GameEventType.ON_WIN);
 
   const onValidateWin = () => {
@@ -147,6 +153,7 @@ const Game = (props: RouteComponentProps<GameProps>) => {
                 players={currentPlayers}
                 state={state}
                 onCloseGame={onCloseGame}
+                onStartGame={onStartGame}
                 onDrawNewField={onDrawNewField}
               />
             )}
@@ -198,6 +205,7 @@ const AdminControls = ({
   players,
   state,
   onCloseGame,
+  onStartGame,
   onDrawNewField,
 }: AdminControlProps) => {
   const auth = useAuthContext();
@@ -253,18 +261,24 @@ const AdminControls = ({
         </Collapsible>
       </CardContent>
       <CardActions>
-        {uncheckedFields.length === 0 && (
-          <div className="info">
-            <span>Es wurden alle Felder aufgedeckt!</span>
-          </div>
-        )}
+        {game.phase === GamePhase.PLAYING ? (
+          <div>
+            {uncheckedFields.length === 0 && (
+              <div className="info">
+                <span>Es wurden alle Felder aufgedeckt!</span>
+              </div>
+            )}
 
-        {uncheckedFields.length === 0 ? (
-          <FlatButton className="warning" onClick={onCloseGame}>
-            Spiel beenden
-          </FlatButton>
-        ) : (
-          <FlatButton onClick={onDrawNewField}>Feld aufdecken</FlatButton>
+            {uncheckedFields.length === 0 ? (
+              <FlatButton className="warning" onClick={onCloseGame}>
+                Spiel beenden
+              </FlatButton>
+            ) : (
+              <FlatButton onClick={onDrawNewField}>Feld aufdecken</FlatButton>
+            )}
+          </div>
+        ) : game.phase ===GamePhase.OPEN && (
+          <FlatButton onClick={onStartGame}>Spiel Starten</FlatButton>
         )}
       </CardActions>
     </Card>

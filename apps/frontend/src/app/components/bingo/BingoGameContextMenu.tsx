@@ -1,11 +1,11 @@
-import { Phase } from '@bingo/models';
+import { GamePhase } from '@bingo/models';
 import { faEllipsisV } from '@fortawesome/free-solid-svg-icons';
 import { Menu, MenuDivider, MenuItem } from '@szhsin/react-menu';
 import { MouseEvent } from 'react';
 import { IconButton } from '../common';
 
 interface BingoGameContextMenuProps {
-  gamePhase: Phase;
+  gamePhase: GamePhase;
   onModifyTitle: () => void;
   onModifyFields: () => void;
   onDeleteGame: () => void;
@@ -33,11 +33,11 @@ export const BingoGameContextMenu = ({
         <MenuItem onClick={onModifyTitle}>Titel bearbeiten</MenuItem>
         <MenuItem onClick={onModifyFields}>Felder bearbeiten</MenuItem>
         <MenuDivider />
-        {gamePhase === 'editing' && (
+        {gamePhase === 'EDITING' && (
           <MenuItem onClick={onOpenGame}>Spiel eröffnen</MenuItem>
         )}
 
-        {gamePhase !== 'finished' && gamePhase !== 'editing' && (
+        {gamePhase !== 'FINISHED' && gamePhase !== 'EDITING' && (
           <MenuItem onClick={onCloseGame}>Spiel Abschließen</MenuItem>
         )}
         <MenuItem onClick={onDeleteGame}>Spiel Löschen</MenuItem>

@@ -1,4 +1,4 @@
-import { BingoGame, Phase } from '@bingo/models';
+import { BingoGame, GamePhase } from '@bingo/models';
 import { ReactNode } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '../common';
 
@@ -9,15 +9,15 @@ interface BingoPreviewCardProps {
   onClick: () => void;
 }
 
-function parseGamePhase(phase: Phase) {
+function parseGamePhase(phase: GamePhase) {
   switch (phase) {
-    case 'editing':
+    case 'EDITING':
       return 'Spiel wird bearbeitet';
-    case 'open':
+    case 'OPEN':
       return 'Spiel ist offen für Anmeldung';
-    case 'playing':
+    case 'PLAYING':
       return 'Spiel hat gestartet';
-    case 'finished':
+    case 'FINISHED':
       return 'Spiel wurde beendet';
     default:
       return 'Error';

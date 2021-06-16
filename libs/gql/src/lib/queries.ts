@@ -22,6 +22,7 @@ export const GET_GAME = gql`
     game(_id: $id) {
       _id
       title
+      phase
       fields {
         _id
         text
@@ -43,6 +44,7 @@ export const GET_GAME_INSTANCE = gql`
       _id
       authorId
       title
+      phase
       fields {
         _id
         text

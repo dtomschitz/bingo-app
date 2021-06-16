@@ -1,5 +1,5 @@
-import { BingoCardState, BingoField, BingoInstanceField } from '@bingo/models';
 import { useReducer } from 'react';
+import { BingoCardState, BingoInstanceField } from '@bingo/models';
 
 type Action =
   | {
