@@ -83,8 +83,7 @@ const Games = (props: GamesListProps) => {
               props.myGames
                 ? game.authorId === auth.user?._id
                 : game.authorId !== auth.user?._id &&
-                  game.phase === GamePhase.OPEN ||
-                  game.hasInstance,
+                  (game.phase === GamePhase.OPEN || game.hasInstance),
             )
             .map((game, i) => (
               <BingoPreviewCard
