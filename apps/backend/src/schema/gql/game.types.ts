@@ -70,6 +70,12 @@ export const GameTypes = gql`
     fields: [BingoField!]!
     instanceFields: [BingoInstanceField!]!
     hasInstance: Boolean
+    podium: [Podium!]
+  }
+
+  type Podium {
+    name: String
+    placement: Int
   }
 
   type BingoField {
@@ -77,7 +83,7 @@ export const GameTypes = gql`
     text: String
     checked: Boolean
   }
-  
+
   type BingoInstanceField {
     _id: ID
     text: String

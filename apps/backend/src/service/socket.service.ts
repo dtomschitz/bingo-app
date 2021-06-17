@@ -1,5 +1,5 @@
 import { isWebSocketCloseEvent, WebSocket } from "../deps.ts";
-import { GameEvent, GameEventType, Player, User } from "../models.ts";
+import { GameEvent, GameEventType, Player, User, Podium } from "../models.ts";
 import { Utils } from "../utils/utils.ts";
 import { GameDatabase } from "../database/index.ts";
 import { GameSchema } from "../schema/index.ts";
@@ -49,6 +49,8 @@ export class SocketService {
           }
 
           this.handleStartGameEvent(event, game);
+        } else if (event.type === GameEventType.ON_WIN) {
+          this.handleWinnerEvent(event, game, user);
         }
       }
     }
@@ -114,11 +116,11 @@ export class SocketService {
     if (uncheckedFields.length === 0) {
       this.sendEvent(socket, GameEventType.NO_MORE_FIELDS);
       return;
-    }    
+    }
 
     const random = Utils.getRandomNumber(0, uncheckedFields.length - 1);
     const randomField = uncheckedFields[random];
-    
+
     await this.games.updateGame(game._id, {
       fields: game.fields.map((field) => {
         return field._id === randomField._id
@@ -155,6 +157,24 @@ export class SocketService {
 
     await this.games.updateGame(game._id, { phase: GamePhase.PLAYING },);
     this.brodcast(sockets, GameEventType.GAME_STARTED);
+  }
+
+  private async handleWinnerEvent(event: GameEvent, game: GameSchema, user: User){
+    const sockets = this.sessions.get(event.id);
+    if (!sockets) {
+      return;
+    }
+    const isDuplicate = game?.podium?.filter((winner: Podium) => {
+      return winner.userId.toString() === user._id.toString()
+    });
+
+
+    if(!isDuplicate || isDuplicate?.length > 0){
+      return;
+    }
+
+    await this.games.updateGame(game._id, { podium: game?.podium ? [...game.podium, { userId: user._id, name: user.name, placement: game.podium.length + 1 }] : [{ userId: user._id, name: user.name, placement: 1 }] },);
+    this.brodcast(sockets, GameEventType.NEW_WINNER, { player: user.name, placement: game?.podium ? game.podium.length + 1 : 1});
   }
 
   private sendEvent<T>(socket: WebSocket, type: GameEventType, data?: T) {

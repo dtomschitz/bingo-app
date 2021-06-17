@@ -11,6 +11,7 @@ import {
   UpdateGame,
   User,
   ValidateWin,
+  Podium
 } from "../models.ts";
 import { GameDatabase } from "../database/index.ts";
 import { GameSchema } from "../schema/index.ts";
@@ -68,6 +69,7 @@ export class GameService {
       fields: game.fields,
       instanceFields,
       hasInstance: true,
+      podium: game?.podium
     };
 
     return gameInstance;
@@ -144,6 +146,7 @@ export class GameService {
         selected: true,
       })),
       hasInstance: true,
+      podium: game?.podium
     };
 
     return gameInstance;
@@ -213,8 +216,12 @@ export class GameService {
     return true;
   }
 
-  async validateWin(props: ValidateWin) {
+  async validateWin(props: ValidateWin, user: User) {
     if (!props._id || !props.fieldIds) {
+      throw new GQLError(ErrorType.INCORRECT_REQUEST);
+    }
+
+    if(props.fieldIds.length < 5){
       throw new GQLError(ErrorType.INCORRECT_REQUEST);
     }
 
@@ -235,4 +242,5 @@ export class GameService {
 
     return true;
   }
+
 }

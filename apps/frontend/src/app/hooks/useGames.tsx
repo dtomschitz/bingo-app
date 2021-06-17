@@ -24,7 +24,7 @@ interface GamesProviderProps {
 interface GamesContext {
   games: BingoGame[];
   loading: boolean;
-  loadGames: () => Promise<boolean>;
+  loadGames: () => ZenObservable.Subscription;
   createGame: (props: CreateGame) => Promise<boolean>;
   updateGame: (update: UpdateGame) => Promise<boolean>;
   deleteGame: (id: string) => Promise<boolean>;

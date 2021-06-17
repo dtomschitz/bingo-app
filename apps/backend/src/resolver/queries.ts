@@ -18,7 +18,7 @@ export const gameQueries = (service: GameService) => {
   );
 
   const validateWin = gqlRequestWrapper<ArgProps<ValidateWin>>(
-    requiresAuthentication(({ args }) => service.validateWin(args.props)),
+    requiresAuthentication(({ context, args }) => service.validateWin(args.props, context.user)),
   );
 
   return {

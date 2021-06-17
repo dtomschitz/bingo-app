@@ -11,6 +11,10 @@ export const GET_GAMES = gql`
         text
         checked
       }
+      podium {
+        name,
+        placement
+      }
       phase
       hasInstance
     }
@@ -23,6 +27,10 @@ export const GET_GAME = gql`
       _id
       title
       phase
+      podium {
+        name,
+        placement
+      }
       fields {
         _id
         text
@@ -56,6 +64,10 @@ export const GET_GAME_INSTANCE = gql`
         selected
       }
       hasInstance
+      podium {
+        name,
+        placement
+      }
     }
   }
 `;

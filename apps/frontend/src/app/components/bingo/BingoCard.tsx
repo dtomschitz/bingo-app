@@ -21,11 +21,7 @@ export const BingoCard = ({
   findWinningPattern,
   onBingoFieldSelected,
 }: BingoCardProps) => {
-  useEffect(() => {
-    if (findWinningPattern(score) !== 0) {
-      onWin.call(this);
-    }
-  }, [score]);
+
 
   return (
     <div className="bingo-card">

@@ -23,7 +23,8 @@ export interface BingoInstanceField {
 
 export interface Podium {
   userId: string;
-  placement: Placement;
+  name: string;
+  placement: number;
 }
 
 enum Placement {
@@ -100,6 +101,7 @@ export enum GameEventType {
   DRAW_FIELD = 'DRAW_FIELD',
   NEW_FIELD_DRAWN = 'NEW_FIELD_DRAWN',
   ON_WIN = 'ON_WIN',
+  NEW_WINNER = 'NEW_WINNER',
   GAME_NOT_FOUND = 'GAME_NOT_FOUND',
   CLOSE_GAME = 'CLOSE_GAME',
   START_GAME = 'START_GAME',

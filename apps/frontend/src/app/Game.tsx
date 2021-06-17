@@ -13,6 +13,7 @@ import {
   GamePhase,
   getConnectionStateMessage,
   Player,
+  Podium
 } from '@bingo/models';
 import {
   Badge,
@@ -34,6 +35,7 @@ import {
   useGamesContext,
   useGameSocket,
 } from './hooks';
+import BingoPodium from './components/bingo/BingoPodium';
 
 interface GameProps {
   gameId: string;
@@ -75,6 +77,8 @@ const Game = (props: RouteComponentProps<GameProps>) => {
 
   const [currentField, setCurrentField] = useState<BingoField>(undefined);
   const [currentPlayers, setCurrentPlayers] = useState<Player[]>([]);
+  const [currentPodium, setCurrentPodium] = useState<Podium[]>();
+
   const { sendEvent, state } = useGameSocket({
     id,
     onMessage: (event: GameEvent) => {
@@ -103,9 +107,20 @@ const Game = (props: RouteComponentProps<GameProps>) => {
       } else if (event.type === GameEventType.GAME_STARTED) {
         toast('Das Spiel wurde gestartet!', { icon: '✅' });
         game.phase = GamePhase.PLAYING;
+      } else if (event.type === GameEventType.NEW_WINNER) {
+        const winner = event.data as { player: string, placement: number };
+        toast(`Juhu!!! ${winner.player} hat ein Bingo und belegt damit den ${winner.placement}. Platz`, { icon: '🏆' });
+        setCurrentPodium(currentPodium ? [...currentPodium, { userId: "", name: winner.player, placement: winner.placement }] : [{ userId: "", name: winner.player, placement: winner.placement }])
       }
     },
   });
+
+  useEffect(() => {
+    if (game?.podium) {
+      setCurrentPodium(game.podium)
+      console.log("podium changed")
+    }
+  }, [game?.podium])
 
   useEffect(() => {
     getGameInstance(id).then();
@@ -130,15 +145,17 @@ const Game = (props: RouteComponentProps<GameProps>) => {
   const onStartGame = () => sendEvent(GameEventType.START_GAME);
   const onWin = () => sendEvent(GameEventType.ON_WIN);
 
-  const onValidateWin = () => {
+  const onValidateWin = async () => {
     const selectedFields = card.fields
       .filter(field => field.selected)
       .map(field => field._id);
 
-    games.validateWin(game._id, selectedFields);
+    const isWin = await games.validateWin(game._id, selectedFields);
+    isWin ? await sendEvent(GameEventType.ON_WIN) : null;
   };
 
   if (error) {
+    console.log(error)
     return <div className="game"></div>;
   }
 
@@ -157,6 +174,7 @@ const Game = (props: RouteComponentProps<GameProps>) => {
                 onDrawNewField={onDrawNewField}
               />
             )}
+            {currentPodium && <BingoPodium podium={currentPodium} />}
             <BingoCardHeader />
             <BingoCard {...card} onWin={onWin} />
           </div>
@@ -277,7 +295,7 @@ const AdminControls = ({
               <FlatButton onClick={onDrawNewField}>Feld aufdecken</FlatButton>
             )}
           </div>
-        ) : game.phase ===GamePhase.OPEN && (
+        ) : game.phase === GamePhase.OPEN && (
           <FlatButton onClick={onStartGame}>Spiel Starten</FlatButton>
         )}
       </CardActions>
