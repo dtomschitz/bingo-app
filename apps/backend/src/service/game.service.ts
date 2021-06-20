@@ -230,6 +230,10 @@ export class GameService {
       throw new GQLError(ErrorType.GAME_NOT_FOUND);
     }
 
+    if(game?.winners?.includes(user._id.toString())){
+      return false;
+    }
+
     for (const id of props.fieldIds) {
       const test = game.fields.find((field) => field._id === id);
 
@@ -239,6 +243,10 @@ export class GameService {
         }
       }
     }
+
+    await this.games.updateGame(game._id, {
+      winners: game?.winners ? [...game.winners, user._id.toString()] : [user._id.toString()]
+    });
 
     return true;
   }

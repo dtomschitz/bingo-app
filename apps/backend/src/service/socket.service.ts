@@ -164,12 +164,23 @@ export class SocketService {
     if (!sockets) {
       return;
     }
-    const isDuplicate = game?.podium?.filter((winner: Podium) => {
-      return winner.userId.toString() === user._id.toString()
-    });
 
+    if(!game?.winners?.includes(user._id.toString())){
+      return;
+    }
 
-    if(!isDuplicate || isDuplicate?.length > 0){
+    let isDuplicate = false;
+
+    if(game?.podium){
+      const userEntries = game?.podium?.filter((winner: Podium) => {
+        return winner.userId.toString() === user._id.toString()
+      });
+      if(userEntries.length > 0){
+        isDuplicate = true;
+      }
+    }
+
+    if(isDuplicate){
       return;
     }
 

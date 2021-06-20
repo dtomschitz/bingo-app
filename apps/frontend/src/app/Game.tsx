@@ -118,7 +118,6 @@ const Game = (props: RouteComponentProps<GameProps>) => {
   useEffect(() => {
     if (game?.podium) {
       setCurrentPodium(game.podium)
-      console.log("podium changed")
     }
   }, [game?.podium])
 
@@ -151,7 +150,9 @@ const Game = (props: RouteComponentProps<GameProps>) => {
       .map(field => field._id);
 
     const isWin = await games.validateWin(game._id, selectedFields);
-    isWin ? await sendEvent(GameEventType.ON_WIN) : null;
+    if (isWin === true) {
+      await sendEvent(GameEventType.ON_WIN);
+    }
   };
 
   if (error) {

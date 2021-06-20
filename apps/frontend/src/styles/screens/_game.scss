@@ -16,6 +16,24 @@
     }
   }
 
+  .podium {
+    color: $primary;
+
+    .podium-headline {
+      margin-bottom: 1.5rem;
+    }
+    .podium {
+      margin-bottom: 0.75rem;
+      font-size: 1.25rem;
+    }
+
+    .winner {
+      margin-bottom: 0.5rem;
+      font-size: 1rem;
+      margin-left: 14px;
+    }
+  }
+
   .admin-controls {
     margin-bottom: 32px;
   }
