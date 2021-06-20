@@ -116,9 +116,7 @@ const Game = (props: RouteComponentProps<GameProps>) => {
   });
 
   useEffect(() => {
-    if (game?.podium) {
-      setCurrentPodium(game.podium)
-    }
+    setCurrentPodium(game?.podium);
   }, [game?.podium])
 
   useEffect(() => {
