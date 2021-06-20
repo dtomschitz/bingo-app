@@ -1,6 +1,7 @@
-import { BingoGame, GamePhase } from '@bingo/models';
+import { BingoGame, GamePhase, User } from '@bingo/models';
 import { useEffect } from 'react';
 import { useHistory } from 'react-router';
+import { Tabs, Tab } from './components/common';
 import { BingoGameContextMenu, BingoPreviewCard } from './components/bingo';
 import {
   CloseGameDialog,
@@ -19,13 +20,37 @@ import { OpenGameDialog } from './dialogs/OpenGameDialog';
 import { useAuthContext, useDialog, useGamesContext } from './hooks';
 
 interface GamesListProps {
-  myGames: boolean;
+  games: BingoGame[];
+  user?: User;
+  showOwnGames: boolean;
 }
 
-const Games = (props: GamesListProps) => {
-  const history = useHistory();
-  const auth = useAuthContext();
+const Home = () => {
   const { games, loadGames } = useGamesContext();
+  const auth = useAuthContext();
+
+  useEffect(() => {
+    if (auth.isLoggedIn) {
+      loadGames();
+    }
+  }, [auth.isLoggedIn]);
+
+  return (
+    <div className="home">
+      <Tabs>
+        <Tab label="Deine Spiele">
+          <Games games={games} user={auth.user} showOwnGames={true} />
+        </Tab>
+        <Tab label="Andere Spiele">
+          <Games games={games} user={auth.user} showOwnGames={false} />
+        </Tab>
+      </Tabs>
+    </div>
+  );
+};
+
+const Games = ({ games, showOwnGames, user }: GamesListProps) => {
+  const history = useHistory();
 
   const gameInstanceDialog = useDialog<CreateGameInstanceDialogData>();
   const modifyGameTitleDialog = useDialog<ModifyGameTitleDialogData>();
@@ -33,12 +58,6 @@ const Games = (props: GamesListProps) => {
   const deleteGameDialog = useDialog<DeleteGameDialogData>();
   const openGameDialog = useDialog<OpenGameDialogData>();
   const closeGameDialog = useDialog<CloseGameDialogData>();
-
-  useEffect(() => {
-    if (auth.isLoggedIn) {
-      loadGames();
-    }
-  }, [auth.isLoggedIn]);
 
   const openGame = (game: BingoGame) => {
     if (game.phase !== GamePhase.EDITING) {
@@ -75,21 +94,21 @@ const Games = (props: GamesListProps) => {
   };
 
   return (
-    <div className="home">
+    <div className="games">
       {games.length !== 0 && (
-        <div className="games">
+        <>
           {games
             .filter(game =>
-              props.myGames
-                ? game.authorId === auth.user?._id
-                : game.authorId !== auth.user?._id &&
+              showOwnGames
+                ? game.authorId === user?._id
+                : game.authorId !== user?._id &&
                   (game.phase === GamePhase.OPEN || game.hasInstance),
             )
             .map((game, i) => (
               <BingoPreviewCard
                 key={`game-${i}`}
                 menu={
-                  game.authorId === auth.user?._id && (
+                  game.authorId === user?._id && (
                     <BingoGameContextMenu
                       {...game}
                       gamePhase={game.phase}
@@ -114,10 +133,10 @@ const Games = (props: GamesListProps) => {
           <DeleteGameDialog {...deleteGameDialog} />
           <CloseGameDialog {...closeGameDialog} />
           <OpenGameDialog {...openGameDialog} />
-        </div>
+        </>
       )}
     </div>
   );
 };
 
-export default Games;
+export default Home;

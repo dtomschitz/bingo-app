@@ -6,6 +6,7 @@ import { faCheck } from '@fortawesome/free-solid-svg-icons';
 import {
   BingoField,
   BingoGame,
+  BingoInstanceField,
   ConnectionState,
   ErrorType,
   GameEvent,
@@ -37,6 +38,10 @@ import {
 
 interface GameProps {
   gameId: string;
+}
+
+interface BingoFieldProps {
+  fields: BingoInstanceField[];
 }
 
 interface BottomInfoBarProps {
@@ -159,6 +164,7 @@ const Game = (props: RouteComponentProps<GameProps>) => {
             )}
             <BingoCardHeader />
             <BingoCard {...card} onWin={onWin} />
+            <BingoFields fields={game.instanceFields} />
           </div>
           <BottomInfoBar
             field={currentField}
@@ -180,6 +186,19 @@ const BingoCardHeader = () => {
       <div className="letter">G</div>
       <div className="letter">O</div>
     </div>
+  );
+};
+
+const BingoFields = ({ fields }: BingoFieldProps) => {
+  return (
+    <Collapsible trigger="Deine Felder" defaultOpen={true}>
+      {fields.map((field, index) => (
+        <div className="list-item">
+          <span className="id">{index + 1}: </span>
+          <span className="text">{field.text}</span>
+        </div>
+      ))}
+    </Collapsible>
   );
 };
 
@@ -277,8 +296,10 @@ const AdminControls = ({
               <FlatButton onClick={onDrawNewField}>Feld aufdecken</FlatButton>
             )}
           </div>
-        ) : game.phase ===GamePhase.OPEN && (
-          <FlatButton onClick={onStartGame}>Spiel Starten</FlatButton>
+        ) : (
+          game.phase === GamePhase.OPEN && (
+            <FlatButton onClick={onStartGame}>Spiel Starten</FlatButton>
+          )
         )}
       </CardActions>
     </Card>

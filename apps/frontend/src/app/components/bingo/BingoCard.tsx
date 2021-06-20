@@ -7,13 +7,9 @@ interface BingoCardProps extends BingoCardState {
   onBingoFieldSelected: (tile: number, field: BingoInstanceField) => void;
 }
 
-interface BingoListProps {
-  field: BingoInstanceField;
-  tile: number;
-}
-
 interface BingoFieldProps {
   field: BingoInstanceField;
+  index: number;
   tile: number;
   winningPattern: number;
   onClick: () => void;
@@ -38,24 +34,18 @@ export const BingoCard = ({
         <BingoTile
           key={field._id}
           field={field}
+          index={index}
           tile={25 - index}
           winningPattern={findWinningPattern(score)}
           onClick={() => onBingoFieldSelected(25 - index, field)}
         />
-      ))}     
-      <div className="bingo-list">
-        {fields?.map((field, index) => (
-          <BingoList
-            field={field}
-            tile={25 - index}
-          />
-        ))}
-      </div> 
+      ))}
     </div>
   );
 };
 
 const BingoTile = ({
+  index,
   tile,
   field,
   onClick,
@@ -68,23 +58,8 @@ const BingoTile = ({
 
   return (
     <div className={classes} onClick={onClick}>
-      <span className="text">
-        {field.text}
-      </span>
-      <span className="bingo-fieldlist-id">
-        {tile}
-      </span>
+      <span className="text">{field.text}</span>
+      <span className="id">{index + 1}</span>
     </div>
   );
 };
-
-const BingoList = ({
-  tile,
-  field,
-}: BingoListProps) => {
-  return (
-    <div className="bingo-fieldlist">
-      <span className="bingo-fieldlist-item"> {tile} = {field.text} </span>
-    </div>
-  )
-}

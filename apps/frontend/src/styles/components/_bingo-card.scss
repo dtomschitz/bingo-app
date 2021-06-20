@@ -76,7 +76,7 @@
 
 .bingo-field {
   position: relative;
-  .bingo-fieldlist-id{
+  .id {
     position: absolute;
     top: 0.5rem;
     right: 0.5rem;
@@ -88,10 +88,10 @@
   }
 }
 
-.bingo-list{
+.bingo-list {
   display: contents;
 
-  .bingo-fieldlist{
+  .bingo-fieldlist {
     display: flex;
     justify-content: center;
     cursor: pointer;
@@ -103,7 +103,6 @@
     }
   }
 
-  .bingo-fieldlist-item{
-
+  .bingo-fieldlist-item {
   }
 }
