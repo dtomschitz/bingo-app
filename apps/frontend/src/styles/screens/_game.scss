@@ -2,6 +2,7 @@
   width: 100%;
   display: flex;
   justify-content: center;
+  margin-bottom: 128px;
 
   #router-container {
     margin-bottom: 83px;
@@ -39,7 +40,7 @@
   }
 
   .bingo-card {
-    margin-bottom: 16px;
+    margin-bottom: 32px;
   }
 
   .bottom-info-bar {
@@ -72,6 +73,23 @@
         width: 120px;
         font-size: 18px;
       }
+    }
+  }
+
+  .list-item {
+    min-height: 32px;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    color: #fff;
+
+    .check-icon {
+      margin-right: 8px;
+    }
+
+    .id {
+      margin-right: 8px;
+      
     }
   }
 
@@ -112,17 +130,6 @@
 
     .card-content {
       margin: 32px 0;
-    }
-
-    .list-item {
-      min-height: 32px;
-      font-size: 16px;
-      display: flex;
-      align-items: center;
-
-      .check-icon {
-        margin-right: 8px;
-      }
     }
   }
 }

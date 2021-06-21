@@ -33,13 +33,14 @@ export const BingoGameContextMenu = ({
         <MenuItem onClick={onModifyTitle}>Titel bearbeiten</MenuItem>
         <MenuItem onClick={onModifyFields}>Felder bearbeiten</MenuItem>
         <MenuDivider />
-        {gamePhase === 'EDITING' && (
+        {gamePhase === GamePhase.EDITING && (
           <MenuItem onClick={onOpenGame}>Spiel eröffnen</MenuItem>
         )}
 
-        {gamePhase !== 'FINISHED' && gamePhase !== 'EDITING' && (
-          <MenuItem onClick={onCloseGame}>Spiel Abschließen</MenuItem>
-        )}
+        {gamePhase !== GamePhase.FINISHED &&
+          gamePhase !== GamePhase.EDITING && (
+            <MenuItem onClick={onCloseGame}>Spiel Abschließen</MenuItem>
+          )}
         <MenuItem onClick={onDeleteGame}>Spiel Löschen</MenuItem>
       </Menu>
     </div>

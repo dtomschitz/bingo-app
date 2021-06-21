@@ -9,6 +9,7 @@ interface BingoCardProps extends BingoCardState {
 
 interface BingoFieldProps {
   field: BingoInstanceField;
+  index: number;
   tile: number;
   winningPattern: number;
   onClick: () => void;
@@ -29,6 +30,7 @@ export const BingoCard = ({
         <BingoTile
           key={field._id}
           field={field}
+          index={index}
           tile={25 - index}
           winningPattern={findWinningPattern(score)}
           onClick={() => onBingoFieldSelected(25 - index, field)}
@@ -39,6 +41,7 @@ export const BingoCard = ({
 };
 
 const BingoTile = ({
+  index,
   tile,
   field,
   onClick,
@@ -52,6 +55,7 @@ const BingoTile = ({
   return (
     <div className={classes} onClick={onClick}>
       <span className="text">{field.text}</span>
+      <span className="id">{index + 1}</span>
     </div>
   );
 };

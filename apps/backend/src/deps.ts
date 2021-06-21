@@ -16,7 +16,7 @@ export {
 export {
   acceptWebSocket,
   isWebSocketCloseEvent,
-  isWebSocketPingEvent,
+  isWebSocketPingEvent
 } from "https://deno.land/std@0.97.0/ws/mod.ts";
 export type { WebSocketEvent } from "https://deno.land/std@0.97.0/ws/mod.ts";
 export type { WebSocket } from "https://deno.land/std@0.97.0/ws/mod.ts";

@@ -79,3 +79,5 @@ app.use(GraphQLService.routes(), GraphQLService.allowedMethods());
 
 console.log("Server start at http://localhost:8000");
 await app.listen({ port: 8000 });
+
+export default app;
