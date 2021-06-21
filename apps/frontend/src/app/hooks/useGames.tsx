@@ -24,7 +24,7 @@ interface GamesProviderProps {
 interface GamesContext {
   games: BingoGame[];
   loading: boolean;
-  loadGames: () => ZenObservable.Subscription;
+  loadGames: () => void;
   createGame: (props: CreateGame) => Promise<boolean>;
   updateGame: (update: UpdateGame) => Promise<boolean>;
   deleteGame: (id: string) => Promise<boolean>;
@@ -48,7 +48,7 @@ export const GamesProvider = ({ children, client }: GamesProviderProps) => {
   const [loading, setLoading] = useState<boolean>(false);
 
   const loadGames = () => {
-    return client
+    client
       .watchQuery<{ games: BingoGame[] }>({
         query: GET_GAMES,
         pollInterval: 1500,
