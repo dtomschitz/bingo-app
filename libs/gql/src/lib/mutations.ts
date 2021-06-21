@@ -104,15 +104,10 @@ export const UPDATE_GAME = gql`
   }
 `;
 
-export const EDIT_USER = gql`
-  mutation EditUser($name: String!, $email: String!, $password: String!) {
-    editUser(props: { name: $name, email: $email, password: $password }) {
-      user {
-        _id
-        name
-        email
-      }
-    }
+
+export const UPDATE_USER = gql`
+  mutation UpdateUser($newName: String!, $newEmail: String!, $newPassword: String!, $email: String!, $password: String!) {
+    updateUser(props: { newName: $newName, newEmail: $newEmail, newPassword: $newPassword, email: $email, password: $password })
   }
 `;
 

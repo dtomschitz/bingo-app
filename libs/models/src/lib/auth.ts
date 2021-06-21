@@ -34,12 +34,6 @@ export interface UpdateUserProps extends Partial<Omit<User, '_id'>> {
   refreshToken?: string;
 }
 
-export interface EditUser {
-  name: string;
-  email: string;
-  password: string;
-}
-
 
 export interface LoginProps {
   email: string;
@@ -53,6 +47,15 @@ export interface LogoutProps {
 export interface RegisterProps extends LoginProps {
   name: string;
 }
+
+
+
+export interface EditUserProps extends LoginProps{
+  newName: string;
+  newEmail: string;
+  newPassword: string;
+}
+
 
 export interface RefreshAccessTokenProps {
   refreshToken: string;

@@ -1,7 +1,7 @@
 import { UserDatabase } from "../database/index.ts";
 import { JwtUtils, ValidationUtils } from "../utils/index.ts";
 import { bcrypt, GQLError } from "../deps.ts";
-import { AuthResult, CreateUserProps, EditUser, ErrorType } from "../models.ts";
+import { AuthResult, CreateUserProps, EditUserProps, ErrorType, User } from "../models.ts";
 
 export class AuthService {
   constructor(private users: UserDatabase) {}
@@ -159,44 +159,48 @@ export class AuthService {
 
 
 
-  async editUser(props: EditUser): Promise<AuthResult> {
-    if (!props.email || !props.name || !props.password) {
+  async editUser(props: EditUserProps): Promise<Boolean> {
+
+    console.log("edit");
+    
+    if (!props.newEmail || !props.newName || !props.newPassword) {
       throw new GQLError(ErrorType.INCORRECT_REQUEST);
     }
 
-    if (!ValidationUtils.isPasswordValid(props.password)) {
+    if (!ValidationUtils.isPasswordValid(props.newPassword)) {
       throw new GQLError(ErrorType.INVALID_PASSWORD_FORMAT);
     }
 
-    const email = props.email.toLowerCase();
+    const email = props.newEmail.toLowerCase();
     if (!ValidationUtils.isEmailValid(email)) {
       throw new GQLError(ErrorType.INVALID_EMAIL_FORMAT);
     }
 
-    if (await this.users.getUserByEmail(email)) {
-      throw new GQLError(ErrorType.USER_ALREADY_EXISTS);
-    }
+
+    console.log(props.email);
+
 
     const salt = await bcrypt.genSalt(8);
-    const password = await bcrypt.hash(props.password, salt);
-    const user = await this.validateUser(email, password);
+    const crPassword = await bcrypt.hash(props.newPassword, salt);
+    const user = await this.validateUser(props.email, props.password);
 
-    if (!user) {
-      throw new GQLError(ErrorType.USER_CREATION_FAILED);
-    }
 
-    const { accessToken, refreshToken } = await JwtUtils.generateTokens({
-      _id: user._id,
-      email: user.email,
-    });
 
-    await this.users.editUser(user._id, props);
 
-    return {
-      user,
-      accessToken,
-      refreshToken,
+
+    const newUser = {
+      name: props.newName,
+      email: props.newEmail,
+      password: crPassword
     };
+
+
+    console.log(user._id);
+
+    await this.users.editUser(user._id, newUser);
+
+
+    return true;
   }
 
 }
