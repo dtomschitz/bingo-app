@@ -104,6 +104,18 @@ export const UPDATE_GAME = gql`
   }
 `;
 
+export const EDIT_USER = gql`
+  mutation EditUser($name: String!, $email: String!, $password: String!) {
+    editUser(props: { name: $name, email: $email, password: $password }) {
+      user {
+        _id
+        name
+        email
+      }
+    }
+  }
+`;
+
 
 
 export const DELETE_GAME = gql`

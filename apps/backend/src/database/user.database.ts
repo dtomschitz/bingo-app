@@ -1,6 +1,6 @@
 import { Database } from "../database/index.ts";
 import { UserSchema } from "../schema/mongo/user.schema.ts";
-import { CreateUserProps, UpdateUserProps } from "../models.ts";
+import { CreateUserProps, UpdateUserProps, EditUser  } from "../models.ts";
 
 export class UserDatabase {
   public readonly collection;
@@ -19,6 +19,12 @@ export class UserDatabase {
   };
 
   updateUser = (_id: string, update: UpdateUserProps) => {
+    return this.collection.updateOne({ _id }, { $set: update }, {
+      upsert: true,
+    });
+  };
+
+  editUser = (_id: string, update: EditUser) => {
     return this.collection.updateOne({ _id }, { $set: update }, {
       upsert: true,
     });

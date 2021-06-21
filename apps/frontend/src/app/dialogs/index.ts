@@ -6,3 +6,4 @@ export * from './OpenGameDialog';
 export * from './ModifyGameFieldsDialog';
 export * from './ModifyGameTitleDialog';
 export * from './CloseGameDialog';
+export * from './EditProfileDialog';

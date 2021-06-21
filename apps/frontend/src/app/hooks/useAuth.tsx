@@ -1,11 +1,12 @@
 import { createContext, ReactNode, useContext, useState } from 'react';
 import { ApolloClient, NormalizedCacheObject } from '@apollo/client';
-import { User, AuthResult, RegisterProps } from '@bingo/models';
+import { User, AuthResult, RegisterProps, EditUser } from '@bingo/models';
 import {
   REGISTER_USER,
   USER_LOGIN,
   USER_LOGOUT,
   VERIFY_USER,
+  EDIT_USER
 } from '@bingo/gql';
 import { useDialog } from './useDialog';
 import { DialogState } from '../components/common';
@@ -27,6 +28,7 @@ export interface AuthContext {
   register: (props: RegisterProps) => Promise<boolean>;
   logout: () => Promise<boolean>;
   verify: () => Promise<boolean>;
+  edit: (props: RegisterProps) => Promise<boolean>;
 }
 
 const context = createContext<AuthContext>({
@@ -41,6 +43,7 @@ const context = createContext<AuthContext>({
   register: undefined,
   logout: undefined,
   verify: undefined,
+  edit: undefined
 });
 
 export const AuthProvider = ({ children, client }: AuthProviderProps) => {
@@ -157,6 +160,23 @@ export const AuthProvider = ({ children, client }: AuthProviderProps) => {
       });
   };
 
+  const edit = ({ name, email, password }: EditUser) => {
+    return client
+      .mutate<{ editUser: boolean }>({
+        mutation: EDIT_USER,
+        variables: {
+          name,
+          email,
+          password,
+        },
+        fetchPolicy: 'no-cache',
+      })
+      .then(result => {
+        return true;
+      })
+      .catch(() => false);
+  }
+
   return (
     <context.Provider
       value={{
@@ -171,6 +191,7 @@ export const AuthProvider = ({ children, client }: AuthProviderProps) => {
         logout,
         register,
         verify,
+        edit
       }}
     >
       {children}

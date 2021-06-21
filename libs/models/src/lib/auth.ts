@@ -34,6 +34,13 @@ export interface UpdateUserProps extends Partial<Omit<User, '_id'>> {
   refreshToken?: string;
 }
 
+export interface EditUser {
+  name: string;
+  email: string;
+  password: string;
+}
+
+
 export interface LoginProps {
   email: string;
   password: string;

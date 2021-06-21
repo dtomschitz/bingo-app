@@ -24,6 +24,10 @@ export const UserTypes = gql`
     success: Boolean
   }
 
+  type UserEditResult {
+    success: Boolean
+  }
+
   type RefreshAccessTokenResult {
     accessToken: String
   }

@@ -9,6 +9,7 @@ import {
   MutateGameField,
   RefreshAccessTokenProps,
   UpdateGame,
+  EditUser
 } from "../models.ts";
 
 export const authMutations = (service: AuthService) => {
@@ -32,12 +33,17 @@ export const authMutations = (service: AuthService) => {
     { args },
   ) => service.refreshAccessToken(args.refreshToken));
 
+  const editUser = gqlRequestWrapper<ArgProps<EditUser>>((
+    { args },
+  ) => service.editUser(args.props));
+
   return {
     registerUser,
     loginUser,
     logoutUser,
     verifyUser,
     refreshAccessToken,
+    editUser
   };
 };
 
