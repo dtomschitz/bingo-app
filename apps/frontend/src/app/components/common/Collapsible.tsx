@@ -7,10 +7,11 @@ interface Collapsible {
   trigger: string;
   children: ReactNode;
   className?: string;
+  defaultOpen?: boolean;
 }
 
 export const Collapsible = (props: Collapsible) => {
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(props.defaultOpen ?? false);
   const className = classNames(
     'collapsible',
     'elevation-z4',

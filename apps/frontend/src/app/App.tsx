@@ -14,7 +14,7 @@ import {
 import { AppBarProvider, useAppBar, useAuthContext, useDialog } from './hooks';
 import { AuthDialog, CreateGameDialog } from './dialogs';
 import Game from './Game';
-import Games from './Games';
+import Home from './Home';
 
 interface AppBarProps {
   elevated: boolean;
@@ -62,14 +62,7 @@ const App = () => {
             component={Game}
           />
           <Route path="/">
-            <Tabs>
-              <Tab label="Eigene Spiele">
-                <Games myGames={true} />
-              </Tab>
-              <Tab label="Spiele von anderen">
-                <Games myGames={false} />
-              </Tab>
-            </Tabs>
+            <Home />
           </Route>
         </Switch>
       </div>

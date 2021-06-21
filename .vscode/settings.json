@@ -4,8 +4,9 @@
     "titleBar.activeBackground": "#5C324E",
     "titleBar.activeForeground": "#FCF9FB"
   },
-  "typescript.enablePromptUseWorkspaceTsdk": false,
-  "deno.enable": true,
-  "deno.lint": true,
-  "deno.unstable": true
+  "typescript.enablePromptUseWorkspaceTsdk": true,
+  "deno.enable": false,
+  "deno.lint": false,
+  "deno.unstable": false,
+  "typescript.tsdk": "node_modules/typescript/lib"
 }

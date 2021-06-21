@@ -2,6 +2,7 @@
   width: 100%;
   display: flex;
   justify-content: center;
+  margin-bottom: 128px;
 
   #router-container {
     margin-bottom: 83px;
@@ -16,12 +17,30 @@
     }
   }
 
+  .podium {
+    color: $primary;
+
+    .podium-headline {
+      margin-bottom: 1.5rem;
+    }
+    .podium {
+      margin-bottom: 0.75rem;
+      font-size: 1.25rem;
+    }
+
+    .winner {
+      margin-bottom: 0.5rem;
+      font-size: 1rem;
+      margin-left: 14px;
+    }
+  }
+
   .admin-controls {
     margin-bottom: 32px;
   }
 
   .bingo-card {
-    margin-bottom: 16px;
+    margin-bottom: 32px;
   }
 
   .bottom-info-bar {
@@ -54,6 +73,23 @@
         width: 120px;
         font-size: 18px;
       }
+    }
+  }
+
+  .list-item {
+    min-height: 32px;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    color: #fff;
+
+    .check-icon {
+      margin-right: 8px;
+    }
+
+    .id {
+      margin-right: 8px;
+      
     }
   }
 
@@ -94,17 +130,6 @@
 
     .card-content {
       margin: 32px 0;
-    }
-
-    .list-item {
-      min-height: 32px;
-      font-size: 16px;
-      display: flex;
-      align-items: center;
-
-      .check-icon {
-        margin-right: 8px;
-      }
     }
   }
 }

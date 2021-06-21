@@ -5,6 +5,7 @@ export interface GameSchema
   extends Omit<BingoGame, "_id" | "hasInstance" | "instanceFields"> {
   _id: Bson.ObjectId;
   instances: { [key: string]: GameInstanceSchema };
+  winners?: string[];
 }
 
 export interface GameInstanceSchema {

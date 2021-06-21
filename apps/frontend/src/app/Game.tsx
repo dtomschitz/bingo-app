@@ -6,6 +6,7 @@ import { faCheck } from '@fortawesome/free-solid-svg-icons';
 import {
   BingoField,
   BingoGame,
+  BingoInstanceField,
   ConnectionState,
   ErrorType,
   GameEvent,
@@ -39,6 +40,10 @@ import BingoPodium from './components/bingo/BingoPodium';
 
 interface GameProps {
   gameId: string;
+}
+
+interface BingoFieldProps {
+  fields: BingoInstanceField[];
 }
 
 interface BottomInfoBarProps {
@@ -116,10 +121,7 @@ const Game = (props: RouteComponentProps<GameProps>) => {
   });
 
   useEffect(() => {
-    if (game?.podium) {
-      setCurrentPodium(game.podium)
-      console.log("podium changed")
-    }
+    setCurrentPodium(game?.podium);
   }, [game?.podium])
 
   useEffect(() => {
@@ -151,7 +153,9 @@ const Game = (props: RouteComponentProps<GameProps>) => {
       .map(field => field._id);
 
     const isWin = await games.validateWin(game._id, selectedFields);
-    isWin ? await sendEvent(GameEventType.ON_WIN) : null;
+    if (isWin === true) {
+      await sendEvent(GameEventType.ON_WIN);
+    }
   };
 
   if (error) {
@@ -177,6 +181,7 @@ const Game = (props: RouteComponentProps<GameProps>) => {
             {currentPodium && <BingoPodium podium={currentPodium} />}
             <BingoCardHeader />
             <BingoCard {...card} onWin={onWin} />
+            <BingoFields fields={game.instanceFields} />
           </div>
           <BottomInfoBar
             field={currentField}
@@ -198,6 +203,19 @@ const BingoCardHeader = () => {
       <div className="letter">G</div>
       <div className="letter">O</div>
     </div>
+  );
+};
+
+const BingoFields = ({ fields }: BingoFieldProps) => {
+  return (
+    <Collapsible trigger="Deine Felder" defaultOpen={true}>
+      {fields.map((field, index) => (
+        <div className="list-item">
+          <span className="id">{index + 1}: </span>
+          <span className="text">{field.text}</span>
+        </div>
+      ))}
+    </Collapsible>
   );
 };
 
@@ -295,8 +313,10 @@ const AdminControls = ({
               <FlatButton onClick={onDrawNewField}>Feld aufdecken</FlatButton>
             )}
           </div>
-        ) : game.phase === GamePhase.OPEN && (
-          <FlatButton onClick={onStartGame}>Spiel Starten</FlatButton>
+        ) : (
+          game.phase === GamePhase.OPEN && (
+            <FlatButton onClick={onStartGame}>Spiel Starten</FlatButton>
+          )
         )}
       </CardActions>
     </Card>

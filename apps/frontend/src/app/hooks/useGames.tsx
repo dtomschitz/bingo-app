@@ -105,9 +105,6 @@ export const GamesProvider = ({ children, client }: GamesProviderProps) => {
   };
 
   const validateWin = (id: string, fieldIds: string[]) => {
-    console.log('validateGame in useGames');
-    console.log(fieldIds);
-
     return client
       .query<{ validateGame: boolean }>({
         query: VALIDATE_WIN,
@@ -116,9 +113,9 @@ export const GamesProvider = ({ children, client }: GamesProviderProps) => {
           fieldIds,
         },
       })
-      .then(() => {
+      .then((res: any) => {
         loadGames();
-        return true;
+        return res.data?.validateWin;
       })
       .catch(() => false);
   };
