@@ -76,33 +76,26 @@
 
 .bingo-field {
   position: relative;
+
+  @media only screen and (max-width: 600px) {
+    .text {
+      display: none;
+      visibility: hidden;
+    }
+
+    .id {
+      position: unset !important;
+      top: unset !important;
+      right: unset !important;
+      font-weight: bold;
+      font-size: 5vw !important;
+    }
+  }
+
   .id {
     position: absolute;
     top: 0.5rem;
     right: 0.5rem;
     font-size: 2.5vw;
-
-    @media only screen and (min-width: 786px) {
-      font-size: 1.5vw;
-    }
-  }
-}
-
-.bingo-list {
-  display: contents;
-
-  .bingo-fieldlist {
-    display: flex;
-    justify-content: center;
-    cursor: pointer;
-    color: #fff;
-    font-size: 3vw;
-
-    @media only screen and (min-width: 786px) {
-      font-size: 2vw;
-    }
-  }
-
-  .bingo-fieldlist-item {
   }
 }
