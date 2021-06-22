@@ -50,6 +50,7 @@ interface BottomInfoBarProps {
   field?: BingoField;
   game: BingoGame;
   onValidateWin: () => void;
+  podium: Podium[];
 }
 
 interface AdminControlProps {
@@ -187,6 +188,7 @@ const Game = (props: RouteComponentProps<GameProps>) => {
             field={currentField}
             game={game}
             onValidateWin={onValidateWin}
+            podium={currentPodium}
           />
         </>
       )}
@@ -219,7 +221,10 @@ const BingoFields = ({ fields }: BingoFieldProps) => {
   );
 };
 
-const BottomInfoBar = ({ field, onValidateWin }: BottomInfoBarProps) => {
+const BottomInfoBar = ({ field, game, podium, onValidateWin }: BottomInfoBarProps) => {
+  const auth = useAuthContext();
+  const isWinner = podium?.some(user => user.name === auth.user?.name);
+
   return (
     <div className="bottom-info-bar elevation-z8">
       <Card className="current-field">
@@ -229,9 +234,11 @@ const BottomInfoBar = ({ field, onValidateWin }: BottomInfoBarProps) => {
             : 'Es wurde noch kein Feld aufgedeckt'}
         </CardTitle>
       </Card>
-      <FlatButton className="bingo-button" onClick={onValidateWin}>
-        BINGO
-      </FlatButton>
+      {game.phase === GamePhase.PLAYING && !isWinner &&
+        <FlatButton className="bingo-button" onClick={onValidateWin} disabled={false}>
+          BINGO
+        </FlatButton>
+      }
     </div>
   );
 };
@@ -310,14 +317,14 @@ const AdminControls = ({
                 Spiel beenden
               </FlatButton>
             ) : (
-              <FlatButton onClick={onDrawNewField}>Feld aufdecken</FlatButton>
-            )}
+                <FlatButton onClick={onDrawNewField}>Feld aufdecken</FlatButton>
+              )}
           </div>
         ) : (
-          game.phase === GamePhase.OPEN && (
-            <FlatButton onClick={onStartGame}>Spiel Starten</FlatButton>
-          )
-        )}
+            game.phase === GamePhase.OPEN && (
+              <FlatButton onClick={onStartGame}>Spiel Starten</FlatButton>
+            )
+          )}
       </CardActions>
     </Card>
   );
