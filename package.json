@@ -8,7 +8,8 @@
     "frontend:start:docker": "nx serve --host 0.0.0.0 --port 3000",
     "backend:start": "deno run --allow-net --allow-env --unstable --watch ./apps/backend/src/main.ts",
     "backend:cache": "deno cache --unstable ./apps/backend/src/deps.ts",
-    "backend:test": "deno test ./apps/backend/ --allow-net --allow-env --allow-read --unstable"
+    "backend:test": "deno test ./apps/backend/ --allow-net --allow-env --allow-read --unstable",
+    "frontend:test": "jest"
   },
   "private": true,
   "dependencies": {
@@ -31,6 +32,7 @@
     "react-overlays": "^5.0.1",
     "react-responsive": "^8.2.0",
     "react-router-dom": "^5.2.0",
+    "react-test-renderer": "^17.0.2",
     "react-use-websocket": "^2.7.1",
     "regenerator-runtime": "0.13.7",
     "tslib": "^2.0.0",
@@ -51,8 +53,8 @@
     "@nrwl/web": "12.1.1",
     "@nrwl/workspace": "12.1.1",
     "@testing-library/react": "11.2.6",
-    "@types/jest": "26.0.8",
-    "@types/node": "14.14.33",
+    "@types/jest": "^26.0.23",
+    "@types/node": "^14.14.33",
     "@types/node-sass": "^4.11.1",
     "@types/react": "17.0.3",
     "@types/react-dom": "17.0.3",
@@ -72,9 +74,9 @@
     "eslint-plugin-jsx-a11y": "6.4.1",
     "eslint-plugin-react": "7.23.1",
     "eslint-plugin-react-hooks": "4.2.0",
-    "jest": "26.2.2",
+    "jest": "^26.2.2",
     "prettier": "2.2.1",
-    "ts-jest": "26.5.5",
+    "ts-jest": "^26.5.5",
     "ts-node": "~9.1.1",
     "typescript": "~4.1.4"
   }
