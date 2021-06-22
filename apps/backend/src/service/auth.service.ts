@@ -167,10 +167,6 @@ export class AuthService {
       throw new GQLError(ErrorType.INCORRECT_REQUEST);
     }
 
-    if (!ValidationUtils.isPasswordValid(props.newPassword)) {
-      throw new GQLError(ErrorType.INVALID_PASSWORD_FORMAT);
-    }
-
     const email = props.newEmail.toLowerCase();
     if (!ValidationUtils.isEmailValid(email)) {
       throw new GQLError(ErrorType.INVALID_EMAIL_FORMAT);
@@ -185,19 +181,27 @@ export class AuthService {
     const user = await this.validateUser(props.email, props.password);
 
 
-
-
-
     const newUser = {
       name: props.newName,
       email: props.newEmail,
       password: crPassword
     };
 
-
     console.log(user._id);
 
     await this.users.editUser(user._id, newUser);
+
+
+    return true;
+  }
+
+  async deleteUser(email: string, password: string): Promise<Boolean> {
+
+    console.log("delete");
+    
+    const user = await this.validateUser(email, password);
+
+    await this.users.deleteUser(user._id);
 
 
     return true;

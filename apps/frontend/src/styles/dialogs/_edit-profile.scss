@@ -10,3 +10,31 @@
       margin-bottom: 16px;
     }
   }
+
+.input-fields{
+  :last-child{
+    margin-top: 16px;
+  }
+
+}
+
+.user-display{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  max-width: 360px;
+  width: 100%;
+  margin-bottom: 20px;
+
+  table{
+    font-size: medium;
+    width: 100%;
+  }
+
+  td{
+    vertical-align: middle;
+    margin:0;
+    padding: 10px;
+    border-bottom: 1px solid #e69eff;
+  }
+}

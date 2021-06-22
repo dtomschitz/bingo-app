@@ -45,5 +45,6 @@ export const UserTypes = gql`
     verifyUser(refreshToken: String!): User!
     refreshAccessToken(refreshToken: String!): String!
     updateUser(props: UserUpdate!): Boolean!
+    deleteUser(email: String!, password: String!): Boolean!
   }
 `;

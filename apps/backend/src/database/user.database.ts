@@ -24,11 +24,14 @@ export class UserDatabase {
     });
   };
 
-
   editUser = (_id: string, changes: CreateUserProps) => {
     return this.collection.updateOne({ _id }, { $set: changes }, {
       upsert: true,
     });
+  };
+
+  deleteUser = (_id: string) => {
+    return this.collection.deleteOne({ _id });
   };
 
   clear = () => {

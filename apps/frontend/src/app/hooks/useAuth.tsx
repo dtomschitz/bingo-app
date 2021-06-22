@@ -6,7 +6,8 @@ import {
   USER_LOGIN,
   USER_LOGOUT,
   VERIFY_USER,
-  UPDATE_USER
+  UPDATE_USER,
+  DELETE_USER
 } from '@bingo/gql';
 import { useDialog } from './useDialog';
 import { DialogState } from '../components/common';
@@ -29,6 +30,7 @@ export interface AuthContext {
   logout: () => Promise<boolean>;
   verify: () => Promise<boolean>;
   update: (props: EditUserProps) => Promise<boolean>;
+  deleteUser: ({email, password}: LoginProps) => Promise<boolean>;
 }
 
 const context = createContext<AuthContext>({
@@ -43,7 +45,8 @@ const context = createContext<AuthContext>({
   register: undefined,
   logout: undefined,
   verify: undefined,
-  update: undefined
+  update: undefined,
+  deleteUser: undefined
 });
 
 export const AuthProvider = ({ children, client }: AuthProviderProps) => {
@@ -174,6 +177,21 @@ export const AuthProvider = ({ children, client }: AuthProviderProps) => {
       })
       .catch(() => false);
   }
+  
+  const deleteUser = ({email, password}: LoginProps) => {
+    return client
+      .mutate<{ deleteUser: boolean }>({
+        mutation: DELETE_USER,
+        variables: {
+          email, password
+        },
+        fetchPolicy: 'no-cache',
+      })
+      .then(result => {
+        return true;
+      })
+      .catch(() => false);
+  }
 
   return (
     <context.Provider
@@ -189,7 +207,8 @@ export const AuthProvider = ({ children, client }: AuthProviderProps) => {
         logout,
         register,
         verify,
-        update
+        update,
+        deleteUser
       }}
     >
       {children}

@@ -9,7 +9,7 @@ import {
   Divider,
   ProgressBar,
   Tabs,
-  Tab,
+  Tab
 } from './components/common';
 import { AppBarProvider, useAppBar, useAuthContext, useDialog } from './hooks';
 import { AuthDialog, CreateGameDialog, EditProfileDialog } from './dialogs';

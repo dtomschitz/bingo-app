@@ -39,13 +39,18 @@ export const authMutations = (service: AuthService) => {
     { args },
   ) => service.editUser(args.props));
 
+  const deleteUser = gqlRequestWrapper<LoginProps>((
+    { args },
+  ) => service.deleteUser(args.email, args.password));
+
   return {
     registerUser,
     loginUser,
     logoutUser,
     verifyUser,
     refreshAccessToken,
-    updateUser
+    updateUser,
+    deleteUser
   };
 };
 
