@@ -26,10 +26,10 @@ describe('Game WebSocket', () => {
   });
 
   afterAll(() => {
-   
+
   });
 
   it('should upgrade the connection and connect to the web socket', () => {
-    const wss = new We
+    //const wss = new We
   });
 });

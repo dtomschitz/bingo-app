@@ -170,7 +170,7 @@ describe("Authentication", () => {
       () => service.logoutUser(""),
     );
 
-    it("should fail because no use is associated with the given email", async () => {    
+    it("should fail because no use is associated with the given email", async () => {
       await assertThrowsAsync(
         async () => await service.logoutUser("logouttest@test.de"),
         GQLError,

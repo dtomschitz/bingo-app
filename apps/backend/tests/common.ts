@@ -15,14 +15,15 @@ export const getDatabase = async (options?: {
   user?: string;
   password?: string;
 }) => {
-  const databaseUser = options?.user ?? Deno.env.get("MONGO_ROOT_USER");
+  const databaseUser = options?.user ?? Deno.env.get("DATABASE_USER");
   const databasePassword = options?.password ??
-    Deno.env.get("MONGO_ROOT_PASSWORD");
+    Deno.env.get("DATABASE_PASSWORD");
 
   const database = new Database(
     options?.name ?? "saturn_testing",
-    options?.url ??
-      `mongodb://${databaseUser}:${databasePassword}@localhost:27017`,
+    options?.url ?? (!databaseUser || !databasePassword) ?
+    `mongodb://database:27017`:
+    `mongodb://${databaseUser}:${databasePassword}@database:27017`,
   );
 
   await database.connect();
