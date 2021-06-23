@@ -31,21 +31,9 @@ export const EditProfileDialog = (props: DialogProps) => {
   ) => {
     const email = auth.user?.email;
 
-    if (newName == undefined) {
-      console.log('newName is undefined');
-      newName = auth.user?.name;
-    }
-    if (newEmail == undefined) {
-      console.log('newEmail is undefined');
-      newEmail = auth.user?.email;
-    }
-
-    if (newPassword == undefined) {
-      console.log('newPassword is undefined');
-      newPassword = auth.user?.password;
-    }
-
-    console.log(newPassword);
+    if (newName == undefined) newName = auth.user?.name;
+    if (newEmail == undefined) newEmail = auth.user?.email;
+    if (newPassword == undefined) newPassword = password;
 
     auth
       .update({ newName, newEmail, newPassword, email, password })
@@ -58,7 +46,6 @@ export const EditProfileDialog = (props: DialogProps) => {
         } else {
           toast.error(errorMessages.INCORRECT_PASSWORD);
         }
-        
       });
   };
 
@@ -67,6 +54,7 @@ export const EditProfileDialog = (props: DialogProps) => {
 
     auth.deleteUser({ email, password }).then(res => {
       if (res) {
+        props.close();
         auth.logout();
         toast.success('Successfully deleted profile!');
       }
@@ -101,11 +89,11 @@ export const EditProfileDialog = (props: DialogProps) => {
               <table>
                 <tbody>
                   <tr>
-                    <td>Benutzername:</td>
+                    <td className="label">Benutzername</td>
                     <td>{auth.user?.name}</td>
                   </tr>
                   <tr>
-                    <td>Email: </td>
+                    <td className="label">Email </td>
                     <td>{auth.user?.email}</td>
                   </tr>
                 </tbody>
@@ -130,7 +118,7 @@ export const EditProfileDialog = (props: DialogProps) => {
                 placeholder="Neues Passwort"
                 onChange={e => setNewPassword(e.currentTarget.value)}
               />
-
+            <label>Erforderlich:</label>
               <input
                 name="password"
                 id="password"
@@ -140,17 +128,16 @@ export const EditProfileDialog = (props: DialogProps) => {
               />
             </div>
           </CardContent>
-          <CardActions>
+          <CardActions className="button-box">
             <FlatButton
+                id="delete-button"
               disabled={!oldPassword}
-              onClick={() =>
-                onDeleteUser(auth.user?.email, auth.user?.password)
-              }
+              onClick={() => onDeleteUser(auth.user?.email, oldPassword)}
             >
               Benutzer Löschen
             </FlatButton>
             <FlatButton
-            disabled={!oldPassword}
+              disabled={!oldPassword}
               onClick={() =>
                 onEditUserData(newName, newEmail, newPassword, oldPassword)
               }

@@ -16,6 +16,10 @@
     margin-top: 16px;
   }
 
+  label{
+    font-size: medium;
+  }
+
 }
 
 .user-display{
@@ -37,4 +41,18 @@
     padding: 10px;
     border-bottom: 1px solid #e69eff;
   }
+}
+
+.label{
+  color: #aaaaaa;
+}
+
+#delete-button{
+  margin-left: 0;
+  margin-right:auto;
+}
+
+.button-box{
+  display:flex;
+  justify-content:flex-end;
 }
