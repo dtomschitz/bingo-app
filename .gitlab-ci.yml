@@ -1,0 +1,13 @@
+image: docker/compose:latest
+
+services:
+  - docker:dind
+
+stages:
+  - build
+  - test
+
+build:
+  stage: build
+  script:
+    - docker-compose build
