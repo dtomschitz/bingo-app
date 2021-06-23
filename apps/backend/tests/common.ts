@@ -21,7 +21,8 @@ export const getDatabase = async (options?: {
 
   const database = new Database(
     options?.name ?? "saturn_testing",
-    options?.url ??
+    options?.url ?? (!databaseUser || !databasePassword) ?
+    `mongodb://database:27017`:
     `mongodb://${databaseUser}:${databasePassword}@database:27017`,
   );
 
