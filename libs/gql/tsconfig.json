@@ -3,7 +3,7 @@
   "files": [],
   "include": [],
   "compilerOptions": {
-    "types": ["jest", "node"]
+    "types": ["@types/jest", "node"]
   },
   "references": [
     {
