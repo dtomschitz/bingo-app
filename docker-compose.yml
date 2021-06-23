@@ -29,6 +29,7 @@ services:
       - ACCESS_TOKEN_EXPIRATION_TIME=$ACCESS_TOKEN_EXPIRATION_TIME
       - REFRESH_TOKEN_SECRET=$REFRESH_TOKEN_SECRET
       - REFRESH_TOKEN_EXPIRATION_TIME=$REFRESH_TOKEN_EXPIRATION_TIME
+      - WAIT_HOSTS=database:27017
     volumes:
       - './apps:/app/apps:ro'
       - './libs:/app/libs:ro'
@@ -42,6 +43,8 @@ services:
       dockerfile: ./apps/frontend/Dockerfile
     depends_on:
       - backend
+    environment:
+      - WAIT_HOSTS=backend:8000
     volumes:
       - './apps:/app/apps:ro'
       - './libs:/app/libs:ro'
