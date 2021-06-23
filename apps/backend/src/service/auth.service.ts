@@ -1,7 +1,7 @@
 import { UserDatabase } from "../database/index.ts";
 import { JwtUtils, ValidationUtils } from "../utils/index.ts";
 import { bcrypt, GQLError } from "../deps.ts";
-import { AuthResult, CreateUserProps, ErrorType } from "../models.ts";
+import { AuthResult, CreateUserProps, EditUserProps, ErrorType, User } from "../models.ts";
 
 export class AuthService {
   constructor(private users: UserDatabase) {}
@@ -95,7 +95,6 @@ export class AuthService {
 
     return true;
   }
-
   /**
    * Refreshes the access token for the `User` with the given refresh token.
    */
@@ -117,7 +116,6 @@ export class AuthService {
 
     return user;
   }
-
   /**
    * Refreshes the access token for the `User` with the given refresh token.
    */
@@ -138,7 +136,6 @@ export class AuthService {
       email,
     });
   }
-
   /**
    * Validates the given credentials and looks for an `User` who is associated
    * with the email.
@@ -159,4 +156,55 @@ export class AuthService {
 
     return user;
   }
+
+
+
+  async editUser(props: EditUserProps): Promise<Boolean> {
+
+    console.log("edit");
+    
+    if (!props.newEmail || !props.newName || !props.newPassword) {
+      throw new GQLError(ErrorType.INCORRECT_REQUEST);
+    }
+
+    const email = props.newEmail.toLowerCase();
+    if (!ValidationUtils.isEmailValid(email)) {
+      throw new GQLError(ErrorType.INVALID_EMAIL_FORMAT);
+    }
+
+
+    console.log(props.email);
+
+
+    const salt = await bcrypt.genSalt(8);
+    const crPassword = await bcrypt.hash(props.newPassword, salt);
+    const user = await this.validateUser(props.email, props.password);
+
+
+    const newUser = {
+      name: props.newName,
+      email: props.newEmail,
+      password: crPassword
+    };
+
+    console.log(user._id);
+
+    await this.users.editUser(user._id, newUser);
+
+
+    return true;
+  }
+
+  async deleteUser(email: string, password: string): Promise<Boolean> {
+
+    console.log("delete");
+    
+    const user = await this.validateUser(email, password);
+
+    await this.users.deleteUser(user._id);
+
+
+    return true;
+  }
+
 }

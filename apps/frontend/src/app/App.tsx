@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Switch, Route, RouteProps, Link, Redirect } from 'react-router-dom';
 import { useMediaQuery } from 'react-responsive';
-import { faCartPlus, faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
+import { faCartPlus, faPortrait, faSignOutAlt, faUser } from '@fortawesome/free-solid-svg-icons';
 import {
   FlatButton,
   IconButton,
@@ -9,16 +9,17 @@ import {
   Divider,
   ProgressBar,
   Tabs,
-  Tab,
+  Tab
 } from './components/common';
 import { AppBarProvider, useAppBar, useAuthContext, useDialog } from './hooks';
-import { AuthDialog, CreateGameDialog } from './dialogs';
+import { AuthDialog, CreateGameDialog, EditProfileDialog } from './dialogs';
 import Game from './Game';
 import Home from './Home';
 
 interface AppBarProps {
   elevated: boolean;
   onCreateGame: () => void;
+  onEditProfile: () => void;
 }
 
 interface ProtectedRouteProps extends RouteProps {
@@ -30,6 +31,7 @@ const App = () => {
 
   const auth = useAuthContext();
   const createGameDialog = useDialog();
+  const editProfileDialog = useDialog();
 
   useEffect(() => {
     auth.verify();
@@ -50,7 +52,7 @@ const App = () => {
 
   return (
     <AppBarProvider>
-      <AppBar onCreateGame={createGameDialog.open} elevated={elevateAppBar} />
+      <AppBar onEditProfile={editProfileDialog.open} onCreateGame={createGameDialog.open} elevated={elevateAppBar} />
       <div
         id="router-container"
         onScroll={e => handleScroll(e.currentTarget.scrollTop)}
@@ -69,11 +71,12 @@ const App = () => {
       <DialogContainer />
       <AuthDialog {...auth.dialog} />
       <CreateGameDialog {...createGameDialog} />
+      <EditProfileDialog {...editProfileDialog} />
     </AppBarProvider>
   );
 };
 
-const AppBar = ({ onCreateGame, elevated }: AppBarProps) => {
+const AppBar = ({onEditProfile, onCreateGame, elevated }: AppBarProps) => {
   const isMoileSmall = useMediaQuery({ query: '(min-width: 500px)' });
 
   const auth = useAuthContext();
@@ -105,6 +108,11 @@ const AppBar = ({ onCreateGame, elevated }: AppBarProps) => {
             onClick={onCreateGame}
           />
         )}
+         <IconButton
+          className="profile-button"
+          icon={faUser}
+          onClick={onEditProfile}
+        />
         <IconButton
           className="logout-button"
           icon={faSignOutAlt}
