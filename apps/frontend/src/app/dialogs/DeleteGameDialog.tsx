@@ -8,14 +8,14 @@ import {
   FlatButton,
   DialogProps,
 } from '../components/common';
-import { useGamesContext } from '../hooks';
+import { useGames } from '../hooks';
 
 export interface DeleteGameDialogData {
   game: BingoGame;
 }
 
 export const DeleteGameDialog = (dialog: DialogProps<DeleteGameDialogData>) => {
-  const { deleteGame } = useGamesContext();
+  const { deleteGame } = useGames();
 
   const onDelete = async () => {
     await deleteGame(dialog?.data.game._id);

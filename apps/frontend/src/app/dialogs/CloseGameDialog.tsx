@@ -8,7 +8,7 @@ import {
   FlatButton,
   DialogProps,
 } from '../components/common';
-import { useGamesContext } from '../hooks';
+import { useGames } from '../hooks';
 
 export interface CloseGameDialogData {
   game: BingoGame;
@@ -16,7 +16,7 @@ export interface CloseGameDialogData {
 }
 
 export const CloseGameDialog = (dialog: DialogProps<CloseGameDialogData>) => {
-  const { updateGame } = useGamesContext();
+  const { updateGame } = useGames();
 
   const onClose = async () => {
     const gameUpdate: UpdateGame = {

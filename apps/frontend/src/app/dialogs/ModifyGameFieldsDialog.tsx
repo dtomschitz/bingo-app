@@ -8,7 +8,7 @@ import {
   DialogHeader,
   DialogProps,
 } from '../components/common';
-import { useGamesContext } from '../hooks';
+import { useGames } from '../hooks';
 
 export interface ModifyGameFieldsDialogData {
   game: BingoGame;
@@ -17,7 +17,7 @@ export interface ModifyGameFieldsDialogData {
 export const ModifyGameFieldsDialog = (
   dialog: DialogProps<ModifyGameFieldsDialogData>,
 ) => {
-  const { mutateField } = useGamesContext();
+  const { mutateField } = useGames();
   const state = useBingoFieldListState(dialog.data?.game.fields);
 
   const onCreate = (field: BingoField) => {

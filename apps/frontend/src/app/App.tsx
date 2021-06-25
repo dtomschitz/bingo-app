@@ -16,7 +16,7 @@ import {
   Divider,
   ProgressBar,
 } from './components/common';
-import { AppBarProvider, useAppBar, useAuthContext, useDialog } from './hooks';
+import { AppBarProvider, useAppBar, useAuth, useDialog } from './hooks';
 import { AuthDialog, CreateGameDialog, EditAccountDialog } from './dialogs';
 import Game from './Game';
 import Home from './Home';
@@ -39,7 +39,7 @@ interface ProtectedRouteProps extends RouteProps {
 const App = () => {
   const [elevateAppBar, setElevateAppBar] = useState(false);
 
-  const auth = useAuthContext();
+  const auth = useAuth();
   const createGameDialog = useDialog();
   const editProfileDialog = useDialog();
 
@@ -93,7 +93,7 @@ const App = () => {
 const AppBar = ({ onEditProfile, onCreateGame, elevated }: AppBarProps) => {
   const isMoileSmall = useMediaQuery({ query: '(min-width: 500px)' });
 
-  const auth = useAuthContext();
+  const auth = useAuth();
   const appBar = useAppBar();
 
   useEffect(() => {

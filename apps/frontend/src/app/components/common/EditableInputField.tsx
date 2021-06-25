@@ -5,6 +5,7 @@ import { IconButton } from './Button';
 interface EditableInputFieldProps {
   initialValue?: string;
   placeholder?: string;
+  type?: string;
   onUpdate?: (value: string) => boolean | Promise<boolean>;
   onDelete?: () => void;
 }
@@ -12,6 +13,7 @@ interface EditableInputFieldProps {
 export const EditableInputField = ({
   initialValue,
   placeholder,
+  type,
   onUpdate,
   onDelete,
 }: EditableInputFieldProps) => {
@@ -50,6 +52,7 @@ export const EditableInputField = ({
         }}
         onChange={e => onChange(e.target.value)}
         placeholder={placeholder}
+        type={type}
       />
       <div className="actions">
         {editMode && (

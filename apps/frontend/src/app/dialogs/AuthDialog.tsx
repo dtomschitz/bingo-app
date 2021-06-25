@@ -10,7 +10,7 @@ import {
   Tab,
   Tabs,
 } from '../components/common';
-import { useAuthContext } from '../hooks';
+import { useAuth } from '../hooks';
 
 interface LoginProps {
   onLogin: (email: string, password: string) => void;
@@ -21,7 +21,7 @@ interface RegisterProps {
 }
 
 export const AuthDialog = (props: DialogProps) => {
-  const auth = useAuthContext();
+  const auth = useAuth();
 
   const onLogin = (email: string, password: string) => {
     auth.login(email, password).then(() => {

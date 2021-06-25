@@ -24,8 +24,16 @@ export class UserService {
       changes.password = await bcrypt.hash(password, salt);
     }
 
-    if (changes.email && !ValidationUtils.isEmailValid(changes.email)) {
-      throw new GQLError(ErrorType.INVALID_EMAIL_FORMAT);
+    if (changes.email) {      
+      if (!ValidationUtils.isEmailValid(changes.email)) {
+        throw new GQLError(ErrorType.INVALID_EMAIL_FORMAT);
+      }
+
+      if (await this.users.getUserByEmail(changes.email)) {
+        throw new GQLError(ErrorType.USER_ALREADY_EXISTS);
+      }
+
+      changes.email = changes.email.toLowerCase();
     }
 
     return await this.users.updateUser(user._id, changes);

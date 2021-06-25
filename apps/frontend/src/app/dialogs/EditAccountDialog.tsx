@@ -9,12 +9,12 @@ import {
   DialogActions,
   EditableInputField,
 } from '../components/common';
-import { useAuthContext } from '../hooks';
+import { useAuth } from '../hooks';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faAt, faUser } from '@fortawesome/free-solid-svg-icons';
 
 export const EditAccountDialog = (dialog: DialogProps) => {
-  const auth = useAuthContext();
+  const auth = useAuth();
 
   const onValueChanged = async (key: keyof User, value: string) => {
     const success = await auth.updateUser({
@@ -72,8 +72,8 @@ export const EditAccountDialog = (dialog: DialogProps) => {
           />
           <EditableInputField
             placeholder="Neues Passwort"
-            initialValue=""
-            onUpdate={value => onValueChanged('email', value)}
+            type="password"
+            onUpdate={value => onValueChanged('password', value)}
           />
 
           <FlatButton className="delete-account warning" onClick={onDeleteUser}>

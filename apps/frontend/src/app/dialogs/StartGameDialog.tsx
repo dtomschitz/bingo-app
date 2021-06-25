@@ -8,14 +8,14 @@ import {
   FlatButton,
   DialogProps,
 } from '../components/common';
-import { useGamesContext } from '../hooks';
+import { useGames } from '../hooks';
 
 export interface StartGameDialogData {
   game: BingoGame;
 }
 
 export const StartGameDialog = (dialog: DialogProps<StartGameDialogData>) => {
-  const { updateGame } = useGamesContext();
+  const { updateGame } = useGames();
 
   const onStart = async () => {
     await updateGame({

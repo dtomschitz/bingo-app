@@ -61,6 +61,7 @@ In the final state of the project, there are unit and integration tests for the 
 | _backend:start_ | Starts the backend in development mode         |
 | _backend:test_  | Runs the tests for the backend                 |
 | _backend:cache_ | Downloads and caches the required Deno modules |
+| _backend:lint_  | Lints the backend                              |
 
 ## Frontend
 
@@ -68,6 +69,7 @@ In the final state of the project, there are unit and integration tests for the 
 | ---------------- | --------------------------------------- |
 | _frontend:start_ | Starts the frontend in development mode |
 | _frontend:test_  | Runs the tests for the frontend         |
+| _frontend:lint_  | Lints the frontend                      |
 
 # Screenshots
 

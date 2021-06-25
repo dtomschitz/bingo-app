@@ -205,4 +205,4 @@ export const AuthProvider = ({ children, client }: AuthProviderProps) => {
   );
 };
 
-export const useAuthContext = () => useContext(context);
+export const useAuth = () => useContext(context);

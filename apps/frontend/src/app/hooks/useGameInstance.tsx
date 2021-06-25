@@ -103,4 +103,4 @@ export const GameInstanceProvider = ({
   );
 };
 
-export const useGameInstanceContext = () => useContext(context);
+export const useGameInstance = () => useContext(context);

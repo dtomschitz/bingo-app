@@ -4,8 +4,8 @@ import {
   forwardRef,
   LegacyRef,
 } from 'react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import classNames from 'classnames';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 export type ButtonProps = DetailedHTMLProps<
   ButtonHTMLAttributes<HTMLButtonElement>,
@@ -39,20 +39,6 @@ export const FlatButton = (props: ButtonProps) => {
     </button>
   );
 };
-
-/*export const IconButton = (props: IconButtonProps) => {
-  const className = classNames('icon-button', props?.className, {
-    disabled: props?.disabled || false,
-  });
-
-  return (
-    <button {...props} className={className}>
-      <div className="icon">
-        <FontAwesomeIcon icon={props.icon} />
-      </div>
-    </button>
-  );
-};*/
 
 export const IconButton = forwardRef(
   (props: IconButtonProps, ref: LegacyRef<HTMLButtonElement>) => {

@@ -30,11 +30,11 @@ import {
 import { BingoCard, BingoPodium } from './components/bingo';
 import {
   useAppBar,
-  useAuthContext,
+  useAuth,
   useBingoCard,
   useDialog,
-  useGameInstanceContext,
-  useGamesContext,
+  useGameInstance,
+  useGames,
   useGameSocket,
 } from './hooks';
 import { CloseGameDialog, CloseGameDialogData } from './dialogs';
@@ -68,7 +68,7 @@ const Game = (props: RouteComponentProps<GameProps>) => {
 
   const history = useHistory();
   const appBar = useAppBar();
-  const auth = useAuthContext();
+  const auth = useAuth();
 
   const {
     game,
@@ -77,10 +77,10 @@ const Game = (props: RouteComponentProps<GameProps>) => {
     loading,
     getGameInstance,
     updateGameField,
-  } = useGameInstanceContext();
+  } = useGameInstance();
 
   const card = useBingoCard();
-  const games = useGamesContext();
+  const games = useGames();
 
   const [currentField, setCurrentField] = useState<BingoField>(undefined);
   const [currentPlayers, setCurrentPlayers] = useState<Player[]>([]);
@@ -261,7 +261,7 @@ const BottomInfoBar = ({
   podium,
   onValidateWin,
 }: BottomInfoBarProps) => {
-  const auth = useAuthContext();
+  const auth = useAuth();
   const isWinner = podium?.some(user => user.name === auth.user?.name);
 
   return (
@@ -294,7 +294,7 @@ const AdminControls = ({
   onStartGame,
   onDrawNewField,
 }: AdminControlProps) => {
-  const auth = useAuthContext();
+  const auth = useAuth();
 
   const uncheckedFields = game.fields.filter(field => !field.checked);
   const checkedFields = game.fields.filter(field => field.checked);

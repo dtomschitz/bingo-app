@@ -12,10 +12,10 @@ import {
   FlatButton,
 } from '../components/common';
 import { BingoFieldList, useBingoFieldListState } from '../components/bingo';
-import { useGamesContext } from '../hooks';
+import { useGames } from '../hooks';
 
 export const CreateGameDialog = (props: DialogProps) => {
-  const { createGame } = useGamesContext();
+  const { createGame } = useGames();
   const [title, setTitle] = useState<string>('');
   const state = useBingoFieldListState(
     Array.from({ length: 40 }).map((_, index) => ({

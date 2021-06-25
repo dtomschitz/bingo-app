@@ -24,24 +24,28 @@ import App from './app/App';
 
 import '@szhsin/react-menu/dist/index.css';
 
-const refreshAccessToken = (refreshToken: string) => {
-  return client
-    .mutate<{ refreshAccessToken: string }>({
-      mutation: REFRESH_ACCESS_TOKEN,
-      variables: {
-        refreshToken,
-      },
-      fetchPolicy: 'no-cache',
-    })
-    .then(result => {
-      const token = result.data.refreshAccessToken;
-      localStorage.setItem('accessToken', token);
-      return token;
-    });
+const refreshAccessToken = async (refreshToken: string) => {
+  const result = await client.mutate<{ refreshAccessToken: string }>({
+    mutation: REFRESH_ACCESS_TOKEN,
+    variables: {
+      refreshToken,
+    },
+    fetchPolicy: 'no-cache',
+  });
+
+  const token = result.data.refreshAccessToken;
+  localStorage.setItem('accessToken', token);
+
+  return token;
 };
 
 const errorLink = onError(
   ({ graphQLErrors, networkError, operation, forward }) => {
+    if (networkError && networkError.message === 'Failed to fetch') {
+      toast.error('API nicht erreichbar!');
+      return forward(operation);
+    }
+
     if (graphQLErrors) {
       for (const i in graphQLErrors) {
         const error = graphQLErrors[i];
@@ -109,7 +113,7 @@ const cache = new InMemoryCache({
     Query: {
       fields: {
         games: {
-          merge(existing, incoming) {
+          merge(_, incoming) {
             return incoming;
           },
         },
@@ -118,7 +122,7 @@ const cache = new InMemoryCache({
     BingoGame: {
       fields: {
         fields: {
-          merge(existing, incoming) {
+          merge(_, incoming) {
             return incoming;
           },
         },

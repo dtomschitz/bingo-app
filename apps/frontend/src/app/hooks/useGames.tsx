@@ -142,4 +142,4 @@ export const GamesProvider = ({ children, client }: GamesProviderProps) => {
   );
 };
 
-export const useGamesContext = () => useContext(context);
+export const useGames = () => useContext(context);

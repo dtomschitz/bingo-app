@@ -9,7 +9,7 @@ import {
   DialogProps,
   FlatButton,
 } from '../components/common';
-import { useGamesContext } from '../hooks';
+import { useGames } from '../hooks';
 
 export interface ModifyGameTitleDialogData {
   game: BingoGame;
@@ -19,7 +19,7 @@ export const ModifyGameTitleDialog = (
   dialog: DialogProps<ModifyGameTitleDialogData>,
 ) => {
   const [title, setTitle] = useState(dialog.data?.game.title || '');
-  const { updateGame } = useGamesContext();
+  const { updateGame } = useGames();
   const canSave = !!title.trim();
 
   const onSave = async () => {

@@ -17,7 +17,7 @@ import {
   OpenGameDialogData,
 } from './dialogs';
 import { OpenGameDialog } from './dialogs';
-import { useAuthContext, useDialog, useGamesContext } from './hooks';
+import { useAuth, useDialog, useGames } from './hooks';
 
 interface GamesListProps {
   games: BingoGame[];
@@ -26,8 +26,8 @@ interface GamesListProps {
 }
 
 const Home = () => {
-  const { games, loadGames } = useGamesContext();
-  const auth = useAuthContext();
+  const { games, loadGames } = useGames();
+  const auth = useAuth();
 
   useEffect(() => {
     if (auth.isLoggedIn) {
