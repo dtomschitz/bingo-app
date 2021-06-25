@@ -6,6 +6,10 @@
 .rc-menu__item {
   color: #fff;
   background-color: $light-background;
+
+  svg {
+    margin-right: 8px;
+  }
 }
 
 .rc-menu__item--hover {

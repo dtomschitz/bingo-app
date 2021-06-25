@@ -1,4 +1,6 @@
 import { useState } from 'react';
+import toast from 'react-hot-toast';
+import { errorMessages } from '@bingo/models';
 import {
   FlatButton,
   Card,
@@ -8,12 +10,10 @@ import {
   DialogContent,
   DialogHeader,
   DialogProps,
-  Tab,
-  Tabs,
+  DialogActions,
+  Button,
 } from '../components/common';
 import { useAuthContext } from '../hooks';
-import { User, ErrorType, errorMessages } from '@bingo/models';
-import toast from 'react-hot-toast';
 
 export const EditProfileDialog = (props: DialogProps) => {
   const auth = useAuthContext();
@@ -65,7 +65,12 @@ export const EditProfileDialog = (props: DialogProps) => {
   };
 
   return (
-    <BaseDialog {...props} className="edit-dialog">
+    <BaseDialog
+      {...props}
+      className="edit-dialog"
+      hideTopDivider
+      hideBottomDivider
+    >
       <DialogHeader>Profil bearbeiten</DialogHeader>
       <DialogContent>
         <Card className="edit">
@@ -132,6 +137,23 @@ export const EditProfileDialog = (props: DialogProps) => {
           </CardActions>
         </Card>
       </DialogContent>
+      <DialogActions>
+        <Button
+          id="delete-button"
+          disabled={!oldPassword}
+          onClick={() => onDeleteUser(auth.user?.email, oldPassword)}
+        >
+          Benutzer Löschen
+        </Button>
+        <FlatButton
+          disabled={!oldPassword}
+          onClick={() =>
+            onEditUserData(newName, newEmail, newPassword, oldPassword)
+          }
+        >
+          Speichern
+        </FlatButton>
+      </DialogActions>
     </BaseDialog>
   );
 };

@@ -11,10 +11,6 @@
   .game-container {
     max-width: 750px;
     width: 100%;
-
-    @media only screen and (min-width: 1280px) {
-      max-width: 1000px;
-    }
   }
 
   .podium {
@@ -89,7 +85,6 @@
 
     .id {
       margin-right: 8px;
-      
     }
   }
 

@@ -32,7 +32,12 @@ export const CreateGameInstanceDialog = (
   };
 
   return (
-    <BaseDialog {...props} className="create-game">
+    <BaseDialog
+      {...props}
+      className="create-game"
+      hideTopDivider
+      hideBottomDivider
+    >
       <DialogHeader>Spiel beitreten</DialogHeader>
       <DialogContent>
         <p>Möchtest du dem Spiel "{props.data?.title}" beitreten?</p>

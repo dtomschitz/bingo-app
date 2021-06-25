@@ -12,6 +12,7 @@ import { useGamesContext } from '../hooks';
 
 export interface CloseGameDialogData {
   game: BingoGame;
+  onClose?: () => void;
 }
 
 export const CloseGameDialog = (dialog: DialogProps<CloseGameDialogData>) => {
@@ -23,14 +24,16 @@ export const CloseGameDialog = (dialog: DialogProps<CloseGameDialogData>) => {
       changes: { phase: GamePhase.FINISHED },
     };
     await updateGame(gameUpdate);
+
+    dialog.data?.onClose();
     dialog.close();
   };
 
   return (
     <BaseDialog {...dialog} hideTopDivider hideBottomDivider>
-      <DialogHeader>Spiel eröffnen</DialogHeader>
+      <DialogHeader>Spiel beenden</DialogHeader>
       <DialogContent>
-        <p>Möchtest du das Spiel "{dialog.data?.game.title}" Abschließen?</p>
+        <p>Möchtest du das Spiel "{dialog.data?.game.title}" beenden?</p>
       </DialogContent>
       <DialogActions>
         <Button onClick={dialog.close}>Abbrechen</Button>

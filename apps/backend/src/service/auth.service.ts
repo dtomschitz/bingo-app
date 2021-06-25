@@ -1,13 +1,7 @@
-import { UserDatabase } from '../database/index.ts';
-import { JwtUtils, ValidationUtils } from '../utils/index.ts';
-import { bcrypt, GQLError } from '../deps.ts';
-import {
-  AuthResult,
-  CreateUserProps,
-  EditUserProps,
-  ErrorType,
-  User,
-} from '../models.ts';
+import { UserDatabase } from "../database/index.ts";
+import { JwtUtils, ValidationUtils } from "../utils/index.ts";
+import { bcrypt, GQLError } from "../deps.ts";
+import { AuthResult, CreateUserProps, EditUserProps, ErrorType } from "../models.ts";
 
 export class AuthService {
   constructor(private users: UserDatabase) {}
@@ -122,6 +116,7 @@ export class AuthService {
 
     return user;
   }
+
   /**
    * Refreshes the access token for the `User` with the given refresh token.
    */
@@ -142,6 +137,7 @@ export class AuthService {
       email,
     });
   }
+
   /**
    * Validates the given credentials and looks for an `User` who is associated
    * with the email.
