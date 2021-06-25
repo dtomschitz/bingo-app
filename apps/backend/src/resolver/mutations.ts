@@ -10,7 +10,6 @@ import {
   RefreshAccessTokenProps,
   UpdateGame,
   EditUserProps,
-  User
 } from "../models.ts";
 
 export const authMutations = (service: AuthService) => {

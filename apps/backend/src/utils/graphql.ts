@@ -56,8 +56,6 @@ export const requiresAuthentication = <T, R = any>(
   };
 };
 
-const pubsub = new PubSub();
-
 export const createContext = async (
   { request }: Context,
   users: UserDatabase,
@@ -65,13 +63,12 @@ export const createContext = async (
   const context: BaseContext = {
     authenticated: false,
     user: undefined,
-    pubsub: pubsub
   };
 
   const requestToken = request.headers.get("Authorization");
   if (!requestToken) {
     return context;
-  }
+  }  
 
   const requestTokenArray = requestToken.split(" ");
   const accessToken = requestTokenArray[1];
@@ -79,7 +76,6 @@ export const createContext = async (
   try {
     const { email } = await JwtUtils.verifyAccessToken(accessToken);
     const user = await users.getUserByEmail(email);
-
     if (!user) {
       return context;
     }

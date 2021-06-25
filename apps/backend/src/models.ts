@@ -11,7 +11,6 @@ export interface ArgProps<T> {
 export interface BaseContext {
   authenticated: boolean;
   user?: User;
-  pubsub: any;
 }
 
 export interface AuthenticationContext extends BaseContext {

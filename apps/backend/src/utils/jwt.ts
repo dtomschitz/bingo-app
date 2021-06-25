@@ -39,8 +39,7 @@ export class JwtUtils {
       },
       {
         secret,
-        //expiration: 3600, // 1h
-        expiration: 60,
+        expiration: 3600, // 1h
       },
     );
   };

@@ -73,8 +73,6 @@ app.use(
   }),
 );
 
-console.log(GraphQLService.routes()?.router);
-
 app.use(GraphQLService.routes(), GraphQLService.allowedMethods());
 
 console.log("Server start at http://localhost:8000");
