@@ -32,10 +32,12 @@ import {
   useAppBar,
   useAuthContext,
   useBingoCard,
+  useDialog,
   useGameInstanceContext,
   useGamesContext,
   useGameSocket,
 } from './hooks';
+import { CloseGameDialog, CloseGameDialogData } from './dialogs';
 
 interface GameProps {
   gameId: string;
@@ -83,6 +85,8 @@ const Game = (props: RouteComponentProps<GameProps>) => {
   const [currentField, setCurrentField] = useState<BingoField>(undefined);
   const [currentPlayers, setCurrentPlayers] = useState<Player[]>([]);
   const [currentPodium, setCurrentPodium] = useState<Podium[]>();
+
+  const closeGameDialog = useDialog<CloseGameDialogData>();
 
   const { sendEvent, state } = useGameSocket({
     id,
@@ -163,8 +167,18 @@ const Game = (props: RouteComponentProps<GameProps>) => {
   useEffect(() => appBar.showLoadingBar(loading), [appBar, loading]);
 
   const onDrawNewField = () => sendEvent(GameEventType.DRAW_FIELD);
-  const onCloseGame = () => sendEvent(GameEventType.CLOSE_GAME);
+
+  const onCloseGame = () => {
+    closeGameDialog.open({
+      game,
+      onClose: () => {
+        sendEvent(GameEventType.CLOSE_GAME);
+      },
+    });
+  };
+
   const onStartGame = () => sendEvent(GameEventType.START_GAME);
+  
   const onWin = () => sendEvent(GameEventType.ON_WIN);
 
   const onValidateWin = async () => {
@@ -211,6 +225,7 @@ const Game = (props: RouteComponentProps<GameProps>) => {
           />
         </>
       )}
+      <CloseGameDialog {...closeGameDialog} />
     </div>
   );
 };
