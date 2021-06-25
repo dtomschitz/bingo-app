@@ -3,8 +3,6 @@ import {
   GQLError,
   it,
   v4,
-  BufReader,
-  BufWriter,
 } from './test.deps.ts';
 import { Application, State, ServerRequest } from '../src/deps.ts';
 import { BingoField, ErrorType, User } from '../src/models.ts';

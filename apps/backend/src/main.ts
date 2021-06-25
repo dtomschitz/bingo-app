@@ -35,7 +35,7 @@ const userService = new UserService(userDatabase);
 const gameService = new GameService(gameDatabase);
 const socketService = new SocketService(gameDatabase);
 
-const GraphQLService: any = await applyGraphQL<Router>({
+const GraphQLService = await applyGraphQL<Router>({
   Router,
   typeDefs: GraphQLSchema,
   resolvers: resolvers(authService, userService, gameService),

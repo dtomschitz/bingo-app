@@ -11,7 +11,6 @@ import {
   UpdateGame,
   User,
   ValidateWin,
-  Podium
 } from "../models.ts";
 import { GameDatabase } from "../database/index.ts";
 import { GameSchema } from "../schema/index.ts";

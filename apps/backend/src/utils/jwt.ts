@@ -105,7 +105,7 @@ export class JwtUtils {
     let verify: jwt.Payload;
     try {
       verify = await jwt.verify(token, secret, defaultJwtHeader.alg);
-    } catch (e) {      
+    } catch {      
       throw new GQLError(ErrorType.INVALID_SERIALIZED_JWT_TOKEN);
     }
 

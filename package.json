@@ -10,7 +10,8 @@
     "frontend:lint": "nx lint frontend",
     "backend:start": "deno run --allow-net --allow-env --unstable --watch ./apps/backend/src/main.ts",
     "backend:cache": "deno cache --unstable ./apps/backend/src/deps.ts",
-    "backend:test": "deno test ./apps/backend/ --allow-net --allow-env --allow-read --unstable"
+    "backend:test": "deno test ./apps/backend/ --allow-net --allow-env --allow-read --unstable",
+    "backend:lint": "deno lint --unstable ./apps/backend"
   },
   "private": true,
   "dependencies": {

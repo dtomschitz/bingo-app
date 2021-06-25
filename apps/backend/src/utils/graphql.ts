@@ -1,6 +1,6 @@
 import { UserDatabase } from "../database/index.ts";
 import { JwtUtils } from "../utils/index.ts";
-import { Context, GQLError, PubSub } from "../deps.ts";
+import { Context, GQLError } from "../deps.ts";
 import {
   AuthenticationContext,
   BaseContext,
