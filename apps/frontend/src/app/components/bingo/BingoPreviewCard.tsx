@@ -30,7 +30,7 @@ export const BingoPreviewCard = ({
   const message = stateMessages[game.phase];
 
   return (
-    <Card onClick={onClick}>
+    <Card className="bingo-preview-card" onClick={onClick}>
       <CardHeader>
         <div className="mobile-header">
           <CardTitle>{game.title}</CardTitle>
