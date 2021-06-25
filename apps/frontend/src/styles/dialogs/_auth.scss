@@ -1,14 +1,19 @@
 .auth-dialog {
+  .tab-content {
+    padding: 24px 0 0 0;
+  }
+
   .card {
     padding: 0;
     box-shadow: none;
 
     .card-content {
       margin-bottom: 0;
-    }
-  }
 
-  .tab-content {
-    padding: 24px 0 0 0;
+      input {
+        width: 100%;
+        margin-bottom: 16px;
+      }
+    }
   }
 }

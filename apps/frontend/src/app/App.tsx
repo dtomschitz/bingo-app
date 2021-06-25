@@ -1,25 +1,37 @@
 import { useEffect, useState } from 'react';
 import { Switch, Route, RouteProps, Link, Redirect } from 'react-router-dom';
 import { useMediaQuery } from 'react-responsive';
-import { faCartPlus, faPortrait, faSignOutAlt, faUser } from '@fortawesome/free-solid-svg-icons';
+import {
+  faCartPlus,
+  faEllipsisV,
+  faPlus,
+  faSignOutAlt,
+  faUser,
+} from '@fortawesome/free-solid-svg-icons';
+import { Menu, MenuItem } from '@szhsin/react-menu';
 import {
   FlatButton,
   IconButton,
   DialogContainer,
   Divider,
   ProgressBar,
-  Tabs,
-  Tab
 } from './components/common';
 import { AppBarProvider, useAppBar, useAuthContext, useDialog } from './hooks';
 import { AuthDialog, CreateGameDialog, EditProfileDialog } from './dialogs';
 import Game from './Game';
 import Home from './Home';
+import { BingoGameContextMenu } from './components/bingo';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 interface AppBarProps {
   elevated: boolean;
   onCreateGame: () => void;
   onEditProfile: () => void;
+}
+
+interface AppContextMenuProps {
+  onEditProfile: () => void;
+  onLogout: () => void;
 }
 
 interface ProtectedRouteProps extends RouteProps {
@@ -52,7 +64,11 @@ const App = () => {
 
   return (
     <AppBarProvider>
-      <AppBar onEditProfile={editProfileDialog.open} onCreateGame={createGameDialog.open} elevated={elevateAppBar} />
+      <AppBar
+        onEditProfile={editProfileDialog.open}
+        onCreateGame={createGameDialog.open}
+        elevated={elevateAppBar}
+      />
       <div
         id="router-container"
         onScroll={e => handleScroll(e.currentTarget.scrollTop)}
@@ -76,7 +92,7 @@ const App = () => {
   );
 };
 
-const AppBar = ({onEditProfile, onCreateGame, elevated }: AppBarProps) => {
+const AppBar = ({ onEditProfile, onCreateGame, elevated }: AppBarProps) => {
   const isMoileSmall = useMediaQuery({ query: '(min-width: 500px)' });
 
   const auth = useAuthContext();
@@ -86,9 +102,8 @@ const AppBar = ({onEditProfile, onCreateGame, elevated }: AppBarProps) => {
     appBar.showLoadingBar(auth.isPending);
   }, [appBar, auth.isPending]);
 
-  const onLogin = () => {
-    auth.dialog.open();
-  };
+  const onLogin = () => auth.dialog.open();
+  const onLogout = () => auth.logout();
 
   const renderActions = () => {
     if (auth.isPending) {
@@ -104,20 +119,11 @@ const AppBar = ({onEditProfile, onCreateGame, elevated }: AppBarProps) => {
         ) : (
           <IconButton
             className="create-game-button"
-            icon={faCartPlus}
+            icon={faPlus}
             onClick={onCreateGame}
           />
         )}
-         <IconButton
-          className="profile-button"
-          icon={faUser}
-          onClick={onEditProfile}
-        />
-        <IconButton
-          className="logout-button"
-          icon={faSignOutAlt}
-          onClick={() => auth.logout()}
-        />
+        <AppContextMenu onEditProfile={onEditProfile} onLogout={onLogout} />
       </>
     ) : (
       <FlatButton onClick={onLogin}>Anmelden</FlatButton>
@@ -138,6 +144,24 @@ const AppBar = ({onEditProfile, onCreateGame, elevated }: AppBarProps) => {
       </div>
       {!elevated && <Divider />}
     </div>
+  );
+};
+
+export const AppContextMenu = ({
+  onEditProfile,
+  onLogout,
+}: AppContextMenuProps) => {
+  return (
+    <Menu menuButton={<IconButton icon={faEllipsisV} />}>
+      <MenuItem onClick={onEditProfile}>
+        <FontAwesomeIcon icon={faUser} />
+        Nutzer bearbeiten
+      </MenuItem>
+      <MenuItem onClick={onLogout}>
+        <FontAwesomeIcon icon={faSignOutAlt} />
+        Abmelden
+      </MenuItem>
+    </Menu>
   );
 };
 

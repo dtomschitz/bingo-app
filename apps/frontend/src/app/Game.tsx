@@ -14,7 +14,7 @@ import {
   GamePhase,
   getConnectionStateMessage,
   Player,
-  Podium
+  Podium,
 } from '@bingo/models';
 import {
   Badge,
@@ -27,7 +27,7 @@ import {
   CardContent,
   Divider,
 } from './components/common';
-import { BingoCard } from './components/bingo';
+import { BingoCard, BingoPodium } from './components/bingo';
 import {
   useAppBar,
   useAuthContext,
@@ -36,7 +36,6 @@ import {
   useGamesContext,
   useGameSocket,
 } from './hooks';
-import BingoPodium from './components/bingo/BingoPodium';
 
 interface GameProps {
   gameId: string;
@@ -114,16 +113,36 @@ const Game = (props: RouteComponentProps<GameProps>) => {
         toast('Das Spiel wurde gestartet!', { icon: '✅' });
         game.phase = GamePhase.PLAYING;
       } else if (event.type === GameEventType.NEW_WINNER) {
-        const winner = event.data as { player: string, placement: number };
-        toast(`Juhu!!! ${winner.player} hat ein Bingo und belegt damit den ${winner.placement}. Platz`, { icon: '🏆' });
-        setCurrentPodium(currentPodium ? [...currentPodium, { userId: "", name: winner.player, placement: winner.placement }] : [{ userId: "", name: winner.player, placement: winner.placement }])
+        const winner = event.data as { player: string; placement: number };
+        toast(
+          `Juhu!!! ${winner.player} hat ein Bingo und belegt damit den ${winner.placement}. Platz`,
+          { icon: '🏆' },
+        );
+        setCurrentPodium(
+          currentPodium
+            ? [
+                ...currentPodium,
+                {
+                  userId: '',
+                  name: winner.player,
+                  placement: winner.placement,
+                },
+              ]
+            : [
+                {
+                  userId: '',
+                  name: winner.player,
+                  placement: winner.placement,
+                },
+              ],
+        );
       }
     },
   });
 
   useEffect(() => {
     setCurrentPodium(game?.podium);
-  }, [game?.podium])
+  }, [game?.podium]);
 
   useEffect(() => {
     getGameInstance(id).then();
@@ -155,12 +174,12 @@ const Game = (props: RouteComponentProps<GameProps>) => {
 
     const isWin = await games.validateWin(game._id, selectedFields);
     if (isWin === true) {
-      await sendEvent(GameEventType.ON_WIN);
+      sendEvent(GameEventType.ON_WIN);
     }
   };
 
   if (error) {
-    console.log(error)
+    console.log(error);
     return <div className="game"></div>;
   }
 
@@ -212,7 +231,7 @@ const BingoFields = ({ fields }: BingoFieldProps) => {
   return (
     <Collapsible trigger="Deine Felder" defaultOpen={true}>
       {fields.map((field, index) => (
-        <div className="list-item">
+        <div key={`bingo-field-list-item${field._id}`} className="list-item">
           <span className="id">{index + 1}: </span>
           <span className="text">{field.text}</span>
         </div>
@@ -221,7 +240,12 @@ const BingoFields = ({ fields }: BingoFieldProps) => {
   );
 };
 
-const BottomInfoBar = ({ field, game, podium, onValidateWin }: BottomInfoBarProps) => {
+const BottomInfoBar = ({
+  field,
+  game,
+  podium,
+  onValidateWin,
+}: BottomInfoBarProps) => {
   const auth = useAuthContext();
   const isWinner = podium?.some(user => user.name === auth.user?.name);
 
@@ -234,11 +258,15 @@ const BottomInfoBar = ({ field, game, podium, onValidateWin }: BottomInfoBarProp
             : 'Es wurde noch kein Feld aufgedeckt'}
         </CardTitle>
       </Card>
-      {game.phase === GamePhase.PLAYING && !isWinner &&
-        <FlatButton className="bingo-button" onClick={onValidateWin} disabled={false}>
+      {game.phase === GamePhase.PLAYING && !isWinner && (
+        <FlatButton
+          className="bingo-button"
+          onClick={onValidateWin}
+          disabled={false}
+        >
           BINGO
         </FlatButton>
-      }
+      )}
     </div>
   );
 };
@@ -256,6 +284,8 @@ const AdminControls = ({
   const uncheckedFields = game.fields.filter(field => !field.checked);
   const checkedFields = game.fields.filter(field => field.checked);
 
+  const trigger = `Bingo Felder (${uncheckedFields.length}/${checkedFields.length})`;
+
   return (
     <Card className="admin-controls">
       <CardHeader>
@@ -266,10 +296,7 @@ const AdminControls = ({
         />
       </CardHeader>
       <CardContent>
-        <Collapsible
-          trigger={`Bingo Felder (${uncheckedFields.length}/${checkedFields.length})`}
-          className="bingo-fields"
-        >
+        <Collapsible trigger={trigger} className="bingo-fields">
           <h2 className="label">
             Nicht aufgedeckte Felder
             <span className="count">({uncheckedFields.length})</span>
@@ -317,14 +344,14 @@ const AdminControls = ({
                 Spiel beenden
               </FlatButton>
             ) : (
-                <FlatButton onClick={onDrawNewField}>Feld aufdecken</FlatButton>
-              )}
+              <FlatButton onClick={onDrawNewField}>Feld aufdecken</FlatButton>
+            )}
           </div>
         ) : (
-            game.phase === GamePhase.OPEN && (
-              <FlatButton onClick={onStartGame}>Spiel Starten</FlatButton>
-            )
-          )}
+          game.phase === GamePhase.OPEN && (
+            <FlatButton onClick={onStartGame}>Spiel Starten</FlatButton>
+          )
+        )}
       </CardActions>
     </Card>
   );

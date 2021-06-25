@@ -1,4 +1,4 @@
-import { BingoGame, GamePhase, UpdateGame } from '@bingo/models';
+import { BingoGame, GamePhase } from '@bingo/models';
 import {
   BaseDialog,
   DialogActions,
@@ -18,11 +18,11 @@ export const StartGameDialog = (dialog: DialogProps<StartGameDialogData>) => {
   const { updateGame } = useGamesContext();
 
   const onStart = async () => {
-    const gameUpdate: UpdateGame = {
+    await updateGame({
       _id: dialog?.data.game._id,
       changes: { phase: GamePhase.PLAYING },
-    };
-    await updateGame(gameUpdate);
+    });
+
     dialog.close();
   };
 

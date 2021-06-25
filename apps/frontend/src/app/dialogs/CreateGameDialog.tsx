@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { faInfoCircle } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { v4 as uuidv4 } from 'uuid';
 import {
   BaseDialog,
   Button,
@@ -16,7 +17,13 @@ import { useGamesContext } from '../hooks';
 export const CreateGameDialog = (props: DialogProps) => {
   const { createGame } = useGamesContext();
   const [title, setTitle] = useState<string>('');
-  const state = useBingoFieldListState();
+  const state = useBingoFieldListState(
+    Array.from({ length: 40 }).map(() => ({
+      _id: uuidv4(),
+      text: 'Field',
+      checked: false,
+    })),
+  );
 
   const validateFieldsLength = state.fields.length < 25;
   const disableSaveButton = validateFieldsLength || !title.trim();
