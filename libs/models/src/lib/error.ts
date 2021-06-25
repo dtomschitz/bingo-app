@@ -27,7 +27,7 @@ export const errorMessages: { [key in ErrorType]: string } = {
   INVALID_PASSWORD_FORMAT:
     'Your password needs a minimum of eight characters, at least one letter, one number and a special character!',
   INVALID_EMAIL_FORMAT: 'Die angegebene E-Mail ist nicht korrekt!',
-  USER_ALREADY_EXISTS: 'Es exsistiert kein Nutzer mit dieser E-Mail!',
+  USER_ALREADY_EXISTS: 'Es exsistiert ein Nutzer mit dieser E-Mail!',
   USER_DOES_NOT_EXIST: 'Es exsistiert kein Nutzer mit dieser ID!',
   USER_CREATION_FAILED: 'Der Nutzer konnte nicht erstellt werden!',
   INVALID_SERIALIZED_JWT_TOKEN: 'The serialization of the jwt is invalid',

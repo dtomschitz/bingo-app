@@ -31,52 +31,37 @@ export const EditProfileDialog = (props: DialogProps) => {
   ) => {
     const email = auth.user?.email;
 
-    if (newName == undefined) newName = auth.user?.name;
-    if (newEmail == undefined) newEmail = auth.user?.email;
-    if (newPassword == undefined) newPassword = password;
-
-    auth
-      .update({ newName, newEmail, newPassword, email, password })
-      .then(res => {
-        console.log(res);
-        if (res) {
-          toast.success('Successfully changed profile!');
-          auth.login(newEmail, newPassword);
-          props.close();
-        } else {
-          toast.error(errorMessages.INCORRECT_PASSWORD);
-        }
-      });
+    if (
+      newName == undefined &&
+      newEmail == undefined &&
+      newPassword == undefined
+    ) {
+      toast.error('Es muss mindestens ein Feld ausgefüllt werden!');
+    } else {
+      if (newName == undefined) newName = auth.user?.name;
+      if (newEmail == undefined) newEmail = auth.user?.email;
+      if (newPassword == undefined) newPassword = password;
+      auth
+        .update({ newName, newEmail, newPassword, email, password })
+        .then(res => {
+          console.log(res);
+          if (res) {
+            toast.success('Profil erfolgreich geändert!');
+            auth.login(newEmail, newPassword);
+            props.close();
+          }
+        });
+    }
   };
 
   const onDeleteUser = (email: string, password: string) => {
-    console.log(email, password);
-
     auth.deleteUser({ email, password }).then(res => {
       if (res) {
         props.close();
         auth.logout();
-        toast.success('Successfully deleted profile!');
+        toast.success('Profil erfolgreich gelöscht!');
       }
     });
-  };
-
-  const onEditUsername = (name: string) => {
-    /*auth.edit({ name, email, password }).then(() => {
-      props.close();
-    });*/
-  };
-
-  const onEditEmail = (nemail: string) => {
-    /*auth.edit({ name, email, password }).then(() => {
-      props.close();
-    });*/
-  };
-
-  const onEditPassword = (password: string) => {
-    /*auth.edit({ name, email, password }).then(() => {
-      props.close();
-    });*/
   };
 
   return (
@@ -93,7 +78,7 @@ export const EditProfileDialog = (props: DialogProps) => {
                     <td>{auth.user?.name}</td>
                   </tr>
                   <tr>
-                    <td className="label">Email </td>
+                    <td className="label">E-Mail </td>
                     <td>{auth.user?.email}</td>
                   </tr>
                 </tbody>
@@ -118,7 +103,7 @@ export const EditProfileDialog = (props: DialogProps) => {
                 placeholder="Neues Passwort"
                 onChange={e => setNewPassword(e.currentTarget.value)}
               />
-            <label>Erforderlich:</label>
+              <label className="label">Erforderlich:</label>
               <input
                 name="password"
                 id="password"
@@ -130,7 +115,7 @@ export const EditProfileDialog = (props: DialogProps) => {
           </CardContent>
           <CardActions className="button-box">
             <FlatButton
-                id="delete-button"
+              id="delete-button"
               disabled={!oldPassword}
               onClick={() => onDeleteUser(auth.user?.email, oldPassword)}
             >
