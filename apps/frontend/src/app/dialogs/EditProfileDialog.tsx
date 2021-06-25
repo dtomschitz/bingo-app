@@ -118,28 +118,11 @@ export const EditProfileDialog = (props: DialogProps) => {
               />
             </div>
           </CardContent>
-          <CardActions className="button-box">
-            <FlatButton
-              id="delete-button"
-              disabled={!oldPassword}
-              onClick={() => onDeleteUser(auth.user?.email, oldPassword)}
-            >
-              Benutzer Löschen
-            </FlatButton>
-            <FlatButton
-              disabled={!oldPassword}
-              onClick={() =>
-                onEditUserData(newName, newEmail, newPassword, oldPassword)
-              }
-            >
-              Speichern
-            </FlatButton>
-          </CardActions>
         </Card>
       </DialogContent>
-      <DialogActions>
+      <DialogActions className="button-box">
         <Button
-          id="delete-button"
+        className="button flat left"
           disabled={!oldPassword}
           onClick={() => onDeleteUser(auth.user?.email, oldPassword)}
         >

@@ -160,6 +160,9 @@ export class AuthService {
   }
 
   async editUser(props: EditUserProps): Promise<Boolean> {
+
+    console.log("edit");
+
     if (!props.newEmail || !props.newName || !props.newPassword) {
       throw new GQLError(ErrorType.INCORRECT_REQUEST);
     }
@@ -169,11 +172,18 @@ export class AuthService {
       throw new GQLError(ErrorType.INVALID_EMAIL_FORMAT);
     }
 
-    if (await this.users.getUserByEmail(email)) {
-      throw new GQLError(ErrorType.USER_ALREADY_EXISTS);
+    if (!ValidationUtils.isPasswordValid(props.newPassword)) {
+      throw new GQLError(ErrorType.INVALID_PASSWORD_FORMAT);
     }
 
-    console.log(props.email);
+    if(email != props.email){
+      if (await this.users.getUserByEmail(email)) {
+        throw new GQLError(ErrorType.USER_ALREADY_EXISTS);
+      }
+    }
+
+
+
 
     const salt = await bcrypt.genSalt(8);
     const crPassword = await bcrypt.hash(props.newPassword, salt);
@@ -185,7 +195,6 @@ export class AuthService {
       password: crPassword,
     };
 
-    console.log(user._id);
     await this.users.editUser(user._id, newUser);
     return true;
   }
