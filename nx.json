@@ -13,7 +13,6 @@
   },
   "projects": {
     "frontend": { "tags": [] },
-    "frontend-e2e": { "tags": [], "implicitDependencies": ["frontend"] },
     "models": { "tags": [] },
     "gql": { "tags": [] }
   }
