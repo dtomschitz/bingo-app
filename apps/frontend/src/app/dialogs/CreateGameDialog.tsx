@@ -18,9 +18,9 @@ export const CreateGameDialog = (props: DialogProps) => {
   const { createGame } = useGamesContext();
   const [title, setTitle] = useState<string>('');
   const state = useBingoFieldListState(
-    Array.from({ length: 40 }).map(() => ({
+    Array.from({ length: 40 }).map((_, index) => ({
       _id: uuidv4(),
-      text: 'Field',
+      text: `Field ${index}`,
       checked: false,
     })),
   );
