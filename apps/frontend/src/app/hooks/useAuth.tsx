@@ -1,16 +1,16 @@
 import { createContext, ReactNode, useContext, useState } from 'react';
 import { ApolloClient, NormalizedCacheObject } from '@apollo/client';
-import { User, AuthResult, RegisterProps, EditUserProps, CreateUserProps, LoginProps } from '@bingo/models';
+import { User, AuthResult, RegisterProps, UpdateUser } from '@bingo/models';
 import {
   REGISTER_USER,
   USER_LOGIN,
   USER_LOGOUT,
   VERIFY_USER,
   UPDATE_USER,
-  DELETE_USER
+  DELETE_USER,
 } from '@bingo/gql';
-import { useDialog } from './useDialog';
 import { DialogState } from '../components/common';
+import { useDialog } from './useDialog';
 
 interface AuthProviderProps {
   children: ReactNode;
@@ -29,8 +29,8 @@ export interface AuthContext {
   register: (props: RegisterProps) => Promise<boolean>;
   logout: () => Promise<boolean>;
   verify: () => Promise<boolean>;
-  update: (props: EditUserProps) => Promise<boolean>;
-  deleteUser: ({email, password}: LoginProps) => Promise<boolean>;
+  updateUser: (update: UpdateUser) => Promise<boolean>;
+  deleteUser: (id: string) => Promise<boolean>;
 }
 
 const context = createContext<AuthContext>({
@@ -45,8 +45,8 @@ const context = createContext<AuthContext>({
   register: undefined,
   logout: undefined,
   verify: undefined,
-  update: undefined,
-  deleteUser: undefined
+  updateUser: undefined,
+  deleteUser: undefined,
 });
 
 export const AuthProvider = ({ children, client }: AuthProviderProps) => {
@@ -84,10 +84,7 @@ export const AuthProvider = ({ children, client }: AuthProviderProps) => {
     return client
       .mutate<{ loginUser: AuthResult }>({
         mutation: USER_LOGIN,
-        variables: {
-          email,
-          password,
-        },
+        variables: { email, password },
         fetchPolicy: 'no-cache',
       })
       .then(result => {
@@ -100,9 +97,7 @@ export const AuthProvider = ({ children, client }: AuthProviderProps) => {
     return client
       .mutate<{ logoutUser: boolean }>({
         mutation: USER_LOGOUT,
-        variables: {
-          email: user.email,
-        },
+        variables: { email: user.email },
         fetchPolicy: 'no-cache',
       })
       .then(() => {
@@ -144,9 +139,7 @@ export const AuthProvider = ({ children, client }: AuthProviderProps) => {
     return client
       .mutate<{ verifyUser: User }>({
         mutation: VERIFY_USER,
-        variables: {
-          refreshToken,
-        },
+        variables: { refreshToken },
         fetchPolicy: 'no-cache',
       })
       .then(result => {
@@ -163,35 +156,31 @@ export const AuthProvider = ({ children, client }: AuthProviderProps) => {
       });
   };
 
-  const update = ({newName, newEmail, newPassword, email, password}: EditUserProps) => {
+  const updateUser = (update: UpdateUser) => {
     return client
-      .mutate<{ updateUser: boolean }>({
+      .mutate<{ updateUser: User }>({
         mutation: UPDATE_USER,
-        variables: {
-          newName, newEmail, newPassword, email, password
-        },
-        fetchPolicy: 'no-cache',
+        variables: { update },
       })
       .then(result => {
+        setUser(result.data.updateUser);
         return true;
       })
       .catch(() => false);
-  }
-  
-  const deleteUser = ({email, password}: LoginProps) => {
+  };
+
+  const deleteUser = (id: string) => {
     return client
       .mutate<{ deleteUser: boolean }>({
         mutation: DELETE_USER,
-        variables: {
-          email, password
-        },
-        fetchPolicy: 'no-cache',
+        variables: { id },
       })
-      .then(result => {
+      .then(() => {
+        resetAuthContext();
         return true;
       })
       .catch(() => false);
-  }
+  };
 
   return (
     <context.Provider
@@ -207,8 +196,8 @@ export const AuthProvider = ({ children, client }: AuthProviderProps) => {
         logout,
         register,
         verify,
-        update,
-        deleteUser
+        updateUser,
+        deleteUser,
       }}
     >
       {children}

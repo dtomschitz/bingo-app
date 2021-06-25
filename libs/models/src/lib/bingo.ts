@@ -27,12 +27,6 @@ export interface Podium {
   placement: number;
 }
 
-enum Placement {
-  first,
-  second,
-  third,
-}
-
 export interface BingoCardState {
   fields: BingoInstanceField[];
   score: number;

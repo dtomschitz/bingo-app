@@ -1,9 +1,10 @@
-import { AuthService, GameService } from "../service/index.ts";
-import { authMutations, gameMutations } from "./mutations.ts";
-import { gameQueries } from "./queries.ts";
+import { AuthService, UserService, GameService } from '../service/index.ts';
+import { authMutations, userMutations, gameMutations } from './mutations.ts';
+import { gameQueries } from './queries.ts';
 
 export const resolvers = (
   authService: AuthService,
+  userService: UserService,
   gameService: GameService,
 ) => {
   return {
@@ -12,6 +13,7 @@ export const resolvers = (
     },
     Mutation: {
       ...authMutations(authService),
+      ...userMutations(userService),
       ...gameMutations(gameService),
     },
   };

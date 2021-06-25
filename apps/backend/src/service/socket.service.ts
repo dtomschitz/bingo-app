@@ -1,9 +1,16 @@
-import { isWebSocketCloseEvent, WebSocket } from "../deps.ts";
-import { GameEvent, GameEventType, Player, User, Podium } from "../models.ts";
-import { Utils } from "../utils/utils.ts";
-import { GameDatabase } from "../database/index.ts";
-import { GameSchema } from "../schema/index.ts";
-import { GamePhase } from "../../../../libs/models/src/lib/bingo.ts"
+import { isWebSocketCloseEvent, WebSocket } from '../deps.ts';
+import {
+  GameEvent,
+  GameEventType,
+  Player,
+  User,
+  Podium,
+  GamePhase,
+} from '../models.ts';
+import { Utils } from '../utils/utils.ts';
+import { GameDatabase } from '../database/index.ts';
+import { GameSchema } from '../schema/index.ts';
+
 export class SocketService {
   private sessions: Map<string, Set<WebSocket>> = new Map();
   private players: Map<string, Set<Player>> = new Map();
@@ -17,7 +24,7 @@ export class SocketService {
         continue;
       }
 
-      if (typeof e === "string") {
+      if (typeof e === 'string') {
         const event = JSON.parse(e) as GameEvent;
         const game = await this.games.getGame(event.id);
 
@@ -111,8 +118,12 @@ export class SocketService {
     });
   }
 
-  private async handleDrawFieldEvent(socket: WebSocket, event: GameEvent, game: GameSchema) {
-    const uncheckedFields = game.fields.filter((field) => !field.checked);
+  private async handleDrawFieldEvent(
+    socket: WebSocket,
+    event: GameEvent,
+    game: GameSchema,
+  ) {
+    const uncheckedFields = game.fields.filter(field => !field.checked);
     if (uncheckedFields.length === 0) {
       this.sendEvent(socket, GameEventType.NO_MORE_FIELDS);
       return;
@@ -122,7 +133,7 @@ export class SocketService {
     const randomField = uncheckedFields[random];
 
     await this.games.updateGame(game._id, {
-      fields: game.fields.map((field) => {
+      fields: game.fields.map(field => {
         return field._id === randomField._id
           ? { ...field, checked: true }
           : field;
@@ -145,7 +156,7 @@ export class SocketService {
       return;
     }
 
-    await this.games.updateGame(game._id, { phase: GamePhase.FINISHED },);
+    await this.games.updateGame(game._id, { phase: GamePhase.FINISHED });
     this.brodcast(sockets, GameEventType.GAME_CLOSED);
   }
 
@@ -155,37 +166,55 @@ export class SocketService {
       return;
     }
 
-    await this.games.updateGame(game._id, { phase: GamePhase.PLAYING },);
+    await this.games.updateGame(game._id, { phase: GamePhase.PLAYING });
     this.brodcast(sockets, GameEventType.GAME_STARTED);
   }
 
-  private async handleWinnerEvent(event: GameEvent, game: GameSchema, user: User){
+  private async handleWinnerEvent(
+    event: GameEvent,
+    game: GameSchema,
+    user: User,
+  ) {
     const sockets = this.sessions.get(event.id);
     if (!sockets) {
       return;
     }
 
-    if(!game?.winners?.includes(user._id.toString())){
+    if (!game?.winners?.includes(user._id.toString())) {
       return;
     }
 
     let isDuplicate = false;
 
-    if(game?.podium){
+    if (game?.podium) {
       const userEntries = game?.podium?.filter((winner: Podium) => {
-        return winner.userId.toString() === user._id.toString()
+        return winner.userId.toString() === user._id.toString();
       });
-      if(userEntries.length > 0){
+      if (userEntries.length > 0) {
         isDuplicate = true;
       }
     }
 
-    if(isDuplicate){
+    if (isDuplicate) {
       return;
     }
 
-    await this.games.updateGame(game._id, { podium: game?.podium ? [...game.podium, { userId: user._id, name: user.name, placement: game.podium.length + 1 }] : [{ userId: user._id, name: user.name, placement: 1 }] },);
-    this.brodcast(sockets, GameEventType.NEW_WINNER, { player: user.name, placement: game?.podium ? game.podium.length + 1 : 1});
+    await this.games.updateGame(game._id, {
+      podium: game?.podium
+        ? [
+            ...game.podium,
+            {
+              userId: user._id,
+              name: user.name,
+              placement: game.podium.length + 1,
+            },
+          ]
+        : [{ userId: user._id, name: user.name, placement: 1 }],
+    });
+    this.brodcast(sockets, GameEventType.NEW_WINNER, {
+      player: user.name,
+      placement: game?.podium ? game.podium.length + 1 : 1,
+    });
   }
 
   private sendEvent<T>(socket: WebSocket, type: GameEventType, data?: T) {

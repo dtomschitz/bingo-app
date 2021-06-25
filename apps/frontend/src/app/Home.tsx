@@ -16,7 +16,7 @@ import {
   ModifyGameTitleDialogData,
   OpenGameDialogData,
 } from './dialogs';
-import { OpenGameDialog } from './dialogs/OpenGameDialog';
+import { OpenGameDialog } from './dialogs';
 import { useAuthContext, useDialog, useGamesContext } from './hooks';
 
 interface GamesListProps {

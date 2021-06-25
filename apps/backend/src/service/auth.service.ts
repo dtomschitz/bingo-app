@@ -1,12 +1,12 @@
 import { UserDatabase } from "../database/index.ts";
 import { JwtUtils, ValidationUtils } from "../utils/index.ts";
 import { bcrypt, GQLError } from "../deps.ts";
-import { AuthResult, CreateUserProps, EditUserProps, ErrorType } from "../models.ts";
+import { CreateUserProps, ErrorType } from "../models.ts";
 
 export class AuthService {
   constructor(private users: UserDatabase) {}
 
-  async registerUser(props: CreateUserProps): Promise<AuthResult> {
+  async registerUser(props: CreateUserProps) {
     if (!props.email || !props.name || !props.password) {
       throw new GQLError(ErrorType.INCORRECT_REQUEST);
     }
@@ -33,7 +33,7 @@ export class AuthService {
     }
 
     const { accessToken, refreshToken } = await JwtUtils.generateTokens({
-      _id: user._id,
+      _id: user._id.toHexString(),
       email: user.email,
     });
 
@@ -46,12 +46,6 @@ export class AuthService {
     };
   }
 
-  /**
-   * Logs the `User` in and generates the authentication tokens which are required
-   * for most of the endpoints. In the first step, the credentials are validated.
-   * The authentication tokens are only generated if these are correct and belong
-   * to a `User`.
-   */
   async loginUser(email: string, password: string) {
     if (!email || !password) {
       throw new GQLError(ErrorType.INCORRECT_REQUEST);
@@ -68,7 +62,7 @@ export class AuthService {
 
     const user = await this.validateUser(email, password);
     const { accessToken, refreshToken } = await JwtUtils.generateTokens({
-      _id: user._id,
+      _id: user._id.toHexString(),
       email: user.email,
     });
 
@@ -95,9 +89,7 @@ export class AuthService {
 
     return true;
   }
-  /**
-   * Refreshes the access token for the `User` with the given refresh token.
-   */
+
   async verifyUser(refreshToken: string) {
     if (!refreshToken) {
       throw new GQLError(ErrorType.INCORRECT_REQUEST);
@@ -117,9 +109,6 @@ export class AuthService {
     return user;
   }
 
-  /**
-   * Refreshes the access token for the `User` with the given refresh token.
-   */
   async refreshAccessToken(refreshToken: string) {
     if (!refreshToken) {
       throw new GQLError(ErrorType.INCORRECT_REQUEST);
@@ -138,13 +127,6 @@ export class AuthService {
     });
   }
 
-  /**
-   * Validates the given credentials and looks for an `User` who is associated
-   * with the email.
-   *
-   * @param email The email of the `User`.
-   * @param password The password of the `User`.
-   */
   async validateUser(email: string, password: string) {
     const user = await this.users.getUserByEmail(email);
     if (!user) {
@@ -157,52 +139,5 @@ export class AuthService {
     }
 
     return user;
-  }
-
-  async editUser(props: EditUserProps): Promise<Boolean> {
-
-    console.log("edit");
-
-    if (!props.newEmail || !props.newName || !props.newPassword) {
-      throw new GQLError(ErrorType.INCORRECT_REQUEST);
-    }
-
-    const email = props.newEmail.toLowerCase();
-    if (!ValidationUtils.isEmailValid(email)) {
-      throw new GQLError(ErrorType.INVALID_EMAIL_FORMAT);
-    }
-
-    if (!ValidationUtils.isPasswordValid(props.newPassword)) {
-      throw new GQLError(ErrorType.INVALID_PASSWORD_FORMAT);
-    }
-
-    if(email != props.email){
-      if (await this.users.getUserByEmail(email)) {
-        throw new GQLError(ErrorType.USER_ALREADY_EXISTS);
-      }
-    }
-
-
-
-
-    const salt = await bcrypt.genSalt(8);
-    const crPassword = await bcrypt.hash(props.newPassword, salt);
-    const user = await this.validateUser(props.email, props.password);
-
-    const newUser = {
-      name: props.newName,
-      email: props.newEmail,
-      password: crPassword,
-    };
-
-    await this.users.editUser(user._id, newUser);
-    return true;
-  }
-
-  async deleteUser(email: string, password: string): Promise<Boolean> {
-    console.log('delete');
-    const user = await this.validateUser(email, password);
-    await this.users.deleteUser(user._id);
-    return true;
   }
 }

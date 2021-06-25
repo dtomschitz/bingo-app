@@ -5,7 +5,6 @@ import {
   CreateGame,
   UpdateGame,
   FieldMutations,
-  BingoField,
 } from '@bingo/models';
 import {
   GET_GAMES,
@@ -23,7 +22,6 @@ interface GamesProviderProps {
 
 interface GamesContext {
   games: BingoGame[];
-  loading: boolean;
   loadGames: () => void;
   createGame: (props: CreateGame) => Promise<boolean>;
   updateGame: (update: UpdateGame) => Promise<boolean>;
@@ -34,7 +32,6 @@ interface GamesContext {
 
 const context = createContext<GamesContext>({
   games: [],
-  loading: false,
   loadGames: undefined,
   createGame: undefined,
   updateGame: undefined,
@@ -45,7 +42,6 @@ const context = createContext<GamesContext>({
 
 export const GamesProvider = ({ children, client }: GamesProviderProps) => {
   const [games, setGames] = useState<BingoGame[]>([]);
-  const [loading, setLoading] = useState<boolean>(false);
 
   const loadGames = () => {
     client
@@ -78,17 +74,13 @@ export const GamesProvider = ({ children, client }: GamesProviderProps) => {
     return client
       .mutate<{ game: BingoGame[] }>({
         mutation: UPDATE_GAME,
-        variables: {
-          update,
-        },
+        variables: { update },
       })
       .then(() => {
         loadGames();
         return true;
       })
-      .catch(e => {
-        return false;
-      });
+      .catch(() => false);
   };
 
   const deleteGame = (id: string) => {
@@ -130,17 +122,13 @@ export const GamesProvider = ({ children, client }: GamesProviderProps) => {
         loadGames();
         return result.data.mutateField;
       })
-      .catch(e => {
-        console.log(e);
-        return false;
-      });
+      .catch(() => false);
   };
 
   return (
     <context.Provider
       value={{
         games,
-        loading,
         loadGames,
         createGame,
         updateGame,

@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import { Switch, Route, RouteProps, Link, Redirect } from 'react-router-dom';
 import { useMediaQuery } from 'react-responsive';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
-  faCartPlus,
   faEllipsisV,
   faPlus,
   faSignOutAlt,
@@ -17,11 +17,9 @@ import {
   ProgressBar,
 } from './components/common';
 import { AppBarProvider, useAppBar, useAuthContext, useDialog } from './hooks';
-import { AuthDialog, CreateGameDialog, EditProfileDialog } from './dialogs';
+import { AuthDialog, CreateGameDialog, EditAccountDialog } from './dialogs';
 import Game from './Game';
 import Home from './Home';
-import { BingoGameContextMenu } from './components/bingo';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 interface AppBarProps {
   elevated: boolean;
@@ -87,7 +85,7 @@ const App = () => {
       <DialogContainer />
       <AuthDialog {...auth.dialog} />
       <CreateGameDialog {...createGameDialog} />
-      <EditProfileDialog {...editProfileDialog} />
+      <EditAccountDialog {...editProfileDialog} />
     </AppBarProvider>
   );
 };
@@ -155,7 +153,7 @@ export const AppContextMenu = ({
     <Menu menuButton={<IconButton icon={faEllipsisV} />}>
       <MenuItem onClick={onEditProfile}>
         <FontAwesomeIcon icon={faUser} />
-        Nutzer bearbeiten
+        Account bearbeiten
       </MenuItem>
       <MenuItem onClick={onLogout}>
         <FontAwesomeIcon icon={faSignOutAlt} />

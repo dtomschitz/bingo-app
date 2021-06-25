@@ -104,20 +104,21 @@ export const UPDATE_GAME = gql`
   }
 `;
 
-export const DELETE_USER = gql`
-  mutation DeleteUser($email: String!, $password: String!) {
-    deleteUser(email: $email, password: $password)
-  }
-`;
-
-
 export const UPDATE_USER = gql`
-  mutation UpdateUser($newName: String!, $newEmail: String!, $newPassword: String!, $email: String!, $password: String!) {
-    updateUser(props: { newName: $newName, newEmail: $newEmail, newPassword: $newPassword, email: $email, password: $password })
+  mutation UpdateUser($update: UpdateUser!) {
+    updateUser(props: $update) {
+      _id
+      name
+      email
+    }
   }
 `;
 
-
+export const DELETE_USER = gql`
+  mutation DeleteUser($id: ID!) {
+    deleteUser(_id: $id)
+  }
+`;
 
 export const DELETE_GAME = gql`
   mutation DeleteGame($id: ID!) {

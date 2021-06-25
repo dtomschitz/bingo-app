@@ -1,67 +1,46 @@
-.edit {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    max-width: 360px;
-    width: 100%;
-  
-    input {
-      width: 100%;
-      margin-bottom: 16px;
+.edit-profile-dialog {
+  width: 360px;
+
+  .editable-input-field-container {
+    margin-bottom: 16px;
+
+    &:last-of-type {
+      margin-bottom: 32px;
+    }
+
+    .actions {
+      margin-left: 0;
+
+      button {
+        &:first-of-type {
+          margin-left: 16px;
+        }
+      }
     }
   }
 
-.input-fields{
-  :last-child{
-    margin-top: 16px;
+  .user-details {
+    margin-bottom: 32px;
+
+    .detail {
+      display: flex;
+      align-items: center;
+      height: 46px;
+
+      svg {
+        width: 22px;
+        height: 22px;
+      }
+
+      span {
+        margin-left: 16px;
+        font-weight: 500;
+        font-size: 16px;
+      }
+    }
   }
 
-  label{
-    font-size: medium;
-  }
-
-}
-
-.user-display{
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  max-width: 360px;
-  width: 100%;
-  margin-bottom: 20px;
-
-  table{
-    font-size: medium;
+  .delete-account {
     width: 100%;
   }
-
-  td{
-    vertical-align: middle;
-    margin:0;
-    padding: 10px;
-    border-bottom: 1px solid #e69eff;
-  }
-}
-
-.label{
-  color: #bbbbbb;
-}
-
-
-.button-box{
-  display:flex;
-  justify-content:flex-end;
-}
-
-.dialog-actions-container{
-  display: block;
-}
-
-.card-content{
-  margin-bottom: 0;
-}
-
-.left{
-  margin-left: 0;
-  margin-right:auto;
 }

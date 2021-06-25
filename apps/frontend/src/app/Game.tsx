@@ -178,7 +178,7 @@ const Game = (props: RouteComponentProps<GameProps>) => {
   };
 
   const onStartGame = () => sendEvent(GameEventType.START_GAME);
-  
+
   const onWin = () => sendEvent(GameEventType.ON_WIN);
 
   const onValidateWin = async () => {

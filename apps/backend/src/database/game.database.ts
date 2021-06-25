@@ -13,8 +13,8 @@ export class GameDatabase {
     return this.collection.find().toArray();
   }
 
-  async getGame(id: string | Document) {
-    return await this.collection.findOne({ _id: new Bson.ObjectId(id) });
+  getGame(id: string | Document) {
+    return this.collection.findOne({ _id: new Bson.ObjectId(id) });
   }
 
   async createGame(game: Omit<GameSchema, "_id">) {

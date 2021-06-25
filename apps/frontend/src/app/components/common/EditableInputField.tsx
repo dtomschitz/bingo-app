@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { IconButton } from './Button';
 
 interface EditableInputFieldProps {
-  initialValue: string;
+  initialValue?: string;
   placeholder?: string;
   onUpdate?: (value: string) => boolean | Promise<boolean>;
   onDelete?: () => void;
@@ -15,7 +15,7 @@ export const EditableInputField = ({
   onUpdate,
   onDelete,
 }: EditableInputFieldProps) => {
-  const [value, setValue] = useState(initialValue);
+  const [value, setValue] = useState(initialValue ?? '');
   const [editMode, setEditMode] = useState(false);
 
   const onChange = (value: string) => {
