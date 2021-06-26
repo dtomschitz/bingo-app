@@ -83,9 +83,12 @@ export const createContext = async (
     return {
       ...context,
       authenticated: true,
-      user
-    };
-  } catch {
+      user: {
+        ...user,
+        _id: user._id.toHexString(),
+      }
+    } as BaseContext;
+  } catch {        
     return context;
   }
 };

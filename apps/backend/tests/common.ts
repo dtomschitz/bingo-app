@@ -1,11 +1,6 @@
-import {
-  assertThrowsAsync,
-  GQLError,
-  it,
-  v4,
-} from './test.deps.ts';
+import { assertThrowsAsync, GQLError, it, v4 } from './test.deps.ts';
 import { Application, State, ServerRequest } from '../src/deps.ts';
-import { BingoField, ErrorType, User } from '../src/models.ts';
+import { BingoField, ErrorType, User, CreateUserProps } from '../src/models.ts';
 import { Database } from '../src/database/index.ts';
 
 export const defaultUser: User = {
@@ -13,6 +8,12 @@ export const defaultUser: User = {
   email: 'test@test.de',
   name: 'Max Mustermann',
   password: 'SuperSicheresPasswort#1337###',
+};
+
+export const defaultRegisterProps: CreateUserProps = {
+  email: 'test@test.de',
+  name: 'Max Mustermann',
+  password: 'SuperSicheresPasswort#1337#%',
 };
 
 export const createMockApp = <S extends State = Record<string, any>>(

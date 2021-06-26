@@ -24,17 +24,14 @@ export class UserDatabase {
   };
 
   updateUser = async (_id: Bson.ObjectId, changes: Partial<UserSchema>) => {
-    await this.collection.updateOne(
-      { _id },
-      { $set: changes },
-    );
+    await this.collection.updateOne({ _id }, { $set: changes });
 
     return this.getUser(_id);
   };
 
   deleteUser = async (_id: Bson.ObjectId) => {
     await this.collection.deleteOne({ _id });
-    return !this.getUser(_id);
+    return !(await this.getUser(_id));
   };
 
   clear = () => {
