@@ -9,6 +9,8 @@
 - [Getting Started](#Getting-Started)
 - [Project Structure](#Project-Structure)
 - [Tests](#Tests)
+- [Migrations](#Migrations)
+- [CI/CD](#CI/CD)
 - [Common Commands](#Common-Commands)
   - [Backend](#Backend)
   - [Frontend](#Frontend)
@@ -27,7 +29,7 @@
 
 ## Locally
 
-In order to run the different apps the repository obvisously needs to get clone and the required packages must be installed via `npm install`. Besides that [Docker](https://www.docker.com/), [Deno](https://deno.land/) and [NodeJS](https://nodejs.org/) are required in order to start the MongoDB, the backend and the frontend. For more detailed informations about how to start the frontend and backend take a look into the [Common Commands](#Common-Commands) section.
+In order to run the different apps the repository obvisously needs to get clone and the required packages must be installed via `npm install`. Besides that [MongoDB](https://www.mongodb.com/), [Deno](https://deno.land/) and [NodeJS](https://nodejs.org/) are required in order to start the backend and frontend.
 
 ```bash
 $ git clone git@gitlab.mi.hdm-stuttgart.de:mwa/ss21/saturn.git
@@ -40,7 +42,9 @@ $ npm install -g nx
 
 ## Docker
 
-Further more the whole project can be started and run with `docker-compose up` which should be the preferred way to the run the whole project. This elimates the requirement to install the node modules locally as well as the global [Nrwl Nx](https://nx.dev/), [Deno](https://deno.land/) and [NodeJS](https://nodejs.org/) installation.
+Further more the whole project can be started and run with `docker-compose up` which should be the preferred way to the run the whole project. This elimates the requirement to install the node modules locally as well as the global [Nrwl Nx](https://nx.dev/), [Deno](https://deno.land/), [MongoDB](https://www.mongodb.com/) and [NodeJS](https://nodejs.org/) installation.
+
+**For more detailed informations about how to start the frontend and backend take a look into the [Common Commands](#Common-Commands) section.**
 
 # Project Structure
 
@@ -54,26 +58,25 @@ The entire project is divided into different folders to ensure a generally clear
 
 In the final state of the project, there are unit and integration tests for the backend and frontend. Those can be started either locally via `npm run backend:test` or `npm run frontend:test` or in a docker container by executing `docker-compose run backend ./test.sh` or `docker-compose run frontend ./test.sh`.
 
+# Migrations
+
+In order to create persistent migrations for our database, we used [migrate-mongo](https://github.com/seppevs/migrate-mongo) which is a migration tool for [MongoDB](https://www.mongodb.com/). The tool is installed if the `$ npm install` command has been run earlier. With the intention to migrate between the different migrations inside the `tools/migrations` folder, the commands `$ npm run database:migrate:up` and `$ npm run database:migrate:down` can be used. The former command can be used to run every migration that wasn`t already applyied to the database. On the opposite, the command `database:migrate:down` will only roll back the last applied migration.
+
 # CI/CD
 
 # Common Commands
 
-## Backend
-
-| Name            | Description                                    |
-| --------------- | ---------------------------------------------- |
-| _backend:start_ | Starts the backend in development mode         |
-| _backend:test_  | Runs the tests for the backend                 |
-| _backend:cache_ | Downloads and caches the required Deno modules |
-| _backend:lint_  | Lints the backend                              |
-
-## Frontend
-
-| Name             | Description                             |
-| ---------------- | --------------------------------------- |
-| _frontend:start_ | Starts the frontend in development mode |
-| _frontend:test_  | Runs the tests for the frontend         |
-| _frontend:lint_  | Lints the frontend                      |
+| Name                    | Description                                                      |
+| ----------------------- | ---------------------------------------------------------------- |
+| _backend:start_         | Starts the backend in development mode                           |
+| _backend:test_          | Runs the tests for the backend                                   |
+| _backend:cache_         | Downloads and caches the required Deno modules                   |
+| _backend:lint_          | Lints the backend                                                |
+| _frontend:start_        | Starts the frontend in development mode                          |
+| _frontend:test_         | Runs the tests for the frontend                                  |
+| _frontend:lint_         | Lints the frontend                                               |
+| _database:migrate:up_   | Runs every migration that wasn't already applyied to the databse |
+| _database:migrate:down_ | Rolls back the latest applyied migration                         |
 
 # Screenshots
 
