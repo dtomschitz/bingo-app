@@ -3,6 +3,7 @@ import * as ReactDOM from 'react-dom';
 import { BrowserRouter } from 'react-router-dom';
 import toast, { Toaster } from 'react-hot-toast';
 import {
+  gql,
   ApolloClient,
   ApolloProvider,
   createHttpLink,
@@ -26,10 +27,8 @@ import '@szhsin/react-menu/dist/index.css';
 
 const refreshAccessToken = async (refreshToken: string) => {
   const result = await client.mutate<{ refreshAccessToken: string }>({
-    mutation: REFRESH_ACCESS_TOKEN,
-    variables: {
-      refreshToken,
-    },
+    mutation: gql(REFRESH_ACCESS_TOKEN),
+    variables: { refreshToken },
     fetchPolicy: 'no-cache',
   });
 

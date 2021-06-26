@@ -1,5 +1,5 @@
 import { createContext, ReactNode, useContext, useState } from 'react';
-import { ApolloClient, NormalizedCacheObject } from '@apollo/client';
+import { gql, ApolloClient, NormalizedCacheObject } from '@apollo/client';
 import { User, AuthResult, RegisterProps, UpdateUser } from '@bingo/models';
 import {
   REGISTER_USER,
@@ -83,7 +83,7 @@ export const AuthProvider = ({ children, client }: AuthProviderProps) => {
   const login = (email: string, password: string) => {
     return client
       .mutate<{ loginUser: AuthResult }>({
-        mutation: USER_LOGIN,
+        mutation: gql(USER_LOGIN),
         variables: { email, password },
         fetchPolicy: 'no-cache',
       })
@@ -96,7 +96,7 @@ export const AuthProvider = ({ children, client }: AuthProviderProps) => {
   const logout = () => {
     return client
       .mutate<{ logoutUser: boolean }>({
-        mutation: USER_LOGOUT,
+        mutation: gql(USER_LOGOUT),
         variables: { email: user.email },
         fetchPolicy: 'no-cache',
       })
@@ -113,7 +113,7 @@ export const AuthProvider = ({ children, client }: AuthProviderProps) => {
   const register = ({ name, email, password }: RegisterProps) => {
     return client
       .mutate<{ registerUser: AuthResult }>({
-        mutation: REGISTER_USER,
+        mutation: gql(REGISTER_USER),
         variables: {
           name,
           email,
@@ -138,7 +138,7 @@ export const AuthProvider = ({ children, client }: AuthProviderProps) => {
 
     return client
       .mutate<{ verifyUser: User }>({
-        mutation: VERIFY_USER,
+        mutation: gql(VERIFY_USER),
         variables: { refreshToken },
         fetchPolicy: 'no-cache',
       })
@@ -159,7 +159,7 @@ export const AuthProvider = ({ children, client }: AuthProviderProps) => {
   const updateUser = (update: UpdateUser) => {
     return client
       .mutate<{ updateUser: User }>({
-        mutation: UPDATE_USER,
+        mutation: gql(UPDATE_USER),
         variables: { update },
       })
       .then(result => {
@@ -172,7 +172,7 @@ export const AuthProvider = ({ children, client }: AuthProviderProps) => {
   const deleteUser = (id: string) => {
     return client
       .mutate<{ deleteUser: boolean }>({
-        mutation: DELETE_USER,
+        mutation: gql(DELETE_USER),
         variables: { id },
       })
       .then(() => {

@@ -1,10 +1,11 @@
 import { createContext, ReactNode, useContext, useState } from 'react';
-import { ApolloClient, NormalizedCacheObject } from '@apollo/client';
+import { gql, ApolloClient, NormalizedCacheObject } from '@apollo/client';
 import {
   BingoGame,
   CreateGame,
   UpdateGame,
   FieldMutations,
+  GamePhase,
 } from '@bingo/models';
 import {
   GET_GAMES,
@@ -23,9 +24,9 @@ interface GamesProviderProps {
 interface GamesContext {
   games: BingoGame[];
   loadGames: () => void;
-  createGame: (props: CreateGame) => Promise<boolean>;
-  updateGame: (update: UpdateGame) => Promise<boolean>;
-  deleteGame: (id: string) => Promise<boolean>;
+  createGame: (props: CreateGame) => Promise<void>;
+  updateGame: (update: UpdateGame) => Promise<void>;
+  deleteGame: (id: string) => Promise<void>;
   mutateField: (id: string, mutation: FieldMutations) => Promise<boolean>;
   validateWin: (id: string, fieldIds: string[]) => Promise<boolean>;
 }
@@ -46,7 +47,7 @@ export const GamesProvider = ({ children, client }: GamesProviderProps) => {
   const loadGames = () => {
     client
       .watchQuery<{ games: BingoGame[] }>({
-        query: GET_GAMES,
+        query: gql(GET_GAMES),
         pollInterval: 1500,
       })
       .subscribe(result => {
@@ -54,75 +55,56 @@ export const GamesProvider = ({ children, client }: GamesProviderProps) => {
       });
   };
 
-  const createGame = ({ title, fields }: CreateGame) => {
-    return client
-      .mutate<{ game: BingoGame[] }>({
-        mutation: CREATE_GAME,
-        variables: {
-          title,
-          fields,
-          phase: 'editing',
-        },
-      })
-      .then(() => {
-        loadGames();
-        return true;
-      });
+  const createGame = async ({ title, fields }: CreateGame) => {
+    await client.mutate<{ game: BingoGame[] }>({
+      mutation: gql(CREATE_GAME),
+      variables: {
+        title,
+        fields,
+        phase: GamePhase.EDITING,
+      },
+    });
   };
 
-  const updateGame = (update: UpdateGame) => {
-    return client
-      .mutate<{ game: BingoGame[] }>({
-        mutation: UPDATE_GAME,
-        variables: { update },
-      })
-      .then(() => {
-        loadGames();
-        return true;
-      })
-      .catch(() => false);
+  const updateGame = async (update: UpdateGame) => {
+    await client.mutate<{ game: BingoGame[] }>({
+      mutation: gql(UPDATE_GAME),
+      variables: { update },
+    });
   };
 
-  const deleteGame = (id: string) => {
-    return client
-      .mutate<{ deleteGame: boolean }>({
-        mutation: DELETE_GAME,
-        variables: { id },
-      })
-      .then(() => {
-        loadGames();
-        return true;
-      })
-      .catch(() => false);
+  const deleteGame = async (id: string) => {
+    await client.mutate<{ deleteGame: boolean }>({
+      mutation: gql(DELETE_GAME),
+      variables: { id },
+    });
   };
 
-  const validateWin = (id: string, fieldIds: string[]) => {
-    return client
-      .query<{ validateGame: boolean }>({
-        query: VALIDATE_WIN,
+  const validateWin = async (id: string, fieldIds: string[]) => {
+    try {
+      const result = await client.query<{ validateWin: boolean }>({
+        query: gql(VALIDATE_WIN),
         variables: {
           id,
           fieldIds,
         },
-      })
-      .then((res: any) => {
-        loadGames();
-        return res.data?.validateWin;
-      })
-      .catch(() => false);
+      });
+      return result.data.validateWin;
+    } catch {
+      return false;
+    }
   };
 
-  const mutateField = (id: string, mutation: FieldMutations) => {
-    return client
-      .mutate<{ mutateField: boolean }>({
-        mutation: MUTATE_FIELD,
+  const mutateField = async (id: string, mutation: FieldMutations) => {
+    try {
+      const result = await client.mutate<{ mutateField: boolean }>({
+        mutation: gql(MUTATE_FIELD),
         variables: { id, mutation },
-      })
-      .then(result => {
-        loadGames();
-        return result.data.mutateField;
-      })
-      .catch(() => false);
+      });
+      return result.data.mutateField;
+    } catch {
+      return false;
+    }
   };
 
   return (

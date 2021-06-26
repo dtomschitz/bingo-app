@@ -25,7 +25,7 @@ export const CloseGameDialog = (dialog: DialogProps<CloseGameDialogData>) => {
     };
     await updateGame(gameUpdate);
 
-    dialog.data?.onClose();
+    if (dialog.data?.onClose) dialog.data?.onClose();
     dialog.close();
   };
 

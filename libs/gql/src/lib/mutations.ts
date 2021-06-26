@@ -1,6 +1,4 @@
-import { gql } from '@apollo/client';
-
-export const USER_LOGIN = gql`
+export const USER_LOGIN = `
   mutation UserLogin($email: String!, $password: String!) {
     loginUser(email: $email, password: $password) {
       user {
@@ -14,15 +12,13 @@ export const USER_LOGIN = gql`
   }
 `;
 
-export const USER_LOGOUT = gql`
+export const USER_LOGOUT = `
   mutation UserLogout($email: String!) {
-    logoutUser(email: $email) {
-      success
-    }
+    logoutUser(email: $email)
   }
 `;
 
-export const REGISTER_USER = gql`
+export const REGISTER_USER = `
   mutation UserRegister($name: String!, $email: String!, $password: String!) {
     registerUser(props: { name: $name, email: $email, password: $password }) {
       user {
@@ -36,7 +32,7 @@ export const REGISTER_USER = gql`
   }
 `;
 
-export const VERIFY_USER = gql`
+export const VERIFY_USER = `
   mutation VerifyUser($refreshToken: String!) {
     verifyUser(refreshToken: $refreshToken) {
       _id
@@ -46,13 +42,13 @@ export const VERIFY_USER = gql`
   }
 `;
 
-export const REFRESH_ACCESS_TOKEN = gql`
+export const REFRESH_ACCESS_TOKEN = `
   mutation RefreshAccessToken($refreshToken: String!) {
     refreshAccessToken(refreshToken: $refreshToken)
   }
 `;
 
-export const CREATE_GAME = gql`
+export const CREATE_GAME = `
   mutation CreateGame($title: String!, $fields: [String!]!) {
     createGame(props: { title: $title, fields: $fields }) {
       _id
@@ -67,7 +63,7 @@ export const CREATE_GAME = gql`
   }
 `;
 
-export const CREATE_GAME_INSTANCE = gql`
+export const CREATE_GAME_INSTANCE = `
   mutation CreateGameInstance($id: ID!) {
     createGameInstance(_id: $id) {
       _id
@@ -88,7 +84,7 @@ export const CREATE_GAME_INSTANCE = gql`
   }
 `;
 
-export const UPDATE_GAME = gql`
+export const UPDATE_GAME = `
   mutation UpdateGame($update: UpdateGame!) {
     updateGame(props: $update) {
       _id
@@ -104,7 +100,7 @@ export const UPDATE_GAME = gql`
   }
 `;
 
-export const UPDATE_USER = gql`
+export const UPDATE_USER = `
   mutation UpdateUser($update: UpdateUser!) {
     updateUser(props: $update) {
       _id
@@ -114,28 +110,20 @@ export const UPDATE_USER = gql`
   }
 `;
 
-export const DELETE_USER = gql`
+export const DELETE_USER = `
   mutation DeleteUser($id: ID!) {
     deleteUser(_id: $id)
   }
 `;
 
-export const DELETE_GAME = gql`
+export const DELETE_GAME = `
   mutation DeleteGame($id: ID!) {
     deleteGame(_id: $id)
   }
 `;
 
-export const MUTATE_FIELD = gql`
+export const MUTATE_FIELD = `
   mutation MutateField($id: ID!, $mutation: MutateField!) {
     mutateField(props: { _id: $id, mutation: $mutation })
-  }
-`;
-
-export const UPDATE_TITLE = gql`
-  mutation Title($id: ID!, $title: String!) {
-    title(_id: $id, title: $title) {
-      title
-    }
   }
 `;

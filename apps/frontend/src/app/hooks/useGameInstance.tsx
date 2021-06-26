@@ -1,5 +1,5 @@
 import { createContext, ReactNode, useContext, useState } from 'react';
-import { ApolloClient, NormalizedCacheObject } from '@apollo/client';
+import { gql, ApolloClient, NormalizedCacheObject } from '@apollo/client';
 import { GET_GAME_INSTANCE, CREATE_GAME_INSTANCE } from '@bingo/gql';
 import { BingoField, BingoGame, ErrorType } from '@bingo/models';
 
@@ -46,7 +46,7 @@ export const GameInstanceProvider = ({
 
     return client
       .query<{ instance: BingoGame }>({
-        query: GET_GAME_INSTANCE,
+        query: gql(GET_GAME_INSTANCE),
         variables: { id },
         fetchPolicy: 'no-cache',
       })
@@ -62,7 +62,7 @@ export const GameInstanceProvider = ({
     setLoading(true);
     return client
       .mutate<{ createGameInstance: BingoGame }>({
-        mutation: CREATE_GAME_INSTANCE,
+        mutation: gql(CREATE_GAME_INSTANCE),
         variables: { id },
       })
       .then(() => true)
