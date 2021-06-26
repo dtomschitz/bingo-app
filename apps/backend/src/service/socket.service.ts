@@ -78,17 +78,14 @@ export class SocketService {
       const players = Array.from(this.players.get(event.id) ?? []);
       this.brodcast(sockets, GameEventType.PLAYER_JOINED, { players });
       this.sendEvent(socket, GameEventType.GAME_JOINED, { players });
-
+      
       sockets.add(socket);
-      console.log(`Added socket to session for game ${event.id}`);
     } else {
       this.sessions.set(event.id, new Set([socket]));
       this.players.set(event.id, new Set([player]));
 
       const players = Array.from(this.players.get(event.id) ?? []);
       this.sendEvent(socket, GameEventType.GAME_JOINED, { players });
-
-      console.log(`New session created for game ${event.id}`);
     }
   }
 

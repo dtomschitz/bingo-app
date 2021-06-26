@@ -149,7 +149,7 @@ const Game = (props: RouteComponentProps<GameProps>) => {
   }, [game?.podium]);
 
   useEffect(() => {
-    getGameInstance(id).then();
+    getGameInstance(id);
   }, []);
 
   useEffect(() => {
@@ -191,11 +191,6 @@ const Game = (props: RouteComponentProps<GameProps>) => {
       sendEvent(GameEventType.ON_WIN);
     }
   };
-
-  if (error) {
-    console.log(error);
-    return <div className="game"></div>;
-  }
 
   return (
     <div className="game">
@@ -262,7 +257,7 @@ const BottomInfoBar = ({
   onValidateWin,
 }: BottomInfoBarProps) => {
   const auth = useAuth();
-  const isWinner = podium?.some(user => user.name === auth.user?.name);
+  const isWinner = podium?.some(user => user.userId === auth.user?._id);
 
   return (
     <div className="bottom-info-bar elevation-z8">
