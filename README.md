@@ -23,9 +23,11 @@
 
 # Abstract
 
-# Getting Started
+# Getting Started & Installation
 
-In order to run the different apps the repository obvisously needs to get clone and the required packages must be installed via `npm install`. Besides that [Docker](https://www.docker.com/), [Deno](https://deno.land/) and [NodeJS](https://nodejs.org/) are required in order to start the MongoDB and the backend. For more detailed informations about how to start the frontend and backend take a look into the [Common Commands](#Common-Commands) section.
+## Locally
+
+In order to run the different apps the repository obvisously needs to get clone and the required packages must be installed via `npm install`. Besides that [Docker](https://www.docker.com/), [Deno](https://deno.land/) and [NodeJS](https://nodejs.org/) are required in order to start the MongoDB, the backend and the frontend. For more detailed informations about how to start the frontend and backend take a look into the [Common Commands](#Common-Commands) section.
 
 ```bash
 $ git clone git@gitlab.mi.hdm-stuttgart.de:mwa/ss21/saturn.git
@@ -35,6 +37,8 @@ $ npm run backend:cache
 
 $ npm install -g nx
 ```
+
+## Docker
 
 Further more the whole project can be started and run with `docker-compose up` which should be the preferred way to the run the whole project. This elimates the requirement to install the node modules locally as well as the global [Nrwl Nx](https://nx.dev/), [Deno](https://deno.land/) and [NodeJS](https://nodejs.org/) installation.
 
