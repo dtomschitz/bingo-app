@@ -1,5 +1,9 @@
 import { gql } from '../../deps.ts';
 
+/*
+All user auth gql types/schemas for queries and mutations
+*/
+
 export const AuthTypes = gql`
   input UserRegister {
     name: String

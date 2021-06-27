@@ -2,6 +2,12 @@ import { GameService } from "../service/index.ts";
 import { gqlRequestWrapper, requiresAuthentication } from "../utils/index.ts";
 import { ArgProps, ValidateWin } from "../models.ts";
 
+/*
+All queries for our services 
+The gqlRequestWrapper syntactically wraps the individual sercive method for each respective resolver 
+gqlRequestWrapper is like a schema 
+*/
+
 export const gameQueries = (service: GameService) => {
   const getGames = gqlRequestWrapper(
     requiresAuthentication(({ context }) => service.getGames(context.user)),

@@ -1,5 +1,9 @@
 import { gql } from "../../deps.ts";
 
+/*
+All game gql types/schemas for queries and mutations
+*/
+
 export const GameTypes = gql`
 
   input CreateGame {

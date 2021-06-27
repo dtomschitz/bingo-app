@@ -1,5 +1,9 @@
 import { gql } from "../../deps.ts";
 
+/*
+All user gql types/schemas for queries and mutations
+*/
+
 export const UserTypes = gql`
   type User {
     _id: String

@@ -12,6 +12,12 @@ import {
   UpdateUser,
 } from '../models.ts';
 
+/*
+All mutations for our services 
+The gqlRequestWrapper syntactically wraps the individual sercive method for each respective resolver 
+gqlRequestWrapper is like a schema 
+*/
+
 export const authMutations = (service: AuthService) => {
   const registerUser = gqlRequestWrapper<ArgProps<CreateUserProps>>(
     ({ args }) => service.registerUser(args.props),
