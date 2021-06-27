@@ -2,15 +2,12 @@
   <img src="bingo.png" alt="logo" width="200"/>
 </center>
 
-# Table of contents
-
 - [Members](#Members)
 - [Abstract](#Abstract)
 - [Getting Started](#Getting-Started)
 - [Project Structure](#Project-Structure)
 - [Tests](#Tests)
 - [Migrations](#Migrations)
-- [CI/CD](#CI/CD)
 - [Common Commands](#Common-Commands)
   - [Backend](#Backend)
   - [Frontend](#Frontend)
@@ -24,6 +21,14 @@
 - David Tomschitz (dt035)
 
 # Abstract
+With our bingo web application, we want to ensure that everyone can play bingo together online. This is now possible with a beautiful design and extensive functionality for players and moderators!
+For our UI/Frontend we used React together with Typescript. Therefore we provides beautiful and fast user interface components for our web application. 
+Our backend/database is based on a document-oriented NoSQL database named MongoDB which is combined with GraphQL, an open source data query and manipulation language for manipulating and updating our data. 
+Deno is our runtime environment for JavaScript and TypeScript and is used on the server-side. 
+We are using Oak to run our server. Oak is a Deno middleware framework for HTTP servers.
+
+Now just try our web appplication! 
+Follow the next steps and sign up and create your first bingo field!
 
 # Getting Started & Installation
 
