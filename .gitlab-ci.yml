@@ -7,7 +7,7 @@ variables:
   REFRESH_TOKEN_EXPIRATION_TIME: '100000'
 
 services:
-  - name: mongo
+  - name: mongo:4.4.6
     alias: database
 
 stages:
