@@ -1,10 +1,8 @@
 import { useState } from 'react';
 import toast from 'react-hot-toast';
-import { errorMessages } from '@bingo/models';
 import {
   FlatButton,
   Card,
-  CardActions,
   CardContent,
   BaseDialog,
   DialogContent,
@@ -13,10 +11,10 @@ import {
   DialogActions,
   Button,
 } from '../components/common';
-import { useAuthContext } from '../hooks';
+import { useAuth } from '../hooks';
 
 export const EditProfileDialog = (props: DialogProps) => {
-  const auth = useAuthContext();
+  const auth = useAuth();
 
   const [newName, setNewName] = useState<string>();
   const [newEmail, setNewEmail] = useState<string>();
@@ -122,7 +120,7 @@ export const EditProfileDialog = (props: DialogProps) => {
       </DialogContent>
       <DialogActions className="button-box">
         <Button
-        className="button flat left"
+          className="button flat left"
           disabled={!oldPassword}
           onClick={() => onDeleteUser(auth.user?.email, oldPassword)}
         >

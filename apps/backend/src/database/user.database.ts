@@ -29,7 +29,6 @@ export class UserDatabase {
 
   updateUser = async (_id: Bson.ObjectId, changes: Partial<UserSchema>) => {
     await this.collection.updateOne({ _id }, { $set: changes });
-
     return this.getUser(_id);
   };
 
