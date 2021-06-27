@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { BingoCardState, BingoInstanceField } from '@bingo/models';
 
-interface BingoCardProps extends BingoCardState {
+export interface BingoCardProps extends BingoCardState {
   onWin: () => void;
   findWinningPattern: (score: number) => number;
   onBingoFieldSelected: (tile: number, field: BingoInstanceField) => void;

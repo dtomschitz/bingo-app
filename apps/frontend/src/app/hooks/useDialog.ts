@@ -24,6 +24,5 @@ export const useDialog = <T>(showFullscreen?: boolean) => {
     open,
     close,
   };
-
   return state;
 };
