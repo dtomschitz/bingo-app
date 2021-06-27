@@ -1,0 +1,39 @@
+.create-game {
+  width: 500px;
+
+  .dialog-content {
+    input {
+      flex: 1;
+    }
+
+    .title {
+      display: flex;
+      margin-bottom: 32px;
+    }
+  }
+
+  .dialog-actions {
+    flex-direction: row;
+
+    .warning,
+    .buttons {
+      width: 100%;
+    }
+
+    .warning {
+      display: flex;
+      align-items: center;
+      margin: 8px 0 16px 0;
+
+      svg {
+        margin-right: 16px;
+        color: $primary;
+      }
+    }
+
+    .buttons {
+      display: flex;
+      justify-content: flex-end;
+    }
+  }
+}

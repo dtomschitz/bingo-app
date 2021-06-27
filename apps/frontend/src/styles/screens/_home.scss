@@ -1,0 +1,31 @@
+.home {
+  width: 100%;
+
+  .tabs,
+  .games {
+    width: 100%;
+  }
+
+  .card {
+    margin-bottom: 16px;
+
+    .card-header {
+      align-items: end;
+    }
+
+    .mobile-header {
+      display: flex;
+      flex: 1;
+      flex-direction: column;
+
+      .subtitle {
+        display: flex;
+        margin-top: 4px;
+      }
+    }
+
+    .info {
+      margin-right: 16px;
+    }
+  }
+}

@@ -1,0 +1,101 @@
+.bingo-card {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  grid-template-rows: repeat(5, 1fr);
+  gap: 0.5rem;
+  user-select: none;
+
+  @media only screen and (min-width: 786px) {
+    gap: 1rem;
+  }
+}
+
+.bingo-card-header {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  grid-template-rows: repeat(1, 1fr);
+  gap: 1rem;
+  margin: 1rem;
+
+  .letter {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 46pt;
+    font-weight: 600;
+    color: $primary;
+    aspect-ratio: 1;
+  }
+}
+
+.bingo-field {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 16px;
+  color: #fff;
+  background-color: lighten($background, $amount: 5%);
+  transition: background-color 0.1s cubic-bezier(0.4, 0, 0.2, 1);
+  font-size: 3vw;
+  aspect-ratio: 1;
+  overflow: hidden;
+
+  @media only screen and (min-width: 786px) {
+    font-size: 2vw;
+  }
+
+  @media only screen and (min-width: 1700px) {
+    font-size: 1vw;
+  }
+
+  &:hover:not(.win, .disable-hover) {
+    background-color: lighten($background, $amount: 15%);
+    cursor: pointer;
+  }
+
+  &.selected {
+    background-color: lighten($background, $amount: 25%);
+  }
+
+  &.win {
+    background-color: $primary;
+  }
+
+  &.create {
+    img {
+      height: 40px;
+      width: 40px;
+    }
+  }
+
+  button.delete {
+    top: 0;
+    right: 0;
+  }
+}
+
+.bingo-field {
+  position: relative;
+
+  @media only screen and (max-width: 600px) {
+    .text {
+      display: none;
+      visibility: hidden;
+    }
+
+    .id {
+      position: unset !important;
+      top: unset !important;
+      right: unset !important;
+      font-weight: bold;
+      font-size: 5vw !important;
+    }
+  }
+
+  .id {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    font-size: 2.5vw;
+  }
+}

@@ -1,0 +1,10 @@
+{
+  getGame(_id: "608e90299e9e9ca03e170882") {
+    _id
+    title
+    fields {
+      _id
+      text
+    }
+  }
+}

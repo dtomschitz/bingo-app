@@ -1,0 +1,21 @@
+.rc-menu {
+  border-radius: 8px !important;
+  background-color: $light-background !important;
+}
+
+.rc-menu__item {
+  color: #fff;
+  background-color: $light-background;
+
+  svg {
+    margin-right: 8px;
+  }
+}
+
+.rc-menu__item--hover {
+  background-color: lighten($light-background, 20%) !important;
+}
+
+.rc-menu__item--active {
+  background-color: darken($light-background, 5%) !important;
+}

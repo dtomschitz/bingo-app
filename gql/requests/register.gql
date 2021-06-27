@@ -1,0 +1,11 @@
+mutation {
+  registerUser(
+    props: {
+      email: "x-email@test.de"
+      name: "test"
+      password: "Test1234!"
+    }
+  ) {
+    accessToken
+  }
+}

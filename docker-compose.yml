@@ -1,0 +1,55 @@
+version: '3.4'
+services:
+  database:
+    container_name: database
+    image: 'mongo'
+    env_file: .env
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: $MONGO_ROOT_USER
+      MONGO_INITDB_ROOT_PASSWORD: $MONGO_ROOT_PASSWORD
+      MONGO_INITDB_USERNAME: $MONGO_USER
+      MONGO_INITDB_PASSWORD: $MONGO_USER_PASSWORD
+      MONGO_INITDB_DATABASE: $MONGO_DB
+    volumes:
+      - 'mongodata:/data/db'
+    ports:
+      - '27017:27017'
+
+  backend:
+    container_name: backend
+    build:
+      context: ./
+      dockerfile: ./apps/backend/Dockerfile
+    depends_on:
+      - database
+    environment:
+      - DATABASE_USER=$MONGO_ROOT_USER
+      - DATABASE_PASSWORD=$MONGO_ROOT_PASSWORD
+      - ACCESS_TOKEN_SECRET=$ACCESS_TOKEN_SECRET
+      - ACCESS_TOKEN_EXPIRATION_TIME=$ACCESS_TOKEN_EXPIRATION_TIME
+      - REFRESH_TOKEN_SECRET=$REFRESH_TOKEN_SECRET
+      - REFRESH_TOKEN_EXPIRATION_TIME=$REFRESH_TOKEN_EXPIRATION_TIME
+      - WAIT_HOSTS=database:27017
+    volumes:
+      - './apps:/app/apps:ro'
+      - './libs:/app/libs:ro'
+    ports:
+      - '8000:8000'
+
+  frontend:
+    container_name: frontend
+    build:
+      context: ./
+      dockerfile: ./apps/frontend/Dockerfile
+    depends_on:
+      - backend
+    environment:
+      - WAIT_HOSTS=backend:8000
+    volumes:
+      - './apps:/app/apps:ro'
+      - './libs:/app/libs:ro'
+    ports:
+      - '3000:3000'
+
+volumes:
+  mongodata:

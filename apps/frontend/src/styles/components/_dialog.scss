@@ -1,0 +1,116 @@
+#dialog-container {
+  position: fixed;
+  z-index: 1000;
+  pointer-events: none;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+}
+
+.dialog-backdrop {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  pointer-events: auto;
+  -webkit-tap-highlight-color: transparent;
+  transition: opacity 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+  background: rgba(0, 0, 0, 0.64);
+  opacity: 1;
+}
+
+.dialog-wrapper {
+  display: flex;
+  position: absolute;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  pointer-events: none;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+
+  &.fullscreen {
+    .dialog-pane {
+      margin: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    .dialog-container {
+      border-radius: 0;
+      height: unset;
+    }
+
+    .dialog-content-container {
+      max-height: fit-content;
+    }
+  }
+}
+
+.dialog-pane {
+  display: flex;
+  position: static;
+  z-index: 1000;
+  pointer-events: auto;
+  box-sizing: border-box;
+  max-height: 100%;
+  margin: 0 16px;
+}
+
+.dialog-container {
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  border-radius: 16px;
+  outline: 0;
+  width: 100%;
+  height: 100%;
+  min-height: inherit;
+  max-height: inherit;
+  box-shadow: 0 11px 15px -7px rgba(0, 0, 0, 0.2),
+    0 24px 38px 3px rgba(0, 0, 0, 0.14), 0 9px 46px 8px rgba(0, 0, 0, 0.12);
+  background: $light-background;
+  color: #fff;
+  pointer-events: auto;
+}
+
+.dialog-header-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 8px 16px 16px;
+}
+
+.dialog-header {
+  font: 500 20px/32px Arial, Helvetica, sans-serif;
+  letter-spacing: normal;
+}
+
+.dialog-content-container {
+  padding: 16px 24px;
+  display: block;
+  max-height: 65vh;
+  overflow: auto;
+  height: 100%;
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+}
+
+.dialog-actions-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  padding: 16px;
+  align-items: center;
+  box-sizing: content-box;
+}
+
+.dialog-actions {
+}

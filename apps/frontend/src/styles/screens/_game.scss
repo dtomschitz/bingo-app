@@ -1,0 +1,143 @@
+.game {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin-bottom: 128px;
+
+  #router-container {
+    margin-bottom: 83px;
+  }
+
+  .game-container {
+    max-width: 750px;
+    width: 100%;
+  }
+
+  .podium {
+    color: #fff;
+
+    .card-content {
+      margin-bottom: 0;
+    }
+
+    .podium {
+      display: flex;
+      align-items: center;
+      margin-bottom: 16px;
+      font-weight: bold;
+      font-size: 18px;
+
+      &:last-of-type {
+        margin-bottom: 0;
+      }
+
+      span {
+        font-size: 36px;
+        margin-right: 16px;
+      }
+    }
+
+    .winner {
+      margin-bottom: 16px;
+      font-size: 1rem;
+      margin-left: 14px;
+    }
+  }
+
+  .admin-controls {
+    margin-bottom: 32px;
+  }
+
+  .bingo-card {
+    margin-bottom: 32px;
+  }
+
+  .bottom-info-bar {
+    display: flex;
+    position: fixed;
+    justify-content: space-between;
+    padding: 16px;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: $background;
+
+    .current-field {
+      box-shadow: none;
+      margin-right: 16px;
+
+      .card-title {
+        font-size: 16px;
+        font-weight: 600;
+        margin-bottom: 0;
+      }
+    }
+
+    .bingo-button {
+      width: 200px;
+      font-weight: bold;
+      font-size: 24px;
+
+      @media screen and (max-width: 570px) {
+        width: 120px;
+        font-size: 18px;
+      }
+    }
+  }
+
+  .list-item {
+    min-height: 32px;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    color: #fff;
+
+    .check-icon {
+      margin-right: 8px;
+    }
+
+    .id {
+      margin-right: 8px;
+    }
+  }
+
+  .admin-controls {
+    box-shadow: none;
+
+    h2 {
+      margin-top: 8px;
+      margin-bottom: 4px;
+    }
+
+    .divider {
+      margin-bottom: 8px;
+    }
+
+    .count {
+      margin-left: 8px;
+      font-weight: 400;
+    }
+
+    .collapsible {
+      margin-bottom: 8px;
+    }
+
+    .card-actions {
+      flex-direction: column;
+
+      .info {
+        color: #fff;
+        margin-bottom: 16px;
+      }
+
+      .button {
+        width: 100%;
+        margin: 0;
+      }
+    }
+
+    .card-content {
+      margin: 32px 0;
+    }
+  }
+}
