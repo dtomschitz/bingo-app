@@ -1,15 +1,16 @@
-import React from 'react';
 import { render } from '@testing-library/react';
-import { BingoCard } from '../components/bingo/BingoCard';
-import { BingoCardState, BingoInstanceField } from '@bingo/models';
-import { CreateGameDialog } from '../dialogs';
+import { CreateGameDialog } from '../src/app/dialogs';
 
 it('renders CreateGameDialog component without error', () => {
   const onButtonClickMock = jest.fn();
 
-  const open = () => {};
+  const open = () => {
+    //
+  };
 
-  const close = () => {};
+  const close = () => {
+    //
+  };
 
   const createGameDialog = render(
     <CreateGameDialog

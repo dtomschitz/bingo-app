@@ -1,12 +1,8 @@
 {
-  "workbench.colorCustomizations": {
-    "activityBar.background": "#422338",
-    "titleBar.activeBackground": "#5C324E",
-    "titleBar.activeForeground": "#FCF9FB"
-  },
+  "workbench.colorCustomizations": {},
   "typescript.enablePromptUseWorkspaceTsdk": true,
-  "deno.enable": false,
-  "deno.lint": false,
-  "deno.unstable": false,
+  "deno.enable": true,
+  "deno.lint": true,
+  "deno.unstable": true,
   "typescript.tsdk": "node_modules/typescript/lib"
 }

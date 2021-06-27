@@ -1,15 +1,15 @@
-import { ApolloProvider } from '@apollo/client';
+import { gql, ApolloProvider } from '@apollo/client';
 import { render } from '@testing-library/react';
 import { act } from 'react-dom/test-utils';
 import { GET_GAMES } from '@bingo/gql';
-import { GamesProvider, AuthProvider } from '../hooks';
-import Home from '../Home';
+import { GamesProvider, AuthProvider } from '../src/app/hooks';
 import { createDefaultMockClient, generateMockedGame, AuthMock } from './utils';
+import Home from '../src/app/Home';
 
 describe('Home', () => {
   it('should render the home screen', async () => {
     const client = createDefaultMockClient();
-    client.setRequestHandler(GET_GAMES, () =>
+    client.setRequestHandler(gql(GET_GAMES), () =>
       Promise.resolve({ data: { games: [generateMockedGame()] } }),
     );
 
@@ -19,7 +19,7 @@ describe('Home', () => {
           <GamesProvider client={client}>
             <ApolloProvider client={client}>
               <AuthMock>
-                <Home/>
+                <Home />
               </AuthMock>
             </ApolloProvider>
           </GamesProvider>

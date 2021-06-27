@@ -1,9 +1,9 @@
 import { useEffect } from 'react';
 import { defaultUser } from './common';
-import { useAuthContext } from '../../hooks';
+import { useAuth } from '../../src/app/hooks';
 
 export const AuthMock = ({ children }) => {
-  const auth = useAuthContext();
+  const auth = useAuth();
 
   useEffect(() => {
     const loginUser = async () => {

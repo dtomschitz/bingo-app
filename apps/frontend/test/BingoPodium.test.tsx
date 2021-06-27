@@ -1,7 +1,6 @@
-import React from 'react';
 import { render } from '@testing-library/react';
-import {BingoPodium} from '../components/bingo/BingoPodium';
 import { Podium } from '@bingo/models';
+import { BingoPodium } from '../src/app/components/bingo';
 
 it('renders no BingoPodium if podium is empty | placment = null/undefinded/NaN', () => {
   const podium: Podium[] = [
@@ -42,17 +41,16 @@ it('BingoPodium does not contain winners/text if podium is empty', () => {
       userId: '',
       name: '',
       placement: 3,
-    }
+    },
   ];
 
-  const component = render(<BingoPodium podium={podium}/>);
-  
+  const component = render(<BingoPodium podium={podium} />);
+
   const winners = component.baseElement.textContent;
 
   expect(winners).not.toContain('🥇 first place');
   expect(winners).not.toContain('🥈 second place');
   expect(winners).not.toContain('🥉 third place');
-
 });
 
 it('renders BingoPodium', () => {

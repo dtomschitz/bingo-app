@@ -1,3 +1,4 @@
+import { gql } from '@apollo/client';
 import { createMockClient } from 'mock-apollo-client';
 import { v4 as uuid } from 'uuid';
 import { USER_LOGIN } from '@bingo/gql';
@@ -35,7 +36,7 @@ export const generateMockedAuthResult = (): AuthResult => {
 
 export const createDefaultMockClient = () => {
   const client = createMockClient();
-  client.setRequestHandler(USER_LOGIN, () =>
+  client.setRequestHandler(gql(USER_LOGIN), () =>
     Promise.resolve({ data: { loginUser: generateMockedAuthResult() } }),
   );
 

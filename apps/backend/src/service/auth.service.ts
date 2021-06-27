@@ -86,7 +86,6 @@ export class AuthService {
     }
 
     await this.users.updateUser(user._id, { refreshToken: undefined });
-
     return true;
   }
 
