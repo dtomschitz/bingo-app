@@ -21,14 +21,9 @@
 - David Tomschitz (dt035)
 
 # Abstract
-With our bingo web application, we want to ensure that everyone can play bingo together online. This is now possible with a beautiful design and extensive functionality for players and moderators!
-For our UI/Frontend we used React together with Typescript. Therefore we provides beautiful and fast user interface components for our web application. 
-Our backend/database is based on a document-oriented NoSQL database named MongoDB which is combined with GraphQL, an open source data query and manipulation language for manipulating and updating our data. 
-Deno is our runtime environment for JavaScript and TypeScript and is used on the server-side. 
-We are using Oak to run our server. Oak is a Deno middleware framework for HTTP servers.
+The projects goal was to create a bingo web app, which enpowers users to play [Bingo](https://de.wikipedia.org/wiki/Bingo) together. With our web app, users can create games, moderate them and play with others after they signed up. The frontend was built with [React](https://reactjs.org/) and some custom designed components to ensure a fluent and easy user interaction. For the backend we used [Deno](https://deno.land/) and Oak as the middleware for creating the HTTP server which connects to the document based [MongoDB](https://www.mongodb.com/) in order to store the data of the users and games. Both the frontend and the backend were developed with TypeScript, which enabled us to use interfaces and strongly typed objects across the applications. Because of this we decided to use the query language [GraphQL](https://graphql.org/) for querying and manipulating the stored data which is send back and forth between the frontend and backend. 
 
-Now just try our web appplication! 
-Follow the next steps and sign up and create your first bingo field!
+Now just try our web appplication, follow the next steps, sign up and create your first bingo game!
 
 # Getting Started & Installation
 
@@ -66,8 +61,6 @@ In the final state of the project, there are unit and integration tests for the 
 # Migrations
 
 In order to create persistent migrations for our database, we used [migrate-mongo](https://github.com/seppevs/migrate-mongo) which is a migration tool for [MongoDB](https://www.mongodb.com/). The tool is installed if the `$ npm install` command has been run earlier. With the intention to migrate between the different migrations inside the `tools/migrations` folder, the commands `$ npm run database:migrate:up` and `$ npm run database:migrate:down` can be used. The former command can be used to run every migration that wasn`t already applyied to the database. On the opposite, the command `database:migrate:down` will only roll back the last applied migration.
-
-# CI/CD
 
 # Common Commands
 
