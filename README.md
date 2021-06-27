@@ -2,6 +2,7 @@
   <img src="bingo.png" alt="logo" width="200"/>
 </center>
 
+# Table of contents
 - [Members](#Members)
 - [Abstract](#Abstract)
 - [Getting Started](#Getting-Started)
