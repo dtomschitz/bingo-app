@@ -16,9 +16,13 @@ export class UserService {
       throw new GQLError(ErrorType.USER_DOES_NOT_EXIST);
     }
 
+
     const changes = props.changes;
 
     if (changes.password) {
+      if (!ValidationUtils.isPasswordValid(changes.password)) {
+        throw new GQLError(ErrorType.INVALID_PASSWORD_FORMAT);
+      }
       const password = changes.password;
       const salt = await bcrypt.genSalt(8);
       changes.password = await bcrypt.hash(password, salt);
