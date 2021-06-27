@@ -33,4 +33,5 @@ frontend:
     - cp ./tools/waitForScript /wait
     - chmod +x /wait
     - chmod +x ./tools/test.sh
+    - npm i
     - ./tools/test.sh
