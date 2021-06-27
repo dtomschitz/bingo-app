@@ -1,6 +1,7 @@
 import React from 'react';
 import { render } from '@testing-library/react';
 import { BingoCard } from '../components/bingo/BingoCard';
+import { BingoCardState, BingoInstanceField } from '@bingo/models';
 
 it('renders BingoCard component without error', () => {
   function testOnWin() {
@@ -34,3 +35,4 @@ it('renders BingoCard component without error', () => {
   //expect(onButtonClickMock).toHaveBeenCalledTimes(1);
   //expect(onButtonClickMock).toHaveBeenCalledWith(true);
 });
+
