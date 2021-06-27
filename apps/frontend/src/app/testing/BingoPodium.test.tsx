@@ -1,6 +1,6 @@
 import React from 'react';
 import { render } from '@testing-library/react';
-import BingoPodium from '../components/bingo/BingoPodium';
+import {BingoPodium} from '../components/bingo/BingoPodium';
 import { Podium } from '@bingo/models';
 
 it('renders BingoPodium', () => {
@@ -28,7 +28,7 @@ it('renders BingoPodium', () => {
 
   const winners = component.baseElement.textContent;
 
-  expect(winners).toContain('🥇 first place');
-  expect(winners).toContain('🥈 second place');
-  expect(winners).toContain('🥉 third place');
+  expect(winners).toContain('🥇first place');
+  expect(winners).toContain('🥈second place');
+  expect(winners).toContain('🥉third place');
 });

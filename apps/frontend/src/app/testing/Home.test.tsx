@@ -19,7 +19,7 @@ describe('Home', () => {
           <GamesProvider client={client}>
             <ApolloProvider client={client}>
               <AuthMock>
-                <Home />
+                <Home/>
               </AuthMock>
             </ApolloProvider>
           </GamesProvider>

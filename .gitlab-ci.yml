@@ -1,0 +1,36 @@
+image: docker/compose:latest
+
+variables:
+  ACCESS_TOKEN_SECRET: nBx38A/zTWQVACT7TmNcJf3Opjqla2+ue1yvjDILFyJ1BIfFQ2LpWn/XNUEhYr+FFZ2xa3IY28e6PA7RFdN4fNGQTCGzo+aiJaMXGTZMEq2SrkAt1OvQ8mBZhktbT9Cgx2gfJQrqowlSxl0ZUfso+lC7EMF2GXDAC5X2zTceTd33zJDsrxO8JMViSo7RFrGw2OZ1n5sTfaCb9bzHSv1RtrAWlfamDHD9bJH/XcK7T8TC0x/5PTI3M2RmksQvGA1iVSPbtUifvViWuzbfyOIleXR6lJH4hVDe1iJ6XIh2QRY1sWEGUEtAvB4zf7CQgvn7W47364RXOC/LeTjNQRQAug==
+  REFRESH_TOKEN_SECRET: R/ychlgoWrYIA8hOecXXBgfDirHwQ4i9V6BmzEdHQfTVrXjD57cO+RbkkymTTrNO8TEfsc1YPfbprRxNu+luk08d4WqvSl0CQRt8oy77/eYjmHp7cSCtZo6i/9WVqNtY/ydP4z5QBOfO7CKoYPTcBVw3FJNDJQDJAtu97yMKtaOE3pMTnpeDdr+66Z8cOGmkymlMk5NrWW81tVTj191Z6fzV57oBjiUvDp0QTBfxbZt24uAm7/I2XC5tVHfFKZg86BmyccwtISY5KNQiNWLOMl6W5JVe/0uLam0VQ1puI4dPun79/N2zJXQZBOhEzkqcQyKw+aXv+7n7dNBGmNYbWQ==
+  ACCESS_TOKEN_EXPIRATION_TIME: '100000'
+  REFRESH_TOKEN_EXPIRATION_TIME: '100000'
+
+services:
+  - name: mongo
+    alias: database
+
+stages:
+  - test
+
+backend:
+  stage: test
+  image: hayd/ubuntu-deno:1.8.2
+  script:
+    - export ACCESS_TOKEN_SECRET=$ACCESS_TOKEN_SECRET
+    - export REFRESH_TOKEN_SECRET=$REFRESH_TOKEN_SECRET
+    - export ACCESS_TOKEN_EXPIRATION_TIME=$ACCESS_TOKEN_EXPIRATION_TIME
+    - export REFRESH_TOKEN_EXPIRATION_TIME=$REFRESH_TOKEN_EXPIRATION_TIME
+    - cp ./tools/waitForScript /wait
+    - chmod +x /wait
+    - chmod +x ./tools/test.sh
+    - ./tools/test.sh
+
+frontend:
+  stage: test
+  image: node:12.10.0
+  script:
+    - cp ./tools/waitForScript /wait
+    - chmod +x /wait
+    - chmod +x ./tools/test.sh
+    - ./tools/test.sh

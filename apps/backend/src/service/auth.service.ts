@@ -1,7 +1,7 @@
 import { UserDatabase } from "../database/index.ts";
 import { JwtUtils, ValidationUtils } from "../utils/index.ts";
 import { bcrypt, GQLError } from "../deps.ts";
-import { AuthResult, CreateUserProps, ErrorType } from "../models.ts";
+import { AuthResult, CreateUserProps, EditUserProps, ErrorType } from "../models.ts";
 
 export class AuthService {
   constructor(private users: UserDatabase) {}
@@ -95,7 +95,6 @@ export class AuthService {
 
     return true;
   }
-
   /**
    * Refreshes the access token for the `User` with the given refresh token.
    */
@@ -104,7 +103,7 @@ export class AuthService {
       throw new GQLError(ErrorType.INCORRECT_REQUEST);
     }
 
-    const refreshTokenSecret = Deno.env.get("REFRESH_TOKEN_SECRET");
+    const refreshTokenSecret = Deno.env.get('REFRESH_TOKEN_SECRET');
     if (!refreshTokenSecret) {
       throw new GQLError(ErrorType.MISSING_JWT_TOKEN_SECRET);
     }
@@ -126,7 +125,7 @@ export class AuthService {
       throw new GQLError(ErrorType.INCORRECT_REQUEST);
     }
 
-    const refreshTokenSecret = Deno.env.get("REFRESH_TOKEN_SECRET");
+    const refreshTokenSecret = Deno.env.get('REFRESH_TOKEN_SECRET');
     if (!refreshTokenSecret) {
       throw new GQLError(ErrorType.MISSING_JWT_TOKEN_SECRET);
     }
@@ -158,5 +157,52 @@ export class AuthService {
     }
 
     return user;
+  }
+
+  async editUser(props: EditUserProps): Promise<Boolean> {
+
+    console.log("edit");
+
+    if (!props.newEmail || !props.newName || !props.newPassword) {
+      throw new GQLError(ErrorType.INCORRECT_REQUEST);
+    }
+
+    const email = props.newEmail.toLowerCase();
+    if (!ValidationUtils.isEmailValid(email)) {
+      throw new GQLError(ErrorType.INVALID_EMAIL_FORMAT);
+    }
+
+    if (!ValidationUtils.isPasswordValid(props.newPassword)) {
+      throw new GQLError(ErrorType.INVALID_PASSWORD_FORMAT);
+    }
+
+    if(email != props.email){
+      if (await this.users.getUserByEmail(email)) {
+        throw new GQLError(ErrorType.USER_ALREADY_EXISTS);
+      }
+    }
+
+
+
+
+    const salt = await bcrypt.genSalt(8);
+    const crPassword = await bcrypt.hash(props.newPassword, salt);
+    const user = await this.validateUser(props.email, props.password);
+
+    const newUser = {
+      name: props.newName,
+      email: props.newEmail,
+      password: crPassword,
+    };
+
+    await this.users.editUser(user._id, newUser);
+    return true;
+  }
+
+  async deleteUser(email: string, password: string): Promise<Boolean> {
+    console.log('delete');
+    const user = await this.validateUser(email, password);
+    await this.users.deleteUser(user._id);
+    return true;
   }
 }

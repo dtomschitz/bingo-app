@@ -1,7 +1,14 @@
-import { GamePhase } from '@bingo/models';
-import { faEllipsisV } from '@fortawesome/free-solid-svg-icons';
-import { Menu, MenuDivider, MenuItem } from '@szhsin/react-menu';
 import { MouseEvent } from 'react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import {
+  faEdit,
+  faEllipsisV,
+  faLock,
+  faLockOpen,
+  faTrash,
+} from '@fortawesome/free-solid-svg-icons';
+import { Menu, MenuDivider, MenuItem } from '@szhsin/react-menu';
+import { GamePhase } from '@bingo/models';
 import { IconButton } from '../common';
 
 interface BingoGameContextMenuProps {
@@ -34,14 +41,21 @@ export const BingoGameContextMenu = ({
         <MenuItem onClick={onModifyFields}>Felder bearbeiten</MenuItem>
         <MenuDivider />
         {gamePhase === GamePhase.EDITING && (
-          <MenuItem onClick={onOpenGame}>Spiel eröffnen</MenuItem>
+          <MenuItem onClick={onOpenGame}>
+            <FontAwesomeIcon icon={faLockOpen} />
+            Spiel eröffnen
+          </MenuItem>
         )}
-
-        {gamePhase !== GamePhase.FINISHED &&
-          gamePhase !== GamePhase.EDITING && (
-            <MenuItem onClick={onCloseGame}>Spiel Abschließen</MenuItem>
-          )}
-        <MenuItem onClick={onDeleteGame}>Spiel Löschen</MenuItem>
+        {gamePhase !== GamePhase.FINISHED && gamePhase !== GamePhase.EDITING && (
+          <MenuItem onClick={onCloseGame}>
+            <FontAwesomeIcon icon={faLock} />
+            Spiel abschließen
+          </MenuItem>
+        )}
+        <MenuItem onClick={onDeleteGame}>
+          <FontAwesomeIcon icon={faTrash} />
+          Spiel löschen
+        </MenuItem>
       </Menu>
     </div>
   );

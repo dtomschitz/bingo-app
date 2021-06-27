@@ -1,5 +1,6 @@
 import { gql } from "../../deps.ts";
 
+
 export const UserTypes = gql`
   type User {
     _id: String
@@ -14,6 +15,14 @@ export const UserTypes = gql`
     password: String
   }
 
+  input UserUpdate{
+    newName: String
+    newEmail: String
+    newPassword: String
+    email: String
+    password: String
+  }
+
   type AuthResult {
     user: User
     accessToken: String
@@ -23,6 +32,7 @@ export const UserTypes = gql`
   type UserLogoutResult {
     success: Boolean
   }
+
 
   type RefreshAccessTokenResult {
     accessToken: String
@@ -34,5 +44,7 @@ export const UserTypes = gql`
     logoutUser(email: String!): Boolean!
     verifyUser(refreshToken: String!): User!
     refreshAccessToken(refreshToken: String!): String!
+    updateUser(props: UserUpdate!): Boolean!
+    deleteUser(email: String!, password: String!): Boolean!
   }
 `;

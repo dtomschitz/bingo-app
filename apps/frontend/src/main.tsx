@@ -106,6 +106,15 @@ const httpLink = createHttpLink({
 
 const cache = new InMemoryCache({
   typePolicies: {
+    Query: {
+      fields: {
+        games: {
+          merge(existing, incoming) {
+            return incoming;
+          },
+        },
+      },
+    },
     BingoGame: {
       fields: {
         fields: {

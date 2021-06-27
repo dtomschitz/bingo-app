@@ -44,9 +44,9 @@
   .actions {
     display: flex;
     align-items: center;
+    margin-right: 16px;
 
-    .create-game-button,
-    .logout-button {
+    .create-game-button {
       margin-right: 16px;
     }
   }
