@@ -20,6 +20,12 @@ const wrap = <T extends Array<any>, U>(fn: (...args: T) => U) => {
   return (...args: T): U => fn(...args);
 };
 
+/**
+ * Wrapps a service method to a resolver function.
+ * 
+ * @param resolver The function which should get executed by the specific resolver.
+ * @returns The wrapped service method.
+ */
 export const gqlRequestWrapper = <T, R = any>(
   resolver: ResolverFn<T, BaseContext, R>,
 ) => {
@@ -35,6 +41,14 @@ export const gqlRequestWrapper = <T, R = any>(
   );
 };
 
+/**
+ * Checks if the current context contains a user.
+ * 
+ * @param resolverFn The resolver function which requires authentication in 
+ * order to get called.
+ * 
+ * @returns The wrapped resolver function.
+ */
 export const requiresAuthentication = <T, R = any>(
   resolverFn: ResolverFn<T, AuthenticationContext, R>,
 ) => {
@@ -56,6 +70,15 @@ export const requiresAuthentication = <T, R = any>(
   };
 };
 
+/**
+ * Modifies the current request context by adding a user if the header contains
+ * a valid access token.
+ * 
+ * @param context The current request context. 
+ * @param users The instance of the current user collection. 
+ * 
+ * @returns The modified context.
+ */
 export const createContext = async (
   { request }: Context,
   users: UserDatabase,

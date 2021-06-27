@@ -12,12 +12,14 @@ import {
   UpdateUser,
 } from '../models.ts';
 
-/*
-All mutations for our services 
-The gqlRequestWrapper syntactically wraps the individual sercive method for each respective resolver 
-gqlRequestWrapper is like a schema 
-*/
-
+/**
+ * Creates all auth specific mutations.
+ * The gqlRequestWrapper syntactically wraps the individual sercive method for 
+ * each respective resolver.
+ * 
+ * @param service The instance of a the current auth service.
+ * @returns All auth specific mutations.
+ */
 export const authMutations = (service: AuthService) => {
   const registerUser = gqlRequestWrapper<ArgProps<CreateUserProps>>(
     ({ args }) => service.registerUser(args.props),
@@ -48,6 +50,14 @@ export const authMutations = (service: AuthService) => {
   };
 };
 
+/**
+ * Creates all user specific mutations.
+ * The gqlRequestWrapper syntactically wraps the individual sercive method for 
+ * each respective resolver.
+ * 
+ * @param service The instance of a the current user service.
+ * @returns All user specific mutations.
+ */
 export const userMutations = (service: UserService) => {
   const updateUser = gqlRequestWrapper<ArgProps<UpdateUser>>(({ args }) =>
     service.updateUser(args.props),
@@ -63,6 +73,14 @@ export const userMutations = (service: UserService) => {
   };
 };
 
+/**
+ * Creates all game specific mutations.
+ * The gqlRequestWrapper syntactically wraps the individual sercive method for 
+ * each respective resolver.
+ * 
+ * @param service The instance of a the current game service.
+ * @returns All game specific mutations.
+ */
 export const gameMutations = (service: GameService) => {
   const createGame = gqlRequestWrapper<ArgProps<CreateGame>>(
     requiresAuthentication(({ context, args }) =>

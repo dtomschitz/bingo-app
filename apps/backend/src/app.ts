@@ -31,13 +31,12 @@ const resolveDatabase = <T>(config: DatabaseConfig<T>) => {
   return 'instance' in config ? config.instance : config;
 }
 
-/*
-We create the application and return it to the main.ts
-There we initialize the app at port 8000 
-
-All services will be created and connected to the respective database
-*/
-
+/**
+ * Creates a new instance of the backend application.
+ * 
+ * @param config The app config containing the database instances.
+ * @returns The newly created application.
+ */
 const createApp = async ({ database }: AppConfig ) => {
   const userDatabase = resolveDatabase(database.user);
   const gameDatabase = resolveDatabase(database.game);
@@ -64,13 +63,13 @@ const createApp = async ({ database }: AppConfig ) => {
     },
   });
   
-  /*
-  Websocket connection:
-  Requests will be updated to a websocket protocol
-  We handel the the game events and parts of the authentication via the websocket
-  */
- 
   const router = new Router();
+
+  /**
+   * A request which is send to /ws will be automatically upgrated to the 
+   * WebSocket protocol. The WebSocket is used for managing 
+   * the different game events.
+   */
   router.get('/ws', async context => {
     if (!context.isUpgradable) {
       throw new Error('Failed to upgrade the connection!');
