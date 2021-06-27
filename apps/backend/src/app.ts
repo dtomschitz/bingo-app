@@ -31,6 +31,12 @@ const resolveDatabase = <T>(config: DatabaseConfig<T>) => {
   return 'instance' in config ? config.instance : config;
 }
 
+/**
+ * Creates a new instance of the backend application.
+ * 
+ * @param config The app config containing the database instances.
+ * @returns The newly created application.
+ */
 const createApp = async ({ database }: AppConfig ) => {
   const userDatabase = resolveDatabase(database.user);
   const gameDatabase = resolveDatabase(database.game);
@@ -58,6 +64,12 @@ const createApp = async ({ database }: AppConfig ) => {
   });
   
   const router = new Router();
+
+  /**
+   * A request which is send to /ws will be automatically upgrated to the 
+   * WebSocket protocol. The WebSocket is used for managing 
+   * the different game events.
+   */
   router.get('/ws', async context => {
     if (!context.isUpgradable) {
       throw new Error('Failed to upgrade the connection!');

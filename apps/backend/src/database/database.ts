@@ -1,5 +1,9 @@
 import { MongoClient } from "../deps.ts";
 
+/**
+ * Contains all the necessary methods for interacting with the databse such as
+ * opening and closing a connection.
+ */
 export class Database {
   private client: MongoClient;
 

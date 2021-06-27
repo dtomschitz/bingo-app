@@ -3,6 +3,9 @@ import { JwtUtils, ValidationUtils } from "../utils/index.ts";
 import { bcrypt, GQLError } from "../deps.ts";
 import { CreateUserProps, ErrorType } from "../models.ts";
 
+/**
+ * Contains all methods for the authentication processes.
+ */
 export class AuthService {
   constructor(private users: UserDatabase) {}
 

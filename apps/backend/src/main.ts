@@ -18,4 +18,5 @@ const app = await createApp({
     user: new UserDatabase(database)
   }
 });
+
 await app.listen({ port: 8000 });

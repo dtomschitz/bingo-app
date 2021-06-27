@@ -3,6 +3,10 @@ import { ValidationUtils } from '../utils/index.ts';
 import { bcrypt, GQLError } from '../deps.ts';
 import { UpdateUser, ErrorType } from '../models.ts';
 
+/**
+ * Contains all methods for creating, updating and deleting, which are 
+ * associated with user model.
+ */
 export class UserService {
   constructor(private users: UserDatabase) {}
 
@@ -15,7 +19,6 @@ export class UserService {
     if (!user) {
       throw new GQLError(ErrorType.USER_DOES_NOT_EXIST);
     }
-
 
     const changes = props.changes;
 
