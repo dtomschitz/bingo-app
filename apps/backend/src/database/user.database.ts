@@ -3,10 +3,9 @@ import { UserSchema } from '../schema/index.ts';
 import { CreateUserProps } from '../models.ts';
 import { Bson, Document } from '../deps.ts';
 
-/*
-Get user specific data from the database for the services
-*/
-
+/**
+ * Contains all the necessary methods for interacting with the user database.
+ */
 export class UserDatabase {
   public readonly collection;
 

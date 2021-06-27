@@ -11,6 +11,13 @@ import { Utils } from '../utils/utils.ts';
 import { GameDatabase } from '../database/index.ts';
 import { GameSchema } from '../schema/index.ts';
 
+/**
+ * This class contains the handler for all websocket events. Its main purpose 
+ * is to mange a specific game and the associated game events such as joining, 
+ * leaving, drawing a new field or winning a game. Additionally all connections 
+ * and players of a game are stored so those player can receive events after 
+ * specific game events like drawing a new field.
+ */
 export class SocketService {
   private sessions: Map<string, Set<WebSocket>> = new Map();
   private players: Map<string, Set<Player>> = new Map();

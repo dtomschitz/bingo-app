@@ -2,10 +2,9 @@ import { Database } from "../database/index.ts";
 import { GameInstanceSchema, GameSchema } from "../schema/index.ts";
 import { Bson, Document } from "../deps.ts";
 
-/*
-Get game specific data from the database for the services
-*/
-
+/**
+ * Contains all the necessary methods for interacting with the game database.
+ */
 export class GameDatabase {
   public readonly collection;
 

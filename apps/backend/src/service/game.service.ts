@@ -16,6 +16,10 @@ import { GameDatabase } from "../database/index.ts";
 import { GameSchema } from "../schema/index.ts";
 import { Utils } from "../utils/index.ts";
 
+/**
+ * Contains all methods for creating, updating and deleting, which are 
+ * associated with game model.
+ */
 export class GameService {
   constructor(private games: GameDatabase) {}
 

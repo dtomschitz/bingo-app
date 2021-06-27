@@ -1,9 +1,9 @@
 import { gql } from "../../deps.ts";
 
-/*
-All user gql types/schemas for queries and mutations
-*/
-
+/**
+ * Contains all the necessary gql types and inputs for the user specific 
+ * queries and mutations.
+ */
 export const UserTypes = gql`
   type User {
     _id: String
