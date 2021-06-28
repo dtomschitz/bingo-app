@@ -17,6 +17,7 @@ backend:
   stage: test
   image: hayd/ubuntu-deno:1.8.2
   script:
+    - export WAIT_HOSTS=database:27017
     - export ACCESS_TOKEN_SECRET=$ACCESS_TOKEN_SECRET
     - export REFRESH_TOKEN_SECRET=$REFRESH_TOKEN_SECRET
     - export ACCESS_TOKEN_EXPIRATION_TIME=$ACCESS_TOKEN_EXPIRATION_TIME
