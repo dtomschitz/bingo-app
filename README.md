@@ -1,9 +1,8 @@
-<center>
+<p align="center">
   <img src="bingo.png" alt="logo" width="200"/>
-</center>
+</p>
 
 # Table of contents
-- [Members](#Members)
 - [Abstract](#Abstract)
 - [Getting Started](#Getting-Started)
 - [Project Structure](#Project-Structure)
@@ -12,14 +11,6 @@
 - [Common Commands](#Common-Commands)
   - [Backend](#Backend)
   - [Frontend](#Frontend)
-
-# Members
-
-- Sundar Arz (sa070)
-- Fabian Bekemeier (fb084)
-- Yannik Pfeifer (yp009)
-- Maximilian Staudenmaier (ms497)
-- David Tomschitz (dt035)
 
 # Abstract
 The projects goal was to create a bingo web app, which enpowers users to play [Bingo](https://de.wikipedia.org/wiki/Bingo) together. With our web app, users can create games, moderate them and play with others after they signed up. The frontend was built with [React](https://reactjs.org/) and some custom designed components to ensure a fluent and easy user interaction. For the backend we used [Deno](https://deno.land/) and Oak as the middleware for creating the HTTP server which connects to the document based [MongoDB](https://www.mongodb.com/) in order to store the data of the users and games. Both the frontend and the backend were developed with TypeScript, which enabled us to use interfaces and strongly typed objects across the applications. Because of this we decided to use the query language [GraphQL](https://graphql.org/) for querying and manipulating the stored data which is send back and forth between the frontend and backend. Additionally the WebSocket [GraphQL](https://developer.mozilla.org/de/docs/Web/API/WebSockets_API) protocol is used, with the intention of providing real time updates and game events between the different players.
