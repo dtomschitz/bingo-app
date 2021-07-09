@@ -1,7 +1,0 @@
-mutation{
-  loginUser(props: {email: "x-email@test.de", password: "Test1234!"}){
-    user{
-      email
-    }
-  }
-}
